@@ -1,4 +1,4 @@
-package onlytrade.app.android
+package onlytrade.app
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,15 +22,15 @@ fun MyApplicationTheme(
 ) {
     val colors = if (darkTheme) {
         darkColorScheme(
-            primary = Color(0xFFBB86FC),
-            secondary = Color(0xFF03DAC5),
-            tertiary = Color(0xFF3700B3)
+            primary = Color(0xFF1C1B1B),
+            secondary = Color(0xFF2196F3),
+            tertiary = Color(0xFFFFFFFF)
         )
     } else {
         lightColorScheme(
-            primary = Color(0xFF6200EE),
-            secondary = Color(0xFF03DAC5),
-            tertiary = Color(0xFF3700B3)
+            primary = Color(0xFFFFFFFF),
+            secondary = Color(0xFF1C1B1B),
+            tertiary = Color(0xFF2196F3)
         )
     }
     val typography = Typography(
