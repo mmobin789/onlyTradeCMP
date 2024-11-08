@@ -1,6 +1,7 @@
 package onlytrade.app.ui.splash
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,7 +31,7 @@ class SplashScreen : Screen {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AsyncImage(
-                model = R.drawable.quickmart_light,
+                model = if (isSystemInDarkTheme()) R.drawable.quickmart_dark else R.drawable.quickmart_light,
                 contentScale = ContentScale.None,
                 contentDescription = "App logo"
             )
