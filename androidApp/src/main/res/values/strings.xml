@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">OnlyTrade</string>
     <string name="app_desc">Asia\'s no 1 e-trading app</string>
+    <string name="app_logo">App logo</string>
 </resources>

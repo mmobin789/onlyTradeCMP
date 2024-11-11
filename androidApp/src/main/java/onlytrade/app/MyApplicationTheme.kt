@@ -24,11 +24,12 @@ fun MyApplicationTheme(
         darkColorScheme(
             primary = Color(0xFF1C1B1B),
             secondary = Color(0xFF2196F3),
-            tertiary = Color(0xFFFFFFFF)
+            tertiary = Color.White,
+
         )
     } else {
         lightColorScheme(
-            primary = Color(0xFFFFFFFF),
+            primary = Color.White,
             secondary = Color(0xFF1C1B1B),
             tertiary = Color(0xFF2196F3)
         )

@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.navigator.Navigator
 import onlytrade.app.ui.splash.SplashScreen
@@ -20,13 +19,10 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    LoadInitialNav()
+                    Navigator(SplashScreen())
                 }
             }
         }
     }
 }
-
-@Composable
-private fun LoadInitialNav() = Navigator(SplashScreen())
 
