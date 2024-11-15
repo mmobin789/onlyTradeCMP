@@ -39,8 +39,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
+import onlytrade.app.ui.login.forgotPassword.ForgotPassword
 import onlytrade.app.ui.onboarding.color
 import onlytrade.app.ui.onboarding.drawableRes
 
@@ -48,7 +51,7 @@ class LoginScreen : Screen {
 
     @Composable
     override fun Content() {
-
+        val nav = LocalNavigator.currentOrThrow
         var email by remember { mutableStateOf(TextFieldValue()) }
         var phone by remember { mutableStateOf(TextFieldValue()) }
         var password by remember { mutableStateOf(TextFieldValue()) }
@@ -75,9 +78,18 @@ class LoginScreen : Screen {
                     .padding(horizontal = 16.dp)
                     .padding(top = 16.dp),
                 text = "Login",
-                color = color(0xFF1C1B1B, 0xFFFFFFFF),
+                color = MaterialTheme.colorScheme.secondary,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.SemiBold
+            )
+
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp),
+                text = "Enter your email or mobile number",
+                color = color(0xFF6F7384, 0xFFA2A2A6),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal
             )
 
 
@@ -283,7 +295,7 @@ class LoginScreen : Screen {
                     .padding(16.dp)
                     .align(Alignment.End)
                     .clickable {
-                        //todo
+                        nav.push(ForgotPassword())
                     },
                 text = stringResource(R.string.forgot_pwd),
                 style = TextStyle(
