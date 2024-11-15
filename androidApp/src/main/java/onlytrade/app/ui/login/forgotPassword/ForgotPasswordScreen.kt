@@ -38,16 +38,19 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
+import onlytrade.app.ui.login.newPassword.NewPasswordScreen
 import onlytrade.app.ui.onboarding.color
 import onlytrade.app.ui.onboarding.drawableRes
 
-class ForgotPassword : Screen {
+class ForgotPasswordScreen : Screen {
 
     @Composable
     override fun Content() {
-
+        val nav = LocalNavigator.currentOrThrow
         var email by remember { mutableStateOf(TextFieldValue()) }
         var phone by remember { mutableStateOf(TextFieldValue()) }
         var password by remember { mutableStateOf(TextFieldValue()) }
@@ -74,7 +77,7 @@ class ForgotPassword : Screen {
                     .padding(horizontal = 16.dp)
                     .padding(top = 16.dp),
                 text = "Forgot Password",
-                color = color(0xFF1C1B1B, 0xFFFFFFFF),
+                color = MaterialTheme.colorScheme.secondary,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -272,8 +275,10 @@ class ForgotPassword : Screen {
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp), onClick = { }, //todo
-                shape = RoundedCornerShape(8.dp), colors = ButtonDefaults.buttonColors(
+                    .padding(16.dp),
+                onClick = { nav.push(NewPasswordScreen()) }, //todo display pop up to enter code received then change pwd.
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
                     containerColor = color(
                         MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.tertiary
                     )

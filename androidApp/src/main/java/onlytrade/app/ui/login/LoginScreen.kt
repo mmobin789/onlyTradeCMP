@@ -43,7 +43,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
-import onlytrade.app.ui.login.forgotPassword.ForgotPassword
+import onlytrade.app.ui.login.forgotPassword.ForgotPasswordScreen
 import onlytrade.app.ui.onboarding.color
 import onlytrade.app.ui.onboarding.drawableRes
 
@@ -295,7 +295,7 @@ class LoginScreen : Screen {
                     .padding(16.dp)
                     .align(Alignment.End)
                     .clickable {
-                        nav.push(ForgotPassword())
+                        nav.push(ForgotPasswordScreen())
                     },
                 text = stringResource(R.string.forgot_pwd),
                 style = TextStyle(
