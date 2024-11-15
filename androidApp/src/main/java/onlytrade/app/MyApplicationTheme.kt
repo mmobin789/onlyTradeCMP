@@ -23,15 +23,15 @@ fun MyApplicationTheme(
     val colors = if (darkTheme) {
         darkColorScheme(
             primary = Color(0xFF1C1B1B),
-            secondary = Color(0xFF2196F3),
-            tertiary = Color.White,
+            secondary = Color.White,
+            tertiary = Color(0xFF21D4B4)
 
         )
     } else {
         lightColorScheme(
             primary = Color.White,
             secondary = Color(0xFF1C1B1B),
-            tertiary = Color(0xFF2196F3)
+            tertiary = Color(0xFF21D4B4)
         )
     }
     val typography = Typography(

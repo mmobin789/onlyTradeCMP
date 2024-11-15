@@ -13,7 +13,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.launch
+import onlytrade.app.ui.login.LoginScreen
 
 class OBScrollPage : Screen {
 
@@ -21,6 +24,7 @@ class OBScrollPage : Screen {
     override fun Content() {
         val pagerState = rememberPagerState { 3 }
         val coroutineScope = rememberCoroutineScope()
+        val nav = LocalNavigator.currentOrThrow
 
         ConstraintLayout(
             modifier = Modifier
@@ -54,11 +58,10 @@ class OBScrollPage : Screen {
                         }
                     }
 
-                    2 -> OBPage3({
+                    2 -> OBPage3(onLoginClick = { nav.push(LoginScreen()) },
+                        onGetStartedClick = {  //todo
 
-                    }, {
-
-                    })
+                         })
 
 
                 }
@@ -74,7 +77,7 @@ class OBScrollPage : Screen {
                     },
                 totalDots = 3,
                 selectedIndex = pagerState.currentPage,
-                selectedColor = Color(0xFF21D4B4),
+                selectedColor = MaterialTheme.colorScheme.tertiary,
                 unSelectedColor = Color(0xFFC0C0C0)
             )
         }

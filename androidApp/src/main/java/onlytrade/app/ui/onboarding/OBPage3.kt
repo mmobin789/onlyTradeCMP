@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -58,7 +61,7 @@ fun OBPage3(onLoginClick: () -> Unit, onGetStartedClick: () -> Unit) {
                 )
 
                 Text(
-                    color = Color(0xFF21D4B4),
+                    color = MaterialTheme.colorScheme.tertiary,
                     text = "Skip for now",
                     modifier = Modifier.align(Alignment.CenterEnd)
                 )
@@ -76,9 +79,7 @@ fun OBPage3(onLoginClick: () -> Unit, onGetStartedClick: () -> Unit) {
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(vertical = 16.dp),
                 fontSize = 24.sp,
-                color = color(
-                    MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.tertiary
-                ),
+                color = MaterialTheme.colorScheme.secondary,
                 text = "Safe and Secure\nDeals",
 
                 )
@@ -91,25 +92,22 @@ fun OBPage3(onLoginClick: () -> Unit, onGetStartedClick: () -> Unit) {
             )
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                ,
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Button(
                     modifier = Modifier
                         .weight(.5f)
                         .padding(8.dp)
                         .border(
-                            2.dp,
-                            color = color(0xFFF4F5FD, 0xFF282828),
-                            RoundedCornerShape(8.dp)
-                        ),
-                    onClick = onLoginClick,
-                    shape = RoundedCornerShape(8.dp)
+                            2.dp, color = color(0xFFF4F5FD, 0xFF282828), RoundedCornerShape(8.dp)
+                        ), onClick = onLoginClick, shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
                         "Login",
-                        color = color(0xFF1C1B1B, 0xFF21D4B4),
+                        color = color(
+                            MaterialTheme.colorScheme.secondary,
+                            MaterialTheme.colorScheme.tertiary
+                        ),
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                 }
@@ -122,15 +120,22 @@ fun OBPage3(onLoginClick: () -> Unit, onGetStartedClick: () -> Unit) {
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = color(
-                            MaterialTheme.colorScheme.secondary, Color(0xFF21D4B4)
+                            MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.tertiary
                         )
                     )
                 ) {
-                    Text(
-                        "Get Started",
-                        color = Color.White,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            "Get Started",
+                            color = Color.White,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
                 }
 
             }

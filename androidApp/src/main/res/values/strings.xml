@@ -3,4 +3,7 @@
     <string name="app_name">OnlyTrade</string>
     <string name="app_desc">Asia\'s no 1 e-trading app</string>
     <string name="app_logo">App logo</string>
+    <string name="password">Password</string>
+    <string name="forgot_pwd">Forgot password?</string>
+    <string name="login">Login</string>
 </resources>

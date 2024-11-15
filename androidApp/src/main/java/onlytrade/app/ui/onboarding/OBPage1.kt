@@ -54,7 +54,7 @@ fun OBPage1(onNextClick: () -> Unit) {
                 )
 
                 Text(
-                    color = Color(0xFF21D4B4),
+                    color = MaterialTheme.colorScheme.tertiary,
                     text = "Skip for now",
                     modifier = Modifier.align(Alignment.CenterEnd)
                 )
@@ -72,9 +72,7 @@ fun OBPage1(onNextClick: () -> Unit) {
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(vertical = 16.dp),
                 fontSize = 24.sp,
-                color = color(
-                    MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.tertiary
-                ),
+                color = MaterialTheme.colorScheme.secondary,
                 text = "Explore a wide range of products",
 
                 )
@@ -94,7 +92,7 @@ fun OBPage1(onNextClick: () -> Unit) {
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = color(
-                        MaterialTheme.colorScheme.secondary, Color(0xFF21D4B4)
+                        MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.tertiary
                     )
                 )
             ) {
