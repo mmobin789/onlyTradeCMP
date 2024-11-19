@@ -45,5 +45,6 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.voyager.navigator)
     implementation(libs.coil)
+    implementation(libs.androidx.ui.text.google.fonts)
     debugImplementation(libs.compose.ui.tooling)
 }

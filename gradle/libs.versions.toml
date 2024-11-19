@@ -7,6 +7,7 @@ androidx-activityCompose = "1.9.3"
 voyager = "1.1.0-beta02"
 coil = "3.0.1"
 constraintLayout = "1.1.0"
+uiTextGoogleFonts = "1.7.5"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -19,6 +20,7 @@ compose-material3 = { module = "androidx.compose.material3:material3", version.r
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout" }
+androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

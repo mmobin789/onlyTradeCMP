@@ -38,7 +38,7 @@ class SplashScreen : Screen {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AsyncImage(
-                model = drawableRes(R.drawable.quickmart_light, R.drawable.quickmart_dark),
+                model = drawableRes(R.drawable.ic_quickmart, R.drawable.ic_quickmart),
                 contentScale = ContentScale.None,
                 contentDescription = stringResource(R.string.app_logo)
             )

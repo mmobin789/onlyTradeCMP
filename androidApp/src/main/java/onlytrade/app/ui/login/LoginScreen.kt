@@ -67,7 +67,7 @@ class LoginScreen : Screen {
             AsyncImage(
                 modifier = Modifier.padding(16.dp),
                 model = drawableRes(
-                    R.drawable.quickmart_light_intro, R.drawable.quickmart_dark_intro
+                    R.drawable.ic_quickmart_intro, R.drawable.ic_quickmart_intro
                 ),
                 contentScale = ContentScale.None,
                 contentDescription = stringResource(R.string.app_logo)
