@@ -1,6 +1,7 @@
 package onlytrade.app.ui.onboarding
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,13 +29,13 @@ fun OBPage1(onNextClick: () -> Unit) {
     Scaffold(bottomBar = {
         Button(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .padding(bottom = 44.dp),
+                .padding(horizontal = 32.dp)
+                .padding(bottom = 56.dp)
+                .fillMaxWidth(),
             onClick = onNextClick,
             shape = MaterialTheme.shapes.small,
         ) {
-            Text("Next", modifier = Modifier)
+            Text("Next", modifier = Modifier.padding(8.dp))
         }
     }, topBar = {
         Row(
@@ -45,7 +46,8 @@ fun OBPage1(onNextClick: () -> Unit) {
                 )
                 .fillMaxWidth()
                 .padding(24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
                     model = R.drawable.ic_quickmart_intro,
@@ -56,8 +58,9 @@ fun OBPage1(onNextClick: () -> Unit) {
                 Text(
                     style = MaterialTheme.typography.bodyMedium,
                     text = "Skip for now",
-
-                    )
+                    modifier = Modifier.clickable {
+                        onNextClick()
+                    })
             }
     }) { paddingValues ->
         Box(
@@ -70,6 +73,7 @@ fun OBPage1(onNextClick: () -> Unit) {
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(16.dp)
+                    .padding(bottom = 16.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)

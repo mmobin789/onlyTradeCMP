@@ -1,146 +1,122 @@
 package onlytrade.app.ui.onboarding
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
-
+import onlytrade.app.ui.design_system.theme.onlyTradePrimary
 
 @Composable
 fun OBPage3(onLoginClick: () -> Unit, onGetStartedClick: () -> Unit) {
-
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(bottom = 32.dp)
-    ) {
-
-        Column {
-
-            Spacer(modifier = Modifier.padding(top = 16.dp))
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .background(
-                        color = color(0xFFF4FDFA, 0xFF212322), shape = RoundedCornerShape(16.dp)
-                    )
-                    .fillMaxWidth()
-                    .padding(24.dp)
-            ) {
-                AsyncImage(
-                    modifier = Modifier.align(Alignment.CenterStart),
-                    model = drawableRes(
-                        R.drawable.ic_quickmart_intro, R.drawable.ic_quickmart_intro
-                    ),
-                    contentScale = ContentScale.None,
-                    contentDescription = stringResource(R.string.app_logo)
-                )
-
-                Text(
-                    color = MaterialTheme.colorScheme.tertiary,
-                    text = "Skip for now",
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                )
-
-            }
-        }
-        Column(
+    Scaffold(bottomBar = {
+        Row(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 32.dp)
+                .padding(bottom = 56.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = 16.dp),
-                fontSize = 24.sp,
-                color = MaterialTheme.colorScheme.secondary,
-                text = "Safe and Secure\nDeals",
-
+            OutlinedButton(
+                modifier = Modifier
+                    .weight(1f), onClick = onLoginClick, shape = MaterialTheme.shapes.small
+            ) {
+                Text(
+                    "Login",
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
-            Text(
-                modifier = Modifier.padding(vertical = 16.dp),
-                textAlign = TextAlign.Center,
-                fontSize = 16.sp,
-                color = color(0xFF6F7384, 0xFFA2A2A6),
-                text = " OnlyTrade provides full scale arbitration\nand customer support for your\ntrusted trades and offers."
+            }
+
+            Button(
+                modifier = Modifier
+                    .weight(1f),
+                onClick = onGetStartedClick,
+                shape = MaterialTheme.shapes.small,
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        "Get Started",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
+
+        }
+    }, topBar = {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .background(
+                    MaterialTheme.colorScheme.onlyTradePrimary, shape = MaterialTheme.shapes.large
+                )
+                .fillMaxWidth()
+                .padding(24.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AsyncImage(
+                model = R.drawable.ic_quickmart_intro,
+                contentScale = ContentScale.None,
+                contentDescription = stringResource(R.string.app_logo)
             )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
+            Text(
+                style = MaterialTheme.typography.bodyMedium,
+                text = "Skip for now",
+
+                )
+        }
+    }) { paddingValues ->
+        Box(
+            Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface)
+        ) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+                    .padding(bottom = 16.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Button(
-                    modifier = Modifier
-                        .weight(.5f)
-                        .padding(8.dp)
-                        .border(
-                            2.dp, color = color(0xFFF4F5FD, 0xFF282828), RoundedCornerShape(8.dp)
-                        ), onClick = onLoginClick, shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        "Login",
-                        color = color(
-                            MaterialTheme.colorScheme.secondary,
-                            MaterialTheme.colorScheme.tertiary
-                        ),
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                }
-
-                Button(
-                    modifier = Modifier
-                        .weight(.5f)
-                        .padding(8.dp),
-                    onClick = onGetStartedClick,
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = color(
-                            MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.tertiary
-                        )
-                    )
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            "Get Started",
-                            color = Color.White,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
-                    }
-                }
-
+                Text(
+                    style = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center),
+                    text = "Safe and Secure\nDeals",
+                )
+                Text(
+                    text = " OnlyTrade provides full scale arbitration\nand customer support for your\ntrusted trades and offers.",
+                    style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center),
+                )
             }
         }
-
     }
-
 }

@@ -61,7 +61,7 @@ class LoginScreen : Screen {
 
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.primary)
+                .background(MaterialTheme.colorScheme.surface)
                 .fillMaxSize()
         ) {
             AsyncImage(

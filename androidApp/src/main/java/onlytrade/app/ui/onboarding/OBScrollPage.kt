@@ -1,6 +1,7 @@
 package onlytrade.app.ui.onboarding
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
@@ -8,45 +9,47 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.launch
+import onlytrade.app.ui.design_system.components.DotsIndicator
 import onlytrade.app.ui.login.LoginScreen
 
 class OBScrollPage : Screen {
 
     @Composable
     override fun Content() {
-        val pagerState = rememberPagerState { 3 }
-        val coroutineScope = rememberCoroutineScope()
-        val nav = LocalNavigator.currentOrThrow
+        OnBoardingScreenContent()
+    }
+}
 
-        ConstraintLayout(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.primary)
+@Composable
+private fun OnBoardingScreenContent(
+    nav: Navigator = LocalNavigator.currentOrThrow
+) {
+    val pagerState = rememberPagerState { 3 }
+    val coroutineScope = rememberCoroutineScope()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primary)
         ) {
-            val (pager, dots) = createRefs()
 
             HorizontalPager(
-                modifier = Modifier
-                    .constrainAs(pager) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(dots.bottom)
-                    },
+                modifier = Modifier,
                 state = pagerState,
                 beyondViewportPageCount = 1
             ) { page ->
 
                 when (page) {
                     0 -> OBPage1 {
+                        nav.replaceAll(LoginScreen())
                         coroutineScope.launch {
                             pagerState.scrollToPage(1)
                         }
@@ -58,10 +61,10 @@ class OBScrollPage : Screen {
                         }
                     }
 
-                    2 -> OBPage3(onLoginClick = { nav.push(LoginScreen()) },
+                    2 -> OBPage3(onLoginClick = { nav.replaceAll(LoginScreen()) },
                         onGetStartedClick = {  //todo
 
-                         })
+                        })
 
 
                 }
@@ -69,19 +72,13 @@ class OBScrollPage : Screen {
             }
             DotsIndicator(
                 modifier = Modifier
-                    .padding(bottom = 16.dp)
-                    .constrainAs(dots) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    },
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp),
                 totalDots = 3,
                 selectedIndex = pagerState.currentPage,
                 selectedColor = MaterialTheme.colorScheme.tertiary,
                 unSelectedColor = Color(0xFFC0C0C0)
             )
         }
-
     }
 
-}

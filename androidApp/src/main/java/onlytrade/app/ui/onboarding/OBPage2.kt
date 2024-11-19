@@ -1,8 +1,10 @@
 package onlytrade.app.ui.onboarding
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,84 +26,70 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
+import onlytrade.app.ui.design_system.theme.onlyTradePrimary
 
 @Composable
 fun OBPage2(onNextClick: () -> Unit) {
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(bottom = 32.dp)
-    ) {
-        Column {
-
-            Spacer(modifier = Modifier.padding(top = 16.dp))
-
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .background(
-                        color = color(0xFFF4FDFA, 0xFF212322), shape = RoundedCornerShape(16.dp)
-                    )
-                    .fillMaxWidth()
-                    .padding(24.dp)
-            ) {
-                AsyncImage(
-                    modifier = Modifier.align(Alignment.CenterStart),
-                    model = drawableRes(
-                        R.drawable.ic_quickmart_intro, R.drawable.ic_quickmart_intro
-                    ),
-                    contentScale = ContentScale.None,
-                    contentDescription = stringResource(R.string.app_logo)
-                )
-
-                Text(
-                    color = Color(0xFF21D4B4),
-                    text = "Skip for now",
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                )
-
-            }
-        }
-        Column(
+    Scaffold(bottomBar = {
+        Button(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(16.dp)
+                .padding(horizontal = 32.dp)
+                .padding(bottom = 56.dp)
                 .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            onClick = onNextClick,
+            shape = MaterialTheme.shapes.small,
         ) {
-            Text(
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = 16.dp),
-                fontSize = 24.sp,
-                color = MaterialTheme.colorScheme.secondary,
-                text = "Unlock exclusive offers and discounts",
-
+            Text("Next", modifier = Modifier.padding(8.dp))
+        }
+    }, topBar = {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .background(
+                    MaterialTheme.colorScheme.onlyTradePrimary, shape = MaterialTheme.shapes.large
                 )
-            Text(
-                modifier = Modifier.padding(vertical = 16.dp),
-                textAlign = TextAlign.Center,
-                fontSize = 16.sp,
-                color = color(0xFF6F7384, 0xFFA2A2A6),
-                text = "Get access to limited-time deals and special\n promotions available only to our valued\n customers."
+                .fillMaxWidth()
+                .padding(24.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AsyncImage(
+                model = R.drawable.ic_quickmart_intro,
+                contentScale = ContentScale.None,
+                contentDescription = stringResource(R.string.app_logo)
             )
 
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                onClick = onNextClick,
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = color(
-                        MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.tertiary
-                    )
+            Text(
+                style = MaterialTheme.typography.bodyMedium,
+                text = "Skip for now",
+
                 )
-            ) {
-                Text("Next", color = Color.White, modifier = Modifier.padding(vertical = 8.dp))
-            }
-
         }
-
+    }) { paddingValues ->
+        Box(
+            Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface)
+        ) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+                    .padding(bottom = 16.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    style = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center),
+                    text = "Unlock exclusive offers and discounts",
+                )
+                Text(
+                    text = "Get access to limited-time deals and special\n promotions available only to our valued\n customers.",
+                    style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center),
+                )
+            }
+        }
     }
-
 }

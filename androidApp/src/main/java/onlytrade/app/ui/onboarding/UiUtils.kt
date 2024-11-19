@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import onlytrade.app.ui.design_system.theme.onlyTradePrimary
 
 @Composable
 fun color(light: Long, dark: Long) = Color(if (isSystemInDarkTheme()) dark else light)
@@ -27,43 +29,3 @@ fun color(light: Color, dark: Color) = if (isSystemInDarkTheme()) dark else ligh
 @Composable
 @DrawableRes
 fun drawableRes(light: Int, dark: Int) = if (isSystemInDarkTheme()) dark else light
-
-@Composable
-fun DotsIndicator(
-    modifier: Modifier,
-    totalDots: Int,
-    selectedIndex: Int,
-    selectedColor: Color,
-    unSelectedColor: Color
-) {
-    LazyRow(
-        modifier = modifier
-            .wrapContentWidth()
-            .wrapContentHeight()
-            .background(shape = RoundedCornerShape(8.dp), color = color(0xFFF4FDFA, 0xFF212322))
-            .padding(8.dp)
-
-    ) {
-        items(totalDots) { index ->
-            if (index == selectedIndex) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(selectedColor)
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(unSelectedColor)
-                )
-            }
-
-            if (index != totalDots - 1) {
-                Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-            }
-        }
-    }
-}
