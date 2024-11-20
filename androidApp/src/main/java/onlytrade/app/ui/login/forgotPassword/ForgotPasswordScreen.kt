@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,27 +18,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
 import onlytrade.app.ui.design_system.components.OTOutlinedTextField
-import onlytrade.app.ui.onboarding.color
 import onlytrade.app.ui.onboarding.drawableRes
 
 class ForgotPasswordScreen : Screen {
@@ -59,9 +55,8 @@ class ForgotPasswordScreen : Screen {
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surface)
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(horizontal = 16.dp), horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             AsyncImage(
                 model = drawableRes(
@@ -75,19 +70,13 @@ class ForgotPasswordScreen : Screen {
             )
 
             Text(
-                text = "Login",
-                color = MaterialTheme.colorScheme.secondary,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.align(Alignment.Start)
+                text = "Forgot Password",
+                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = W700)
             )
 
             Text(
                 text = "Enter your email or mobile number",
-                color = color(0xFF6F7384, 0xFFA2A2A6),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                modifier = Modifier.align(Alignment.Start)
+                style = MaterialTheme.typography.labelLarge
             )
 
             if (phone.text.isBlank()) {
@@ -112,9 +101,8 @@ class ForgotPasswordScreen : Screen {
             if (orLabelVisible) {
                 Text(
                     text = "OR",
-                    color = MaterialTheme.colorScheme.secondary,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Medium
+                    style = MaterialTheme.typography.headlineMedium.copy(textAlign = TextAlign.Center),
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 
@@ -151,7 +139,9 @@ class ForgotPasswordScreen : Screen {
                         Icon(imageVector = eyeIcon,
                             tint = MaterialTheme.colorScheme.secondary,
                             contentDescription = null,
-                            modifier = Modifier.clickable { passwordVisible = !passwordVisible })
+                            modifier = Modifier.clickable {
+                                passwordVisible = !passwordVisible
+                            })
                     }
                 },
                 keyboardType = KeyboardType.Password,
@@ -159,22 +149,18 @@ class ForgotPasswordScreen : Screen {
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
             )
 
-
             Button(
                 onClick = { /* TODO: Handle login */ },
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
-                ), modifier = Modifier
+                shape = MaterialTheme.shapes.small,
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp)
+
             ) {
                 Text(
                     text = stringResource(R.string.send),
-                    color = Color.White,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
+            }
         }
     }
-}
