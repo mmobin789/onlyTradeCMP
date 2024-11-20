@@ -40,7 +40,7 @@ fun OBPage3(onLoginClick: () -> Unit, onGetStartedClick: () -> Unit) {
         ) {
             OutlinedButton(
                 modifier = Modifier
-                    .weight(1f), onClick = onLoginClick, shape = MaterialTheme.shapes.small
+                    .weight(1f), onClick = onLoginClick, shape = MaterialTheme.shapes.medium
             ) {
                 Text(
                     "Login",
@@ -52,7 +52,7 @@ fun OBPage3(onLoginClick: () -> Unit, onGetStartedClick: () -> Unit) {
                 modifier = Modifier
                     .weight(1f),
                 onClick = onGetStartedClick,
-                shape = MaterialTheme.shapes.small,
+                shape = MaterialTheme.shapes.medium,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(

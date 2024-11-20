@@ -25,18 +25,8 @@ fun OTOutlinedTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     OutlinedTextField(
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.tertiary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-            errorBorderColor = Color(0xFFEE4D4D),
-            focusedTextColor = MaterialTheme.colorScheme.secondary,
-            unfocusedTextColor = MaterialTheme.colorScheme.secondary,
-            focusedLabelColor = MaterialTheme.colorScheme.secondary,
-            unfocusedLabelColor = MaterialTheme.colorScheme.secondary,
-            cursorColor = MaterialTheme.colorScheme.secondary
-        ),
         isError = isError,
-        shape = RoundedCornerShape(4.dp),
+        shape = MaterialTheme.shapes.large,
         modifier = modifier
             .fillMaxWidth(),
         value = value,
@@ -45,9 +35,7 @@ fun OTOutlinedTextField(
             Text(
                 modifier = Modifier,
                 text = label,
-                color = MaterialTheme.colorScheme.secondary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
+                style = MaterialTheme.typography.labelSmall
             )
         },
         singleLine = true,

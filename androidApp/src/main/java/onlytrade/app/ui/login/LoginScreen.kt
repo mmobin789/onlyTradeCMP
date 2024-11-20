@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,6 +36,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
 import onlytrade.app.ui.design_system.components.OTOutlinedTextField
+import onlytrade.app.ui.design_system.components.PrimaryButton
 import onlytrade.app.ui.login.forgotPassword.ForgotPasswordScreen
 
 class LoginScreen : Screen {
@@ -152,18 +152,13 @@ class LoginScreen : Screen {
                     .align(Alignment.End)
                     .clickable { nav.push(ForgotPasswordScreen()) })
 
-            Button(
+            PrimaryButton(
+                text = stringResource(R.string.login),
                 onClick = { /* TODO: Handle login */ },
-                shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .fillMaxWidth()
 
-            ) {
-                Text(
-                    text = stringResource(R.string.login),
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-            }
+            )
         }
     }
 }

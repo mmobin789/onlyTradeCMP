@@ -49,7 +49,7 @@ private fun OnBoardingScreenContent(
 
                 when (page) {
                     0 -> OBPage1 {
-                        nav.replaceAll(LoginScreen())
+                       // nav.replaceAll(LoginScreen())
                         coroutineScope.launch {
                             pagerState.scrollToPage(1)
                         }

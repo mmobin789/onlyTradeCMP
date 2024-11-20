@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,21 +21,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
+import onlytrade.app.ui.design_system.components.PrimaryButton
 import onlytrade.app.ui.design_system.theme.onlyTradePrimary
 
 @Composable
 fun OBPage1(onNextClick: () -> Unit) {
     Scaffold(bottomBar = {
-        Button(
+        PrimaryButton(
             modifier = Modifier
                 .padding(horizontal = 32.dp)
                 .padding(bottom = 56.dp)
                 .fillMaxWidth(),
             onClick = onNextClick,
-            shape = MaterialTheme.shapes.small,
-        ) {
-            Text("Next", modifier = Modifier.padding(8.dp))
-        }
+            text = "Next"
+        )
     }, topBar = {
         Row(
             modifier = Modifier
