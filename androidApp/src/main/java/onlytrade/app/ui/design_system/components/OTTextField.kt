@@ -38,8 +38,6 @@ fun OTOutlinedTextField(
         isError = isError,
         shape = RoundedCornerShape(4.dp),
         modifier = modifier
-            .padding(top = 24.dp)
-            .padding(horizontal = 16.dp)
             .fillMaxWidth(),
         value = value,
         trailingIcon = trailingIcon,

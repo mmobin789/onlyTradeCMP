@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -57,191 +55,138 @@ class LoginScreen : Screen {
         var password by remember { mutableStateOf(TextFieldValue()) }
         var passwordVisible by remember { mutableStateOf(true) }
         val orLabelVisible = email.text.isBlank() && phone.text.isBlank()
-        val inputWrongError = false //todo condition from vm.
+        val inputWrongError = false // TODO: condition from ViewModel
 
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surface)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             AsyncImage(
-                modifier = Modifier.padding(16.dp),
                 model = drawableRes(
                     R.drawable.ic_quickmart_intro, R.drawable.ic_quickmart_intro
                 ),
                 contentScale = ContentScale.None,
-                contentDescription = stringResource(R.string.app_logo)
+                contentDescription = stringResource(R.string.app_logo),
+                modifier = Modifier
+                    .padding(top = 32.dp)
+                    .align(Alignment.Start)
             )
 
             Text(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp),
                 text = "Login",
                 color = MaterialTheme.colorScheme.secondary,
                 fontSize = 32.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.align(Alignment.Start)
             )
 
             Text(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp),
                 text = "Enter your email or mobile number",
                 color = color(0xFF6F7384, 0xFFA2A2A6),
                 fontSize = 14.sp,
-                fontWeight = FontWeight.Normal
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.align(Alignment.Start)
             )
 
-
-            if (phone.text.isBlank())
+            if (phone.text.isBlank()) {
                 OTOutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = "Email",
-                    isError = false,
+                    label = "Email", isError = inputWrongError,
                     trailingIcon = {
                         if (email.text.isNotBlank()) {
                             Icon(
-                                modifier = Modifier
-                                    .padding(horizontal = 24.dp)
-                                    .clickable {
-                                        email = TextFieldValue("")
-                                    },
                                 painter = painterResource(R.drawable.outline_clear_24),
                                 tint = MaterialTheme.colorScheme.secondary,
-                                contentDescription = null
-                            )
-                        } else if (inputWrongError) {
-                            Icon(
-                                modifier = Modifier
-                                    .padding(horizontal = 24.dp),
-                                imageVector = ImageVector.vectorResource(R.drawable.outline_clear_24),
-                                tint = MaterialTheme.colorScheme.secondary,
-                                contentDescription = null
+                                contentDescription = null,
+                                modifier = Modifier.clickable { email = TextFieldValue("") }
                             )
                         }
                     },
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next,
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
+                    keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
                 )
-            if (orLabelVisible)
+            }
+
+            if (orLabelVisible) {
                 Text(
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally),
                     text = "OR",
                     color = MaterialTheme.colorScheme.secondary,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Medium
                 )
+            }
 
-            if (email.text.isBlank())
+            if (email.text.isBlank()) {
                 OTOutlinedTextField(
                     value = phone,
                     onValueChange = { phone = it },
-                    label = "Mobile Number",
-                    isError = false, //todo
+                    label = "Mobile Number", isError = inputWrongError,
                     trailingIcon = {
                         if (phone.text.isNotBlank()) {
                             Icon(
-                                modifier = Modifier
-                                    .clickable {
-                                        phone = TextFieldValue("")
-                                    },
-                                imageVector = ImageVector.vectorResource(R.drawable.outline_clear_24),
+                                painter = painterResource(R.drawable.outline_clear_24),
                                 tint = MaterialTheme.colorScheme.secondary,
-                                contentDescription = null
-                            )
-                        } else if (inputWrongError) {
-                            Icon(
-                                modifier = Modifier
-                                    .padding(horizontal = 24.dp),
-                                imageVector = ImageVector.vectorResource(R.drawable.outline_clear_24),
-                                tint = MaterialTheme.colorScheme.secondary,
-                                contentDescription = null
+                                contentDescription = null,
+                                modifier = Modifier.clickable { phone = TextFieldValue("") }
                             )
                         }
-                    },
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next,
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
+                    }, keyboardType = KeyboardType.Phone, imeAction = ImeAction.Next
                 )
-
+            }
 
             OTOutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = stringResource(R.string.password),
-                isError = false, //todo
+                isError = inputWrongError,
                 trailingIcon = {
-                    if (password.text.isNotBlank()) {
+                    if (password.text.isNotEmpty()) {
                         val eyeIcon = if (passwordVisible) {
                             ImageVector.vectorResource(R.drawable.pwd_visibility_24)
                         } else {
                             ImageVector.vectorResource(R.drawable.pwd_visibility_off_24)
                         }
-                        Icon(
-                            modifier = Modifier
-                                .padding(horizontal = 24.dp)
-                                .clickable { passwordVisible = passwordVisible.not() },
-                            imageVector = eyeIcon,
+                        Icon(imageVector = eyeIcon,
                             tint = MaterialTheme.colorScheme.secondary,
-                            contentDescription = null
-                        )
-                    } else if (inputWrongError) {
-                        Icon(
-                            modifier = Modifier
-                                .padding(horizontal = 24.dp),
-                            imageVector = Icons.Outlined.Warning, //todo
-                            tint = Color.Unspecified,
-                            contentDescription = null
-                        )
+                            contentDescription = null,
+                            modifier = Modifier.clickable { passwordVisible = !passwordVisible })
                     }
                 },
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done,
-                modifier = Modifier
-                    .fillMaxWidth(),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
             )
 
             Text(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.End)
-                    .clickable {
-                        nav.push(ForgotPasswordScreen())
-                    },
                 text = stringResource(R.string.forgot_pwd),
                 style = TextStyle(
                     fontWeight = FontWeight.Medium,
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.tertiary
-                )
-            )
+                ),
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .clickable { nav.push(ForgotPasswordScreen()) })
 
             Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                onClick = { }, //todo
+                onClick = { /* TODO: Handle login */ },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = color(
-                        MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.tertiary
-                    )
-                )
+                    containerColor = MaterialTheme.colorScheme.secondary
+                ), modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
             ) {
                 Text(
-                    stringResource(R.string.login),
+                    text = stringResource(R.string.login),
                     color = Color.White,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
-
         }
     }
-
-
 }
