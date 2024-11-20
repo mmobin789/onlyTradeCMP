@@ -40,7 +40,6 @@ import cafe.adriel.voyager.core.screen.Screen
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
 import onlytrade.app.ui.onboarding.color
-import onlytrade.app.ui.onboarding.drawableRes
 
 class NewPasswordScreen : Screen {
 
@@ -59,9 +58,7 @@ class NewPasswordScreen : Screen {
         ) {
             AsyncImage(
                 modifier = Modifier.padding(16.dp),
-                model = drawableRes(
-                    R.drawable.ic_quickmart_intro, R.drawable.ic_quickmart_intro
-                ),
+                model = R.drawable.ic_quickmart_intro,
                 contentScale = ContentScale.None,
                 contentDescription = stringResource(R.string.app_logo)
             )

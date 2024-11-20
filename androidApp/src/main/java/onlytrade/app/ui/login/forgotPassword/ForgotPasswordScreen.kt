@@ -37,7 +37,6 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
 import onlytrade.app.ui.design_system.components.OTOutlinedTextField
-import onlytrade.app.ui.onboarding.drawableRes
 
 class ForgotPasswordScreen : Screen {
 
@@ -59,9 +58,8 @@ class ForgotPasswordScreen : Screen {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             AsyncImage(
-                model = drawableRes(
-                    R.drawable.ic_quickmart_intro, R.drawable.ic_quickmart_intro
-                ),
+                model =
+                R.drawable.ic_quickmart_intro,
                 contentScale = ContentScale.None,
                 contentDescription = stringResource(R.string.app_logo),
                 modifier = Modifier

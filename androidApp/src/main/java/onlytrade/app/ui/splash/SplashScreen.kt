@@ -22,7 +22,6 @@ import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
 import onlytrade.app.android.R
 import onlytrade.app.ui.onboarding.OBScrollPage
-import onlytrade.app.ui.onboarding.drawableRes
 
 
 class SplashScreen : Screen {
@@ -33,12 +32,12 @@ class SplashScreen : Screen {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.primary),
+                .background(MaterialTheme.colorScheme.background),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AsyncImage(
-                model = drawableRes(R.drawable.ic_quickmart, R.drawable.ic_quickmart),
+                model = R.drawable.ic_quickmart,
                 contentScale = ContentScale.None,
                 contentDescription = stringResource(R.string.app_logo)
             )
