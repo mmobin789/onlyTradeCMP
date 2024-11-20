@@ -2,20 +2,18 @@ package onlytrade.app.ui.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -43,6 +42,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
+import onlytrade.app.ui.design_system.components.OTOutlinedTextField
 import onlytrade.app.ui.login.forgotPassword.ForgotPasswordScreen
 import onlytrade.app.ui.onboarding.color
 import onlytrade.app.ui.onboarding.drawableRes
@@ -62,7 +62,9 @@ class LoginScreen : Screen {
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surface)
-                .fillMaxSize()
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             AsyncImage(
                 modifier = Modifier.padding(16.dp),
@@ -75,8 +77,7 @@ class LoginScreen : Screen {
 
             Text(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp),
+                    .padding(horizontal = 16.dp),
                 text = "Login",
                 color = MaterialTheme.colorScheme.secondary,
                 fontSize = 32.sp,
@@ -94,24 +95,11 @@ class LoginScreen : Screen {
 
 
             if (phone.text.isBlank())
-                OutlinedTextField(
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.tertiary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                        errorBorderColor = Color(0xFFEE4D4D),
-                        focusedTextColor = MaterialTheme.colorScheme.secondary,
-                        unfocusedTextColor = MaterialTheme.colorScheme.secondary,
-                        focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.secondary,
-                        cursorColor = MaterialTheme.colorScheme.secondary
-                    ),
-                    isError = false,
-                    shape = RoundedCornerShape(4.dp),
-                    modifier = Modifier
-                        .padding(top = 24.dp)
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth(),
+                OTOutlinedTextField(
                     value = email,
+                    onValueChange = { email = it },
+                    label = "Email",
+                    isError = false,
                     trailingIcon = {
                         if (email.text.isNotBlank()) {
                             Icon(
@@ -120,7 +108,7 @@ class LoginScreen : Screen {
                                     .clickable {
                                         email = TextFieldValue("")
                                     },
-                                imageVector = ImageVector.vectorResource(R.drawable.outline_clear_24),
+                                painter = painterResource(R.drawable.outline_clear_24),
                                 tint = MaterialTheme.colorScheme.secondary,
                                 contentDescription = null
                             )
@@ -134,29 +122,13 @@ class LoginScreen : Screen {
                             )
                         }
                     },
-                    label = {
-                        Text(
-                            modifier = Modifier,
-                            text = "Email",
-                            color = MaterialTheme.colorScheme.secondary,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
-                    ),
-                    onValueChange = {
-                        email = it
-
-                    }
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next,
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
                 )
             if (orLabelVisible)
                 Text(
                     modifier = Modifier
-                        .padding(top = 16.dp)
                         .align(Alignment.CenterHorizontally),
                     text = "OR",
                     color = MaterialTheme.colorScheme.secondary,
@@ -165,29 +137,15 @@ class LoginScreen : Screen {
                 )
 
             if (email.text.isBlank())
-                OutlinedTextField(
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.tertiary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                        errorBorderColor = Color(0xFFEE4D4D),
-                        focusedTextColor = MaterialTheme.colorScheme.secondary,
-                        unfocusedTextColor = MaterialTheme.colorScheme.secondary,
-                        focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.secondary,
-                        cursorColor = MaterialTheme.colorScheme.secondary
-                    ),
-                    isError = false, //todo
-                    shape = RoundedCornerShape(4.dp),
-                    modifier = Modifier
-                        .padding(top = if (orLabelVisible) 16.dp else 24.dp)
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth(),
+                OTOutlinedTextField(
                     value = phone,
+                    onValueChange = { phone = it },
+                    label = "Mobile Number",
+                    isError = false, //todo
                     trailingIcon = {
                         if (phone.text.isNotBlank()) {
                             Icon(
                                 modifier = Modifier
-                                    .padding(horizontal = 24.dp)
                                     .clickable {
                                         phone = TextFieldValue("")
                                     },
@@ -205,59 +163,21 @@ class LoginScreen : Screen {
                             )
                         }
                     },
-                    label = {
-                        Text(
-                            modifier = Modifier,
-                            text = "Mobile Number",
-                            color = MaterialTheme.colorScheme.secondary,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Phone,
-                        imeAction = ImeAction.Next
-                    ),
-                    onValueChange = {
-                        phone = it
-
-                    }
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next,
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
                 )
 
-            OutlinedTextField(
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.tertiary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                    errorBorderColor = Color(0xFFEE4D4D),
-                    focusedTextColor = MaterialTheme.colorScheme.secondary,
-                    unfocusedTextColor = MaterialTheme.colorScheme.secondary,
-                    focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                    unfocusedLabelColor = MaterialTheme.colorScheme.secondary,
-                    cursorColor = MaterialTheme.colorScheme.secondary
-                ),
-                isError = false, //todo
-                shape = RoundedCornerShape(4.dp),
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
+
+            OTOutlinedTextField(
                 value = password,
-                label = {
-                    Text(
-                        text = stringResource(R.string.password),
-                        color = MaterialTheme.colorScheme.secondary,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                },
-                singleLine = true,
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                onValueChange = { password = it },
+                label = stringResource(R.string.password),
+                isError = false, //todo
                 trailingIcon = {
                     if (password.text.isNotBlank()) {
                         val eyeIcon = if (passwordVisible) {
                             ImageVector.vectorResource(R.drawable.pwd_visibility_24)
-
                         } else {
                             ImageVector.vectorResource(R.drawable.pwd_visibility_off_24)
                         }
@@ -279,16 +199,12 @@ class LoginScreen : Screen {
                         )
                     }
                 },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                ),
-                onValueChange = {
-                    password = it
-
-                }
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
             )
-
 
             Text(
                 modifier = Modifier
