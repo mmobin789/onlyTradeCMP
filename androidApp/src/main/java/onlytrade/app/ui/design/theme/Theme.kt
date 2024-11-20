@@ -1,4 +1,4 @@
-package onlytrade.app.ui.design_system.theme
+package onlytrade.app.ui.design.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

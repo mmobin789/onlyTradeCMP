@@ -1,4 +1,4 @@
-package onlytrade.app.ui.design_system.components
+package onlytrade.app.ui.design.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import onlytrade.app.ui.design_system.theme.onlyTradePrimary
+import onlytrade.app.ui.design.theme.onlyTradePrimary
 
 @Composable
 fun DotsIndicator(

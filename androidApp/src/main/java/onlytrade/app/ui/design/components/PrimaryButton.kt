@@ -1,4 +1,4 @@
-package onlytrade.app.ui.design_system.components
+package onlytrade.app.ui.design.components
 
 
 import androidx.compose.foundation.layout.padding

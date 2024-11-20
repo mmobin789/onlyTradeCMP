@@ -1,4 +1,4 @@
-package onlytrade.app.ui.design_system.theme
+package onlytrade.app.ui.design.theme
 import androidx.compose.ui.graphics.Color
 
 val primaryLight = Color(0xFF196584)

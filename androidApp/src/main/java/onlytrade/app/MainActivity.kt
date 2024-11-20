@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import cafe.adriel.voyager.navigator.Navigator
 import onlytrade.app.ui.splash.SplashScreen
-import onlytrade.app.ui.design_system.theme.AppTheme
+import onlytrade.app.ui.design.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {

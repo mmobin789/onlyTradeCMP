@@ -34,8 +34,8 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
-import onlytrade.app.ui.design_system.components.OTOutlinedTextField
-import onlytrade.app.ui.design_system.components.PrimaryButton
+import onlytrade.app.ui.design.components.OTOutlinedTextField
+import onlytrade.app.ui.design.components.PrimaryButton
 
 class NewPasswordScreen : Screen {
 

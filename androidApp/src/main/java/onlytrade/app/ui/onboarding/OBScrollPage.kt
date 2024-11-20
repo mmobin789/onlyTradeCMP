@@ -18,7 +18,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.launch
-import onlytrade.app.ui.design_system.components.DotsIndicator
+import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.login.LoginScreen
 
 class OBScrollPage : Screen {

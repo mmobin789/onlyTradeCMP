@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
-import onlytrade.app.ui.design_system.theme.onlyTradePrimary
+import onlytrade.app.ui.design.theme.onlyTradePrimary
 
 @Composable
 fun OBPage3(onLoginClick: () -> Unit, onGetStartedClick: () -> Unit) {

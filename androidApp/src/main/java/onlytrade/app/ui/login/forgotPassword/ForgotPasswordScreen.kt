@@ -35,8 +35,9 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
-import onlytrade.app.ui.design_system.components.OTOutlinedTextField
-import onlytrade.app.ui.design_system.components.PrimaryButton
+import onlytrade.app.ui.design.components.OTOutlinedTextField
+import onlytrade.app.ui.design.components.PrimaryButton
+import onlytrade.app.ui.login.newPassword.NewPasswordScreen
 
 class ForgotPasswordScreen : Screen {
 
@@ -151,6 +152,8 @@ class ForgotPasswordScreen : Screen {
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.send),
                 onClick = {
+                                //todo add dialog to verify otp 1st.
+                     nav.push(NewPasswordScreen())
 
                 }
             )
