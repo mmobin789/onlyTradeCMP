@@ -37,6 +37,7 @@ import coil3.compose.AsyncImage
 import onlytrade.app.android.R
 import onlytrade.app.ui.design.components.OTOutlinedTextField
 import onlytrade.app.ui.design.components.PrimaryButton
+import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.login.forgotPassword.ForgotPasswordScreen
 
 class LoginScreen : Screen {
@@ -154,7 +155,8 @@ class LoginScreen : Screen {
 
             PrimaryButton(
                 text = stringResource(R.string.login),
-                onClick = { /* TODO: Handle login */ },
+                onClick = { /* TODO: Handle login */ nav.replaceAll(HomeScreen()) // todo remove temp home page access.
+                     },
                 modifier = Modifier
                     .fillMaxWidth()
 
