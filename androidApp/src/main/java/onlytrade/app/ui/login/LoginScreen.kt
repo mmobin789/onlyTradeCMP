@@ -39,15 +39,11 @@ import onlytrade.app.ui.design.components.OTOutlinedTextField
 import onlytrade.app.ui.design.components.PrimaryButton
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.login.forgotPassword.ForgotPasswordScreen
-import onlytrade.app.viewmodel.login.LoginViewModel
-import org.koin.compose.viewmodel.koinViewModel
 
 class LoginScreen : Screen {
 
     @Composable
     override fun Content() {
-        val loginViewModel = koinViewModel<LoginViewModel>()
-        loginViewModel.doMobileLogin("") //todo implement
         val nav = LocalNavigator.currentOrThrow
         var email by remember { mutableStateOf(TextFieldValue()) }
         var phone by remember { mutableStateOf(TextFieldValue()) }
@@ -60,7 +56,7 @@ class LoginScreen : Screen {
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surface)
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp), horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             AsyncImage(
@@ -160,7 +156,7 @@ class LoginScreen : Screen {
             PrimaryButton(
                 text = stringResource(R.string.login),
                 onClick = { /* TODO: Handle login */ nav.replaceAll(HomeScreen()) // todo remove temp home page access.
-                },
+                     },
                 modifier = Modifier
                     .fillMaxWidth()
 
