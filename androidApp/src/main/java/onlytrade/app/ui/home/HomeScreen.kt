@@ -33,9 +33,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight.Companion.W300
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -68,13 +71,11 @@ class HomeScreen : Screen {
                         model = R.drawable.ic_quickmart_intro,
                         contentScale = ContentScale.None,
                         contentDescription = stringResource(R.string.app_logo),
-                        modifier = Modifier
-                            .padding(top = 32.dp)
+                        modifier = Modifier.padding(top = 32.dp)
                     )
 
                     Row(
-                        modifier = Modifier
-                            .padding(top = 32.dp)
+                        modifier = Modifier.padding(top = 32.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Search,
@@ -124,8 +125,7 @@ class HomeScreen : Screen {
                     val pagerState = rememberPagerState { 5 }
 
                     HorizontalPager(
-                        state = pagerState,
-                        beyondViewportPageCount = 1
+                        state = pagerState, beyondViewportPageCount = 1
                     ) { page ->
 
                         val color = when (page) {
@@ -144,7 +144,9 @@ class HomeScreen : Screen {
 
                         Spacer(
                             modifier = Modifier
-                                .background(color, shape = MaterialTheme.shapes.medium)
+                                .background(
+                                    color, shape = MaterialTheme.shapes.medium
+                                )
                                 .fillMaxWidth()
                                 .height(200.dp)
                         )
@@ -216,8 +218,7 @@ class HomeScreen : Screen {
                             )
 
                         }
-                        if (i < 3)
-                            Spacer(modifier = Modifier.width(16.dp))
+                        if (i < 3) Spacer(modifier = Modifier.width(16.dp))
 
                     }
 
@@ -251,8 +252,8 @@ class HomeScreen : Screen {
                     columns = GridCells.Fixed(2)
                 ) {
 
-                    items(10) {
-                        ProductItem()
+                    items(10) { i ->
+                        ProductUI(i)
                     }
                 }
 
@@ -262,18 +263,17 @@ class HomeScreen : Screen {
     }
 
     @Composable
-    private fun ProductItem() {
+    private fun ProductUI(index:Int) {
         val size = (LocalConfiguration.current.screenWidthDp / 2).dp
+
         Column {
             Box(
                 Modifier
                     .size(size)
                     .background(
                         color = Color(
-                            Random.nextFloat(),
-                            Random.nextFloat(),
-                            Random.nextFloat()
-                        ), shape = MaterialTheme.shapes.large
+                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                        ), shape = MaterialTheme.shapes.extraLarge
                     )
             ) {
 
@@ -281,13 +281,126 @@ class HomeScreen : Screen {
                     modifier = Modifier
                         .padding(8.dp)
                         .background(
-                            shape = CircleShape,
-                            color = MaterialTheme.colorScheme.onSecondary
+                            shape = CircleShape, color = MaterialTheme.colorScheme.onSecondary
                         )
                         .align(Alignment.TopEnd)
                         .padding(8.dp),
                     imageVector = Icons.Outlined.FavoriteBorder,
                     contentDescription = stringResource(android.R.string.search_go)
+                )
+            }
+
+            ConstraintLayout(
+                modifier = Modifier.padding(vertical = 16.dp)
+            ) {
+
+                val (c1, c2, c3, s1, s2, colorsTxt, productName, price, discountPrice) = createRefs()
+
+                Spacer(
+                    modifier = Modifier
+                        .constrainAs(c1) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                        }
+                        .size(24.dp)
+                        .background(
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        )
+                )
+
+                Spacer(modifier = Modifier
+                    .width(12.dp)
+                    .constrainAs(s1) {
+                        top.linkTo(c1.top)
+                        bottom.linkTo(c1.bottom)
+                        start.linkTo(c1.start)
+                        end.linkTo(c1.end)
+
+                    })
+
+                Spacer(
+                    modifier = Modifier
+                        .constrainAs(c2) {
+                            start.linkTo(s1.end)
+                            top.linkTo(parent.top)
+                        }
+                        .size(24.dp)
+                        .background(
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        )
+                )
+
+                Spacer(modifier = Modifier
+                    .width(12.dp)
+                    .constrainAs(s2) {
+                        top.linkTo(c2.top)
+                        bottom.linkTo(c2.bottom)
+                        start.linkTo(c2.start)
+                        end.linkTo(c2.end)
+
+                    })
+                Spacer(
+                    modifier = Modifier
+                        .constrainAs(c3) {
+                            start.linkTo(s2.end)
+                            top.linkTo(parent.top)
+                        }
+                        .size(24.dp)
+                        .background(
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        )
+                )
+
+                Text(
+                    modifier = Modifier
+                        .constrainAs(colorsTxt) {
+                            top.linkTo(parent.top)
+                            start.linkTo(c3.end)
+
+                        }
+                        .padding(horizontal = 16.dp),
+                    textDecoration = TextDecoration.Underline,
+                    text = "All ${Random.nextInt(2, 10)} colors",
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
+                )
+
+                Text(
+                    modifier = Modifier
+                        .constrainAs(productName) {
+                            top.linkTo(c1.bottom)
+                            start.linkTo(parent.start)
+                        }
+                        .padding(top = 16.dp),
+                    text = "Product $index",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
+                )
+
+                Text(
+                    modifier = Modifier
+                        .constrainAs(price) {
+                            top.linkTo(productName.bottom)
+                            start.linkTo(productName.start)
+                        },
+                    text = "$${Random.nextInt(index,500)}",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
+                )
+
+                Text(
+                    modifier = Modifier
+                        .constrainAs(discountPrice) {
+                            top.linkTo(price.bottom)
+                            start.linkTo(price.start)
+
+                        },
+                    textDecoration = TextDecoration.LineThrough,
+                    text = "$${Random.nextInt(index,500)}",
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
                 )
             }
         }
