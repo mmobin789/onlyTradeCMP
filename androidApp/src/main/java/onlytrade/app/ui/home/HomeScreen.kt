@@ -18,9 +18,13 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.text.font.FontWeight.Companion.W300
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
@@ -166,7 +171,80 @@ class HomeScreen : Screen {
 
                 }
             }
-        }, bottomBar = { //todo
+        }, bottomBar = {
+            Row(
+                modifier = Modifier
+                    .background(color = MaterialTheme.colorScheme.surface)
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.Home,
+                        contentDescription = stringResource(R.string.app_name)
+                    )
+
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = "Home",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
+                }
+                Column(Modifier.weight(1f)) {
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.Menu,
+                        contentDescription = stringResource(R.string.app_name)
+                    )
+
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = "Categories",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
+                }
+                Column(Modifier.weight(1f)) {
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.ShoppingCart,
+                        contentDescription = stringResource(R.string.app_name)
+                    )
+
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = "TradeCart",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
+                }
+                Column(Modifier.weight(1f)) {
+
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.Favorite,
+                        contentDescription = stringResource(R.string.app_name)
+                    )
+
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = "Wishlist",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
+                }
+                Column(Modifier.weight(1f)) {
+
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.Person,
+                        contentDescription = stringResource(R.string.app_name)
+                    )
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = "Profile",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
+                }
+            }
 
         }) { paddingValues ->
 
@@ -263,7 +341,7 @@ class HomeScreen : Screen {
     }
 
     @Composable
-    private fun ProductUI(index:Int) {
+    private fun ProductUI(index: Int) {
         val size = (LocalConfiguration.current.screenWidthDp / 2).dp
 
         Column {
@@ -387,7 +465,7 @@ class HomeScreen : Screen {
                             top.linkTo(productName.bottom)
                             start.linkTo(productName.start)
                         },
-                    text = "$${Random.nextInt(index,500)}",
+                    text = "$${Random.nextInt(index, 500)}",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
                 )
 
@@ -399,7 +477,7 @@ class HomeScreen : Screen {
 
                         },
                     textDecoration = TextDecoration.LineThrough,
-                    text = "$${Random.nextInt(index,500)}",
+                    text = "$${Random.nextInt(index, 500)}",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
                 )
             }
