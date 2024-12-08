@@ -1,4 +1,4 @@
-package onlytrade.app.ui.home
+package onlytrade.app.ui.home.category.sub
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -21,11 +21,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,7 +35,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W200
@@ -48,13 +47,11 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import coil3.compose.AsyncImage
 import onlytrade.app.android.R
 import onlytrade.app.ui.design.components.DotsIndicator
-import onlytrade.app.ui.home.category.sub.SubCategoriesScreen
 import kotlin.random.Random
 
-class HomeScreen : Screen {
+class SubCategoriesScreen(private val categoryName: String) : Screen {
 
     @Composable
     override fun Content() {
@@ -65,65 +62,33 @@ class HomeScreen : Screen {
         Scaffold(
             topBar = {
                 Column {
-                 //   AnimatedVisibility(visible = headerVisible.not()) {
-                        Row(
+                    //   AnimatedVisibility(visible = headerVisible.not()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.surface)
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+
+                        Icon(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.surface)
-                                .padding(horizontal = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
+                                .padding(top = 32.dp)
+                                .clickable { nav.pop() },
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                            contentDescription = stringResource(android.R.string.cancel)
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
 
-                            AsyncImage(
-                                model = R.drawable.ic_quickmart_intro,
-                                contentScale = ContentScale.None,
-                                contentDescription = stringResource(R.string.app_logo),
-                                modifier = Modifier.padding(top = 32.dp)
-                            )
-
-                            Row(
-                                modifier = Modifier.padding(top = 32.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Search,
-                                    contentDescription = stringResource(android.R.string.search_go)
-                                )
-
-                                Spacer(modifier = Modifier.width(16.dp))
-
-                                Icon(
-                                    imageVector = Icons.Outlined.Person,
-                                    contentDescription = stringResource(android.R.string.search_go)
-                                )
-                            }
-                        }
+                        Text(
+                            text = categoryName,
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
+                        )
 
 
-
-                    /*   SearchBar(
-                           inputField = {
-                               OTTextField(
-                                   label = "",
-                                   value = TextFieldValue(""),
-                                   onValueChange = { },
-                                   isError = false,
-                                   trailingIcon = {
-
-                                       Icon(
-                                           painter = painterResource(R.drawable.outline_clear_24),
-                                           tint = MaterialTheme.colorScheme.secondary,
-                                           contentDescription = null,
-                                           modifier = Modifier.clickable { }
-                                       )
-
-                                   },
-                                   keyboardType = KeyboardType.Text, imeAction = ImeAction.Search
-                               )
-                           },
-                           expanded = isSearchBarExtended,
-                           onExpandedChange = {}
-                       ) { }*/
+                    }
 
 
 
@@ -289,7 +254,7 @@ class HomeScreen : Screen {
                             repeat(4) { i ->
 
                                 Column(
-                                    modifier = Modifier.clickable { nav.push(SubCategoriesScreen("Category ${i+1}")) },
+                                    modifier = Modifier,
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.SpaceAround
                                 ) {
@@ -342,7 +307,7 @@ class HomeScreen : Screen {
                 ) {
 
                     items(10) { i ->
-                        ProductUI(i)
+                        SubCategoryUI(i)
                     }
                 }
 
@@ -352,7 +317,7 @@ class HomeScreen : Screen {
     }
 
     @Composable
-    private fun ProductUI(index: Int) {
+    private fun SubCategoryUI(index: Int) {
         val size = (LocalConfiguration.current.screenWidthDp / 2).dp
 
         Column {
