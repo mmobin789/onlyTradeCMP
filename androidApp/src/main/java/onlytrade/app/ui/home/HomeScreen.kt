@@ -1,5 +1,6 @@
 package onlytrade.app.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -21,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.ShoppingCart
@@ -30,7 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,46 +54,49 @@ import kotlin.random.Random
 
 class HomeScreen : Screen {
 
-
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
-        val coroutineScope = rememberCoroutineScope()
+        val productGridState = rememberLazyGridState()
+        val headerVisible = productGridState.canScrollBackward.not()
         //       var isSearchBarExtended by remember { mutableStateOf(false) }
+        Scaffold(
+            topBar = {
+                Column {
+                 //   AnimatedVisibility(visible = headerVisible.not()) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.surface)
+                                .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
 
-        Scaffold(topBar = {
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
+                            AsyncImage(
+                                model = R.drawable.ic_quickmart_intro,
+                                contentScale = ContentScale.None,
+                                contentDescription = stringResource(R.string.app_logo),
+                                modifier = Modifier.padding(top = 32.dp)
+                            )
 
-                    AsyncImage(
-                        model = R.drawable.ic_quickmart_intro,
-                        contentScale = ContentScale.None,
-                        contentDescription = stringResource(R.string.app_logo),
-                        modifier = Modifier.padding(top = 32.dp)
-                    )
+                            Row(
+                                modifier = Modifier.padding(top = 32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Search,
+                                    contentDescription = stringResource(android.R.string.search_go)
+                                )
 
-                    Row(
-                        modifier = Modifier.padding(top = 32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Search,
-                            contentDescription = stringResource(android.R.string.search_go)
-                        )
+                                Spacer(modifier = Modifier.width(16.dp))
 
-                        Spacer(modifier = Modifier.width(16.dp))
+                                Icon(
+                                    imageVector = Icons.Outlined.Person,
+                                    contentDescription = stringResource(android.R.string.search_go)
+                                )
+                            }
+                        }
 
-                        Icon(
-                            imageVector = Icons.Outlined.Person,
-                            contentDescription = stringResource(android.R.string.search_go)
-                        )
-                    }
 
 
                     /*   SearchBar(
@@ -121,132 +124,136 @@ class HomeScreen : Screen {
                        ) { }*/
 
 
-                }
-                Box(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth()
-                ) {
-                    val pagerState = rememberPagerState { 5 }
 
-                    HorizontalPager(
-                        state = pagerState, beyondViewportPageCount = 1
-                    ) { page ->
+                    AnimatedVisibility(visible = headerVisible) {
+                        Box(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth()
+                        ) {
+                            val pagerState = rememberPagerState { 5 }
 
-                        val color = when (page) {
-                            0 -> Color.Green
+                            HorizontalPager(
+                                state = pagerState, beyondViewportPageCount = 1
+                            ) { page ->
 
-                            1 -> Color.Blue
+                                val color = when (page) {
+                                    0 -> Color.Green
 
-                            2 -> Color.Red
+                                    1 -> Color.Blue
 
-                            3 -> Color.Cyan
+                                    2 -> Color.Red
 
-                            else -> Color.Gray
+                                    3 -> Color.Cyan
 
+                                    else -> Color.Gray
+
+
+                                }
+
+                                Spacer(
+                                    modifier = Modifier
+                                        .background(
+                                            color, shape = MaterialTheme.shapes.medium
+                                        )
+                                        .fillMaxWidth()
+                                        .height((LocalConfiguration.current.screenHeightDp / 4).dp)
+                                )
+
+
+                            }
+                            DotsIndicator(
+                                modifier = Modifier
+                                    .padding(bottom = 8.dp)
+                                    .padding(horizontal = 8.dp)
+                                    .align(Alignment.BottomEnd),
+                                totalDots = 5,
+                                selectedIndex = pagerState.currentPage,
+                                selectedColor = MaterialTheme.colorScheme.tertiary,
+                                unSelectedColor = Color(0xFFC0C0C0)
+                            )
 
                         }
-
-                        Spacer(
-                            modifier = Modifier
-                                .background(
-                                    color, shape = MaterialTheme.shapes.medium
-                                )
-                                .fillMaxWidth()
-                                .height(200.dp)
+                    }
+                }
+            },
+            bottomBar = {
+                Row(
+                    modifier = Modifier
+                        .background(color = MaterialTheme.colorScheme.surface)
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = Icons.Outlined.Home,
+                            contentDescription = stringResource(R.string.app_name)
                         )
 
-
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = "Home",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
                     }
-                    DotsIndicator(
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .padding(horizontal = 8.dp)
-                            .align(Alignment.BottomEnd),
-                        totalDots = 5,
-                        selectedIndex = pagerState.currentPage,
-                        selectedColor = MaterialTheme.colorScheme.tertiary,
-                        unSelectedColor = Color(0xFFC0C0C0)
-                    )
+                    /*   Column(Modifier.weight(1f)) {
+                           Icon(
+                               modifier = Modifier.align(Alignment.CenterHorizontally),
+                               imageVector = Icons.Outlined.Menu,
+                               contentDescription = stringResource(R.string.app_name)
+                           )
 
+                           Text(
+                               modifier = Modifier.align(Alignment.CenterHorizontally),
+                               text = "Categories",
+                               style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                           )
+                       }*/
+                    Column(Modifier.weight(1f)) {
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = Icons.Outlined.ShoppingCart,
+                            contentDescription = stringResource(R.string.app_name)
+                        )
+
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = "TradeCart",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }
+                    Column(Modifier.weight(1f)) {
+
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = Icons.Outlined.Favorite,
+                            contentDescription = stringResource(R.string.app_name)
+                        )
+
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = "Wishlist",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }
+                    Column(Modifier.weight(1f)) {
+
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = Icons.Outlined.Person,
+                            contentDescription = stringResource(R.string.app_name)
+                        )
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = "Profile",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }
                 }
-            }
-        }, bottomBar = {
-            Row(
-                modifier = Modifier
-                    .background(color = MaterialTheme.colorScheme.surface)
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Column(Modifier.weight(1f)) {
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.Home,
-                        contentDescription = stringResource(R.string.app_name)
-                    )
 
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Home",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                }
-                Column(Modifier.weight(1f)) {
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.Menu,
-                        contentDescription = stringResource(R.string.app_name)
-                    )
-
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Categories",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                }
-                Column(Modifier.weight(1f)) {
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.ShoppingCart,
-                        contentDescription = stringResource(R.string.app_name)
-                    )
-
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "TradeCart",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                }
-                Column(Modifier.weight(1f)) {
-
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.Favorite,
-                        contentDescription = stringResource(R.string.app_name)
-                    )
-
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Wishlist",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                }
-                Column(Modifier.weight(1f)) {
-
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.Person,
-                        contentDescription = stringResource(R.string.app_name)
-                    )
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Profile",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                }
-            }
-
-        }) { paddingValues ->
+            })
+        { paddingValues ->
 
             Column(
                 modifier = Modifier
@@ -254,52 +261,53 @@ class HomeScreen : Screen {
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp)
             ) {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        modifier = Modifier.align(Alignment.TopStart),
-                        text = "Categories",
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
-                    )
+                AnimatedVisibility(visible = headerVisible) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Box {
+                            Text(
+                                text = "Categories",
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
+                            )
 
 
-                    Text(
+                            /*   Text(
                         modifier = Modifier.align(Alignment.TopEnd),
                         text = "SEE All",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = W700)
-                    )
-                }
+                    )*/
+                        }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    horizontalArrangement = Arrangement.Center
-                    // verticalAlignment = Alignment.CenterVertically
-                ) {
-                    repeat(4) { i ->
-
-                        Column(
-                            modifier = Modifier,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.SpaceAround
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(vertical = 16.dp),
+                            horizontalArrangement = Arrangement.Center
+                            // verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = Icons.Outlined.FavoriteBorder,
-                                contentDescription = stringResource(R.string.app_name)
-                            )
+                            repeat(4) { i ->
 
-                            Text(
-                                text = "Category ${i + 1}",
-                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = W500)
-                            )
+                                Column(
+                                    modifier = Modifier,
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.SpaceAround
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.FavoriteBorder,
+                                        contentDescription = stringResource(R.string.app_name)
+                                    )
+
+                                    Text(
+                                        text = "Category ${i + 1}",
+                                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W500)
+                                    )
+
+                                }
+                                if (i < 3) Spacer(modifier = Modifier.width(16.dp))
+
+                            }
 
                         }
-                        if (i < 3) Spacer(modifier = Modifier.width(16.dp))
-
                     }
-
                 }
 
                 Box(
@@ -322,6 +330,7 @@ class HomeScreen : Screen {
                 }
 
                 LazyVerticalGrid(
+                    state = productGridState,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .fillMaxSize(),
