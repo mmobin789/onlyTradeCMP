@@ -1,4 +1,4 @@
-package onlytrade.app.ui.home.category.sub
+package onlytrade.app.ui.home.categories.sub
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -39,6 +39,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.android.R
+import onlytrade.app.ui.home.products.ProductsScreen
 import kotlin.random.Random
 
 class SubCategoriesScreen(private val categoryName: String) : Screen {
@@ -92,7 +93,9 @@ class SubCategoriesScreen(private val categoryName: String) : Screen {
                     modifier = Modifier.padding(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Column(Modifier.weight(1f)) {
+                    Column(Modifier.weight(1f).clickable {
+                        nav.pop()
+                    }) {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                             imageVector = Icons.Outlined.Home,
@@ -187,8 +190,10 @@ class SubCategoriesScreen(private val categoryName: String) : Screen {
 @Composable
 private fun SubCategoryUI(index: Int) {
     val size = (LocalConfiguration.current.screenWidthDp / 2).dp
-
-    Column {
+    val nav = LocalNavigator.currentOrThrow
+    Column(modifier = Modifier.clickable {
+        nav.push(ProductsScreen("Subcategory ${index + 1}"))
+    }) {
         Box(
             Modifier
                 .size(size)
