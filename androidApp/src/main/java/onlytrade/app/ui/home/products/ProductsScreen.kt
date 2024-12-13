@@ -24,6 +24,7 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -32,10 +33,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.text.font.FontWeight.Companion.W300
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
@@ -47,8 +46,6 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.android.R
-import onlytrade.app.ui.home.products.details.ProductDetailScreen
-import onlytrade.app.ui.home.wishlist.WishListScreen
 import kotlin.random.Random
 
 class ProductsScreen(private val categoryName: String? = null) : Screen {
@@ -100,12 +97,9 @@ class ProductsScreen(private val categoryName: String? = null) : Screen {
                 modifier = Modifier.padding(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .clickable {
-                            nav.pop()
-                        }) {
+                Column(Modifier.weight(1f).clickable {
+                    nav.pop()
+                }) {
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         imageVector = Icons.Outlined.Home,
@@ -133,22 +127,17 @@ class ProductsScreen(private val categoryName: String? = null) : Screen {
                 Column(Modifier.weight(1f)) {
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = ImageVector.vectorResource(R.drawable.outline_compare_arrows_24),
+                        imageVector = Icons.Outlined.ShoppingCart,
                         contentDescription = stringResource(R.string.app_name)
                     )
 
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "My Trades",
+                        text = "TradeCart",
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                     )
                 }
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .clickable {
-                            nav.push(WishListScreen())
-                        }) {
+                Column(Modifier.weight(1f)) {
 
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -202,10 +191,8 @@ class ProductsScreen(private val categoryName: String? = null) : Screen {
     @Composable
     private fun ProductUI(index: Int) {
         val size = (LocalConfiguration.current.screenWidthDp / 2).dp
-        val nav = LocalNavigator.currentOrThrow
-        Column(modifier = Modifier.clickable {
-            nav.push(ProductDetailScreen(index))
-        }) {
+
+        Column {
             Box(
                 Modifier
                     .size(size)
@@ -312,19 +299,19 @@ class ProductsScreen(private val categoryName: String? = null) : Screen {
 
                 Text(
                     modifier = Modifier.constrainAs(price) {
-                        top.linkTo(productName.bottom)
-                        start.linkTo(productName.start)
-                    },
+                            top.linkTo(productName.bottom)
+                            start.linkTo(productName.start)
+                        },
                     text = "$${Random.nextInt(index, 500)}",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
                 )
 
                 Text(
                     modifier = Modifier.constrainAs(discountPrice) {
-                        top.linkTo(price.bottom)
-                        start.linkTo(price.start)
+                            top.linkTo(price.bottom)
+                            start.linkTo(price.start)
 
-                    },
+                        },
                     textDecoration = TextDecoration.LineThrough,
                     text = "$${Random.nextInt(index, 500)}",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)

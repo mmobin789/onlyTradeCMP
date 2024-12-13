@@ -51,7 +51,8 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import onlytrade.app.android.R
 import onlytrade.app.ui.design.components.DotsIndicator
-import onlytrade.app.ui.home.category.sub.SubCategoriesScreen
+import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
+import onlytrade.app.ui.home.products.ProductsScreen
 import kotlin.random.Random
 
 class HomeScreen : Screen {
@@ -325,7 +326,9 @@ class HomeScreen : Screen {
 
 
                     Text(
-                        modifier = Modifier.align(Alignment.TopEnd),
+                        modifier = Modifier.align(Alignment.TopEnd).clickable {
+                            nav.push(ProductsScreen())
+                        },
                         text = "SEE All",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = W700)
                     )

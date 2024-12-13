@@ -21,6 +21,7 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -29,10 +30,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.unit.dp
@@ -41,7 +40,6 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.android.R
 import onlytrade.app.ui.home.products.ProductsScreen
-import onlytrade.app.ui.home.wishlist.WishListScreen
 import kotlin.random.Random
 
 class SubCategoriesScreen(private val categoryName: String) : Screen {
@@ -95,12 +93,9 @@ class SubCategoriesScreen(private val categoryName: String) : Screen {
                     modifier = Modifier.padding(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Column(
-                        Modifier
-                            .weight(1f)
-                            .clickable {
-                                nav.pop()
-                            }) {
+                    Column(Modifier.weight(1f).clickable {
+                        nav.pop()
+                    }) {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                             imageVector = Icons.Outlined.Home,
@@ -129,22 +124,17 @@ class SubCategoriesScreen(private val categoryName: String) : Screen {
                     Column(Modifier.weight(1f)) {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = ImageVector.vectorResource(R.drawable.outline_compare_arrows_24),
+                            imageVector = Icons.Outlined.ShoppingCart,
                             contentDescription = stringResource(R.string.app_name)
                         )
 
                         Text(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "My Trades",
+                            text = "TradeCart",
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                         )
                     }
-                    Column(
-                        Modifier
-                            .weight(1f)
-                            .clickable {
-                                nav.push(WishListScreen())
-                            }) {
+                    Column(Modifier.weight(1f)) {
 
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -195,31 +185,30 @@ class SubCategoriesScreen(private val categoryName: String) : Screen {
 
 
     }
+}
+
+@Composable
+private fun SubCategoryUI(index: Int) {
+    val size = (LocalConfiguration.current.screenWidthDp / 2).dp
+    val nav = LocalNavigator.currentOrThrow
+    Column(modifier = Modifier.clickable {
+        nav.push(ProductsScreen("Subcategory ${index + 1}"))
+    }) {
+        Box(
+            Modifier
+                .size(size)
+                .background(
+                    color = Color(
+                        Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                    ), shape = MaterialTheme.shapes.extraLarge
+                )
+        )
+
+        Text(
+            text = "Subcategory ${index + 1}",
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
+        )
 
 
-    @Composable
-    private fun SubCategoryUI(index: Int) {
-        val size = (LocalConfiguration.current.screenWidthDp / 2).dp
-        val nav = LocalNavigator.currentOrThrow
-        Column(modifier = Modifier.clickable {
-            nav.push(ProductsScreen("Subcategory ${index + 1}"))
-        }) {
-            Box(
-                Modifier
-                    .size(size)
-                    .background(
-                        color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        ), shape = MaterialTheme.shapes.extraLarge
-                    )
-            )
-
-            Text(
-                text = "Subcategory ${index + 1}",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
-            )
-
-
-        }
     }
 }
