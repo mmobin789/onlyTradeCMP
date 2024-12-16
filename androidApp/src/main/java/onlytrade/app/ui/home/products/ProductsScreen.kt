@@ -46,6 +46,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.android.R
+import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import kotlin.random.Random
 
 class ProductsScreen(private val categoryName: String? = null) : Screen {
@@ -97,9 +98,12 @@ class ProductsScreen(private val categoryName: String? = null) : Screen {
                 modifier = Modifier.padding(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Column(Modifier.weight(1f).clickable {
-                    nav.pop()
-                }) {
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .clickable {
+                            nav.pop()
+                        }) {
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         imageVector = Icons.Outlined.Home,
@@ -191,8 +195,10 @@ class ProductsScreen(private val categoryName: String? = null) : Screen {
     @Composable
     private fun ProductUI(index: Int) {
         val size = (LocalConfiguration.current.screenWidthDp / 2).dp
-
-        Column {
+        val nav = LocalNavigator.currentOrThrow
+        Column(modifier = Modifier.clickable {
+            nav.push(ProductDetailScreen(index))
+        }) {
             Box(
                 Modifier
                     .size(size)
@@ -299,19 +305,19 @@ class ProductsScreen(private val categoryName: String? = null) : Screen {
 
                 Text(
                     modifier = Modifier.constrainAs(price) {
-                            top.linkTo(productName.bottom)
-                            start.linkTo(productName.start)
-                        },
+                        top.linkTo(productName.bottom)
+                        start.linkTo(productName.start)
+                    },
                     text = "$${Random.nextInt(index, 500)}",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
                 )
 
                 Text(
                     modifier = Modifier.constrainAs(discountPrice) {
-                            top.linkTo(price.bottom)
-                            start.linkTo(price.start)
+                        top.linkTo(price.bottom)
+                        start.linkTo(price.start)
 
-                        },
+                    },
                     textDecoration = TextDecoration.LineThrough,
                     text = "$${Random.nextInt(index, 500)}",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)

@@ -53,6 +53,7 @@ import onlytrade.app.android.R
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
 import onlytrade.app.ui.home.products.ProductsScreen
+import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import kotlin.random.Random
 
 class HomeScreen : Screen {
@@ -137,27 +138,15 @@ class HomeScreen : Screen {
                             val pagerState = rememberPagerState { 5 }
 
                             HorizontalPager(
-                                state = pagerState, beyondViewportPageCount = 1
+                                state = pagerState
                             ) { page ->
-
-                                val color = when (page) {
-                                    0 -> Color.Green
-
-                                    1 -> Color.Blue
-
-                                    2 -> Color.Red
-
-                                    3 -> Color.Cyan
-
-                                    else -> Color.Gray
-
-
-                                }
 
                                 Spacer(
                                     modifier = Modifier
                                         .background(
-                                            color, shape = MaterialTheme.shapes.medium
+                                            color = Color(
+                                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                                            ), shape = MaterialTheme.shapes.medium
                                         )
                                         .fillMaxWidth()
                                         .height((LocalConfiguration.current.screenHeightDp / 4).dp)
@@ -357,8 +346,10 @@ class HomeScreen : Screen {
     @Composable
     private fun ProductUI(index: Int) {
         val size = (LocalConfiguration.current.screenWidthDp / 2).dp
-
-        Column {
+        val nav = LocalNavigator.currentOrThrow
+        Column(modifier = Modifier.clickable {
+            nav.push(ProductDetailScreen(index))
+        }) {
             Box(
                 Modifier
                     .size(size)
