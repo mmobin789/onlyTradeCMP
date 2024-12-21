@@ -1,11 +1,8 @@
 package onlytrade.app.ui.home.products.details
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,18 +13,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,8 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.text.font.FontWeight.Companion.W300
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
-import androidx.compose.ui.text.font.FontWeight.Companion.W700
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import cafe.adriel.voyager.core.screen.Screen
@@ -47,141 +42,123 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.android.R
 import onlytrade.app.ui.design.components.DotsIndicator
-import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
-import onlytrade.app.ui.home.products.ProductsScreen
 import kotlin.random.Random
 
-class ProductDetailScreen(id: Int) : Screen {
+class ProductDetailScreen(private val id: Int) : Screen {
 
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
         // var headerVisible by remember { mutableStateOf(true) }
-        var headerVisible = true
+        // var headerVisible = true
 
-        Scaffold(
-            topBar = {
-                Column {
-                    AnimatedVisibility(visible = headerVisible) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
+        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+            val (header, back, like, dots, space, content) = createRefs()
 
-                            val pagerState = rememberPagerState { 5 }
+            //    AnimatedVisibility(visible = headerVisible) {
 
-                            HorizontalPager(
-                                state = pagerState
-                            ) { page ->
+            val pagerState = rememberPagerState { 5 }
 
-                                Spacer(
-                                    modifier = Modifier
-                                        .background(
-                                            color = Color(
-                                                Random.nextFloat(),
-                                                Random.nextFloat(),
-                                                Random.nextFloat()
-                                            )
-                                        )
-                                        .fillMaxWidth()
-                                        .height((LocalConfiguration.current.screenHeightDp / 3).dp)
-                                )
+            HorizontalPager(
+                modifier = Modifier.constrainAs(header) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }, state = pagerState
+            ) { page ->
 
-
-                            }
-
-                            Icon(
-                                modifier = Modifier
-                                    .clickable { nav.pop() }
-                                    .align(Alignment.TopStart)
-                                    .padding(16.dp),
-                                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                                contentDescription = stringResource(android.R.string.ok)
-                            )
-
-                            Icon(
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .background(
-                                        shape = CircleShape,
-                                        color = MaterialTheme.colorScheme.tertiary
-                                    )
-                                    .padding(8.dp)
-                                    .align(Alignment.TopEnd),
-                                imageVector = Icons.Outlined.Favorite,
-                                contentDescription = stringResource(R.string.app_name)
-                            )
-                            DotsIndicator(
-                                modifier = Modifier
-                                    .padding(bottom = 8.dp)
-                                    .padding(horizontal = 8.dp)
-                                    .align(Alignment.BottomCenter),
-                                totalDots = 5,
-                                selectedIndex = pagerState.currentPage,
-                                selectedColor = MaterialTheme.colorScheme.tertiary,
-                                unSelectedColor =MaterialTheme.colorScheme.secondary
-                            )
-
-                        }
-                    }
-                }
-            },
-            bottomBar = {
-                Row(
+                Spacer(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 32.dp)
-                        .padding(bottom = 56.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedButton(
-                        modifier = Modifier
-                            .weight(1f), onClick = { }, shape = MaterialTheme.shapes.medium
-                    ) {
-                        Text(
-                            text = "Offer Trade",
-                            modifier = Modifier.padding(vertical = 8.dp)
+                        .background(
+                            color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
                         )
-                    }
+                        .fillMaxWidth()
+                        .height((LocalConfiguration.current.screenHeightDp / 3).dp)
+                )
 
-                    Button(
-                        modifier = Modifier
-                            .weight(1f),
-                        onClick = {},
-                        shape = MaterialTheme.shapes.medium,
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = "View Trade Requests",
-                                modifier = Modifier.padding(8.dp)
-                            )
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
-                        }
-                    }
 
+            }
+
+            Icon(modifier = Modifier
+                .constrainAs(back) {
+                    top.linkTo(header.top)
+                    start.linkTo(header.start)
                 }
-            })
-        { paddingValues ->
+                .clickable { nav.pop() }
+                .padding(16.dp),
+                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                contentDescription = stringResource(android.R.string.ok))
 
-            Column(
+            Icon(modifier = Modifier
+                .constrainAs(like) {
+                    top.linkTo(header.top)
+                    end.linkTo(header.end)
+                }
+                .padding(8.dp)
+                .background(
+                    shape = CircleShape, color = MaterialTheme.colorScheme.tertiary
+                )
+                .padding(8.dp),
+                imageVector = Icons.Outlined.Favorite,
+                contentDescription = stringResource(R.string.app_name))
+
+            DotsIndicator(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .constrainAs(dots) {
+                        start.linkTo(header.start)
+                        end.linkTo(header.end)
+                        bottom.linkTo(space.top)
+                    }
+                    .padding(bottom = 8.dp)
+                    .padding(horizontal = 8.dp),
+
+                totalDots = 5,
+                selectedIndex = pagerState.currentPage,
+                selectedColor = MaterialTheme.colorScheme.tertiary,
+                unSelectedColor = MaterialTheme.colorScheme.secondary
+            )
+
+
+            Spacer(
+                modifier = Modifier
+                    .size(16.dp)
                     .background(
-                        shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
+                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
                         color = MaterialTheme.colorScheme.background
                     )
-                    .padding(paddingValues)
-                    .padding(horizontal = 32.dp)
+                    .constrainAs(space) {
+                        bottom.linkTo(header.bottom)
+                        start.linkTo(header.start)
+                        end.linkTo(header.end)
+                    }
+            )
+
+
+
+            ConstraintLayout(modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                )
+                .constrainAs(content) {
+                    top.linkTo(dots.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
 
             ) {
+                val (tags, productTitle, productDescription, buttons) = createRefs()
 
                 Row(
                     modifier = Modifier
+                        .constrainAs(tags) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+
+                        }
                         .padding(top = 16.dp)
                         .padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -210,152 +187,79 @@ class ProductDetailScreen(id: Int) : Screen {
                     )
                 }
 
-            }
-
-        }
-    }
-}
-
-@Composable
-private fun ProductUI(index: Int) {
-    val size = (LocalConfiguration.current.screenWidthDp / 2).dp
-
-    Column {
-        Box(
-            Modifier
-                .size(size)
-                .background(
-                    color = Color(
-                        Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                    ), shape = MaterialTheme.shapes.extraLarge
+                Text(
+                    text = "Product ${id + 1}",
+                    modifier = Modifier
+                        .constrainAs(productTitle) {
+                            top.linkTo(tags.bottom)
+                            start.linkTo(tags.start)
+                        }
+                        .padding(16.dp),
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
                 )
-        ) {
 
-            Icon(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .background(
-                        shape = CircleShape, color = MaterialTheme.colorScheme.onSecondary
-                    )
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp),
-                imageVector = Icons.Outlined.FavoriteBorder,
-                contentDescription = stringResource(android.R.string.search_go)
-            )
-        }
 
-        ConstraintLayout(
-            modifier = Modifier.padding(vertical = 16.dp)
-        ) {
+                Text(
+                    text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 32.dp)
+                        .verticalScroll(rememberScrollState())
+                        .constrainAs(productDescription) {
+                            top.linkTo(productTitle.bottom)
+                            start.linkTo(productTitle.start)
+                            end.linkTo(parent.end)
 
-            val (c1, c2, c3, s1, s2, colorsTxt, productName, price, discountPrice) = createRefs()
+                        },
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W300)
+                )
 
-            Spacer(
-                modifier = Modifier
-                    .constrainAs(c1) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                    }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                Row(
+                    modifier = Modifier
+                        .constrainAs(buttons) {
+                            top.linkTo(productDescription.bottom)
+                            start.linkTo(productDescription.start)
+                            end.linkTo(productDescription.end)
+                        }
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = { },
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Text(
+                            text = "Offer Trade", modifier = Modifier.padding(vertical = 8.dp)
                         )
-                    )
-            )
-
-            Spacer(modifier = Modifier
-                .width(12.dp)
-                .constrainAs(s1) {
-                    top.linkTo(c1.top)
-                    bottom.linkTo(c1.bottom)
-                    start.linkTo(c1.start)
-                    end.linkTo(c1.end)
-
-                })
-
-            Spacer(
-                modifier = Modifier
-                    .constrainAs(c2) {
-                        start.linkTo(s1.end)
-                        top.linkTo(parent.top)
                     }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    )
-            )
 
-            Spacer(modifier = Modifier
-                .width(12.dp)
-                .constrainAs(s2) {
-                    top.linkTo(c2.top)
-                    bottom.linkTo(c2.bottom)
-                    start.linkTo(c2.start)
-                    end.linkTo(c2.end)
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        onClick = {},
+                        shape = MaterialTheme.shapes.medium,
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Trade Requests",
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
 
-                })
-            Spacer(
-                modifier = Modifier
-                    .constrainAs(c3) {
-                        start.linkTo(s2.end)
-                        top.linkTo(parent.top)
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
                     }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    )
-            )
 
-            Text(
-                modifier = Modifier
-                    .constrainAs(colorsTxt) {
-                        top.linkTo(parent.top)
-                        start.linkTo(c3.end)
+                }
 
-                    }
-                    .padding(horizontal = 16.dp),
-                textDecoration = TextDecoration.Underline,
-                text = "All ${Random.nextInt(2, 10)} colors",
-                style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
-            )
-
-            Text(
-                modifier = Modifier
-                    .constrainAs(productName) {
-                        top.linkTo(c1.bottom)
-                        start.linkTo(parent.start)
-                    }
-                    .padding(top = 16.dp),
-                text = "Product $index",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
-            )
-
-            Text(
-                modifier = Modifier
-                    .constrainAs(price) {
-                        top.linkTo(productName.bottom)
-                        start.linkTo(productName.start)
-                    },
-                text = "$${Random.nextInt(index, 500)}",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
-            )
-
-            Text(
-                modifier = Modifier
-                    .constrainAs(discountPrice) {
-                        top.linkTo(price.bottom)
-                        start.linkTo(price.start)
-
-                    },
-                textDecoration = TextDecoration.LineThrough,
-                text = "$${Random.nextInt(index, 500)}",
-                style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
-            )
+            }
         }
     }
+
 }
