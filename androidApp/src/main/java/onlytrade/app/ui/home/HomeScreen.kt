@@ -21,12 +21,16 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -53,6 +57,7 @@ import onlytrade.app.android.R
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
 import onlytrade.app.ui.home.products.ProductsScreen
+import onlytrade.app.ui.home.products.add.AddProductScreen
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import kotlin.random.Random
 
@@ -64,132 +69,129 @@ class HomeScreen : Screen {
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
         //       var isSearchBarExtended by remember { mutableStateOf(false) }
-        Scaffold(
-            topBar = {
-                Column {
-                 //   AnimatedVisibility(visible = headerVisible.not()) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.surface)
-                                .padding(horizontal = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-
-                            AsyncImage(
-                                model = R.drawable.ic_quickmart_intro,
-                                contentScale = ContentScale.None,
-                                contentDescription = stringResource(R.string.app_logo),
-                                modifier = Modifier.padding(top = 32.dp)
-                            )
-
-                            Row(
-                                modifier = Modifier.padding(top = 32.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Search,
-                                    contentDescription = stringResource(android.R.string.search_go)
-                                )
-
-                                Spacer(modifier = Modifier.width(16.dp))
-
-                                Icon(
-                                    imageVector = Icons.Outlined.Person,
-                                    contentDescription = stringResource(android.R.string.search_go)
-                                )
-                            }
-                        }
-
-
-
-                    /*   SearchBar(
-                           inputField = {
-                               OTTextField(
-                                   label = "",
-                                   value = TextFieldValue(""),
-                                   onValueChange = { },
-                                   isError = false,
-                                   trailingIcon = {
-
-                                       Icon(
-                                           painter = painterResource(R.drawable.outline_clear_24),
-                                           tint = MaterialTheme.colorScheme.secondary,
-                                           contentDescription = null,
-                                           modifier = Modifier.clickable { }
-                                       )
-
-                                   },
-                                   keyboardType = KeyboardType.Text, imeAction = ImeAction.Search
-                               )
-                           },
-                           expanded = isSearchBarExtended,
-                           onExpandedChange = {}
-                       ) { }*/
-
-
-
-                    AnimatedVisibility(visible = headerVisible) {
-                        Box(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth()
-                        ) {
-                            val pagerState = rememberPagerState { 5 }
-
-                            HorizontalPager(
-                                state = pagerState
-                            ) { page ->
-
-                                Spacer(
-                                    modifier = Modifier
-                                        .background(
-                                            color = Color(
-                                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                                            ), shape = MaterialTheme.shapes.medium
-                                        )
-                                        .fillMaxWidth()
-                                        .height((LocalConfiguration.current.screenHeightDp / 4).dp)
-                                )
-
-
-                            }
-                            DotsIndicator(
-                                modifier = Modifier
-                                    .padding(bottom = 8.dp)
-                                    .padding(horizontal = 8.dp)
-                                    .align(Alignment.BottomEnd),
-                                totalDots = 5,
-                                selectedIndex = pagerState.currentPage,
-                                selectedColor = MaterialTheme.colorScheme.tertiary,
-                                unSelectedColor = Color(0xFFC0C0C0)
-                            )
-
-                        }
-                    }
-                }
-            },
-            bottomBar = {
+        Scaffold(topBar = {
+            Column {
+                //   AnimatedVisibility(visible = headerVisible.not()) {
                 Row(
                     modifier = Modifier
-                        .background(color = MaterialTheme.colorScheme.surface)
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(Modifier.weight(1f)) {
+
+                    AsyncImage(
+                        model = R.drawable.ic_quickmart_intro,
+                        contentScale = ContentScale.None,
+                        contentDescription = stringResource(R.string.app_logo),
+                        modifier = Modifier.padding(top = 32.dp)
+                    )
+
+                    Row(
+                        modifier = Modifier.padding(top = 32.dp)
+                    ) {
                         Icon(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = Icons.Outlined.Home,
-                            contentDescription = stringResource(R.string.app_name)
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = stringResource(android.R.string.search_go)
                         )
 
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "Home",
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        Icon(
+                            imageVector = Icons.Outlined.Person,
+                            contentDescription = stringResource(android.R.string.search_go)
                         )
                     }
-                    /*   Column(Modifier.weight(1f)) {
+                }
+
+
+                /*   SearchBar(
+                       inputField = {
+                           OTTextField(
+                               label = "",
+                               value = TextFieldValue(""),
+                               onValueChange = { },
+                               isError = false,
+                               trailingIcon = {
+
+                                   Icon(
+                                       painter = painterResource(R.drawable.outline_clear_24),
+                                       tint = MaterialTheme.colorScheme.secondary,
+                                       contentDescription = null,
+                                       modifier = Modifier.clickable { }
+                                   )
+
+                               },
+                               keyboardType = KeyboardType.Text, imeAction = ImeAction.Search
+                           )
+                       },
+                       expanded = isSearchBarExtended,
+                       onExpandedChange = {}
+                   ) { }*/
+
+
+
+                AnimatedVisibility(visible = headerVisible) {
+                    Box(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
+                    ) {
+                        val pagerState = rememberPagerState { 5 }
+
+                        HorizontalPager(
+                            state = pagerState
+                        ) { page ->
+
+                            Spacer(
+                                modifier = Modifier
+                                    .background(
+                                        color = Color(
+                                            Random.nextFloat(),
+                                            Random.nextFloat(),
+                                            Random.nextFloat()
+                                        ), shape = MaterialTheme.shapes.medium
+                                    )
+                                    .fillMaxWidth()
+                                    .height((LocalConfiguration.current.screenHeightDp / 4).dp)
+                            )
+
+
+                        }
+                        DotsIndicator(
+                            modifier = Modifier
+                                .padding(bottom = 8.dp)
+                                .padding(horizontal = 8.dp)
+                                .align(Alignment.BottomEnd),
+                            totalDots = 5,
+                            selectedIndex = pagerState.currentPage,
+                            selectedColor = MaterialTheme.colorScheme.tertiary,
+                            unSelectedColor = Color(0xFFC0C0C0)
+                        )
+
+                    }
+                }
+            }
+        }, bottomBar = {
+            Row(
+                modifier = Modifier
+                    .background(color = MaterialTheme.colorScheme.surface)
+                    .padding(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.Home,
+                        contentDescription = stringResource(R.string.app_name)
+                    )
+
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = "Home",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
+                }/*   Column(Modifier.weight(1f)) {
                            Icon(
                                modifier = Modifier.align(Alignment.CenterHorizontally),
                                imageVector = Icons.Outlined.Menu,
@@ -202,50 +204,70 @@ class HomeScreen : Screen {
                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                            )
                        }*/
-                    Column(Modifier.weight(1f)) {
-                        Icon(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = Icons.Outlined.ShoppingCart,
-                            contentDescription = stringResource(R.string.app_name)
-                        )
+                Column(Modifier.weight(1f)) {
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.ShoppingCart,
+                        contentDescription = stringResource(R.string.app_name)
+                    )
 
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "TradeCart",
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                        )
-                    }
-                    Column(Modifier.weight(1f)) {
-
-                        Icon(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = Icons.Outlined.Favorite,
-                            contentDescription = stringResource(R.string.app_name)
-                        )
-
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "Wishlist",
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                        )
-                    }
-                    Column(Modifier.weight(1f)) {
-
-                        Icon(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = Icons.Outlined.Person,
-                            contentDescription = stringResource(R.string.app_name)
-                        )
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "Profile",
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                        )
-                    }
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = "TradeCart",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
                 }
+                Column(Modifier.weight(1f)) {
 
-            })
-        { paddingValues ->
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.Favorite,
+                        contentDescription = stringResource(R.string.app_name)
+                    )
+
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = "Wishlist",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
+                }
+                Column(Modifier.weight(1f)) {
+
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.Person,
+                        contentDescription = stringResource(R.string.app_name)
+                    )
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = "Profile",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
+                }
+            }
+
+        }, floatingActionButton = {
+
+            val addProductClicked = {
+                nav.push(AddProductScreen())
+            }
+
+            if (productGridState.isScrollInProgress)
+                FloatingActionButton(
+                    onClick = addProductClicked,
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.secondary
+                ) {
+                    Icon(Icons.Filled.Add, "Add Product")
+                }
+            else
+                ExtendedFloatingActionButton(
+                    onClick = addProductClicked,
+                    icon = { Icon(Icons.Outlined.Add, "Add Product") },
+                    text = { Text(text = "Add Product") },
+                )
+
+        }) { paddingValues ->
 
             Column(
                 modifier = Modifier
@@ -279,7 +301,7 @@ class HomeScreen : Screen {
                             repeat(4) { i ->
 
                                 Column(
-                                    modifier = Modifier.clickable { nav.push(SubCategoriesScreen("Category ${i+1}")) },
+                                    modifier = Modifier.clickable { nav.push(SubCategoriesScreen("Category ${i + 1}")) },
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.SpaceAround
                                 ) {
@@ -315,9 +337,11 @@ class HomeScreen : Screen {
 
 
                     Text(
-                        modifier = Modifier.align(Alignment.TopEnd).clickable {
-                            nav.push(ProductsScreen())
-                        },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .clickable {
+                                nav.push(ProductsScreen())
+                            },
                         text = "SEE All",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = W700)
                     )
@@ -379,19 +403,17 @@ class HomeScreen : Screen {
 
                 val (c1, c2, c3, s1, s2, colorsTxt, productName, price, discountPrice) = createRefs()
 
-                Spacer(
-                    modifier = Modifier
-                        .constrainAs(c1) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                        }
-                        .size(24.dp)
-                        .background(
-                            shape = CircleShape, color = Color(
-                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                            )
+                Spacer(modifier = Modifier
+                    .constrainAs(c1) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                    }
+                    .size(24.dp)
+                    .background(
+                        shape = CircleShape, color = Color(
+                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
                         )
-                )
+                    ))
 
                 Spacer(modifier = Modifier
                     .width(12.dp)
@@ -403,19 +425,17 @@ class HomeScreen : Screen {
 
                     })
 
-                Spacer(
-                    modifier = Modifier
-                        .constrainAs(c2) {
-                            start.linkTo(s1.end)
-                            top.linkTo(parent.top)
-                        }
-                        .size(24.dp)
-                        .background(
-                            shape = CircleShape, color = Color(
-                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                            )
+                Spacer(modifier = Modifier
+                    .constrainAs(c2) {
+                        start.linkTo(s1.end)
+                        top.linkTo(parent.top)
+                    }
+                    .size(24.dp)
+                    .background(
+                        shape = CircleShape, color = Color(
+                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
                         )
-                )
+                    ))
 
                 Spacer(modifier = Modifier
                     .width(12.dp)
@@ -426,61 +446,53 @@ class HomeScreen : Screen {
                         end.linkTo(c2.end)
 
                     })
-                Spacer(
-                    modifier = Modifier
-                        .constrainAs(c3) {
-                            start.linkTo(s2.end)
-                            top.linkTo(parent.top)
-                        }
-                        .size(24.dp)
-                        .background(
-                            shape = CircleShape, color = Color(
-                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                            )
+                Spacer(modifier = Modifier
+                    .constrainAs(c3) {
+                        start.linkTo(s2.end)
+                        top.linkTo(parent.top)
+                    }
+                    .size(24.dp)
+                    .background(
+                        shape = CircleShape, color = Color(
+                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
                         )
-                )
+                    ))
 
-                Text(
-                    modifier = Modifier
-                        .constrainAs(colorsTxt) {
-                            top.linkTo(parent.top)
-                            start.linkTo(c3.end)
+                Text(modifier = Modifier
+                    .constrainAs(colorsTxt) {
+                        top.linkTo(parent.top)
+                        start.linkTo(c3.end)
 
-                        }
-                        .padding(horizontal = 16.dp),
+                    }
+                    .padding(horizontal = 16.dp),
                     textDecoration = TextDecoration.Underline,
                     text = "All ${Random.nextInt(2, 10)} colors",
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
-                )
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300))
 
-                Text(
-                    modifier = Modifier
-                        .constrainAs(productName) {
-                            top.linkTo(c1.bottom)
-                            start.linkTo(parent.start)
-                        }
-                        .padding(top = 16.dp),
+                Text(modifier = Modifier
+                    .constrainAs(productName) {
+                        top.linkTo(c1.bottom)
+                        start.linkTo(parent.start)
+                    }
+                    .padding(top = 16.dp),
                     text = "Product $index",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
-                )
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500))
 
                 Text(
-                    modifier = Modifier
-                        .constrainAs(price) {
-                            top.linkTo(productName.bottom)
-                            start.linkTo(productName.start)
-                        },
+                    modifier = Modifier.constrainAs(price) {
+                        top.linkTo(productName.bottom)
+                        start.linkTo(productName.start)
+                    },
                     text = "$${Random.nextInt(index, 500)}",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
                 )
 
                 Text(
-                    modifier = Modifier
-                        .constrainAs(discountPrice) {
-                            top.linkTo(price.bottom)
-                            start.linkTo(price.start)
+                    modifier = Modifier.constrainAs(discountPrice) {
+                        top.linkTo(price.bottom)
+                        start.linkTo(price.start)
 
-                        },
+                    },
                     textDecoration = TextDecoration.LineThrough,
                     text = "$${Random.nextInt(index, 500)}",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)

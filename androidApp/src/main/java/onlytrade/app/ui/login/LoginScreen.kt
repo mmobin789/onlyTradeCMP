@@ -56,7 +56,7 @@ class LoginScreen : Screen {
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surface)
                 .fillMaxSize()
-                .padding(horizontal = 16.dp), horizontalAlignment = Alignment.Start,
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             AsyncImage(
