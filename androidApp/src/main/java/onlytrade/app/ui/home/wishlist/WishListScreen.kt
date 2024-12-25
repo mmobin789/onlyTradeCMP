@@ -1,10 +1,9 @@
-package onlytrade.app.ui.home.products
+package onlytrade.app.ui.home.wishlist
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,17 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -42,22 +39,20 @@ import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.android.R
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
-import onlytrade.app.ui.home.wishlist.WishListScreen
 import kotlin.random.Random
 
-class ProductsScreen(private val categoryName: String? = null) : Screen {
+class WishListScreen : Screen {
 
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
-        val productGridState = rememberLazyGridState()
-        val headerVisible = productGridState.canScrollBackward.not()
+        val wishListState = rememberLazyListState()
+        val headerVisible = wishListState.canScrollBackward.not()
 
         Scaffold(topBar = {
             AnimatedVisibility(visible = headerVisible) {
@@ -79,7 +74,7 @@ class ProductsScreen(private val categoryName: String? = null) : Screen {
 
                         Text(
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            text = categoryName ?: "Latest Products",
+                            text = "Wishlist",
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
                         )
 
@@ -143,12 +138,7 @@ class ProductsScreen(private val categoryName: String? = null) : Screen {
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                     )
                 }
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .clickable {
-                            nav.push(WishListScreen())
-                        }) {
+                Column(Modifier.weight(1f)) {
 
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -179,15 +169,13 @@ class ProductsScreen(private val categoryName: String? = null) : Screen {
 
         }) { paddingValues ->
 
-            LazyVerticalGrid(
-                state = productGridState,
+            LazyColumn(
+                state = wishListState,
                 modifier = Modifier
                     .padding(paddingValues)
                     .padding(16.dp)
                     .fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                columns = GridCells.Fixed(2)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
 
                 items(10) { i ->
@@ -199,14 +187,16 @@ class ProductsScreen(private val categoryName: String? = null) : Screen {
 
     }
 
+
     @Composable
     private fun ProductUI(index: Int) {
-        val size = (LocalConfiguration.current.screenWidthDp / 2).dp
+        val size = (LocalConfiguration.current.screenWidthDp / 3).dp
         val nav = LocalNavigator.currentOrThrow
-        Column(modifier = Modifier.clickable {
+
+        Row(modifier = Modifier.clickable {
             nav.push(ProductDetailScreen(index))
         }) {
-            Box(
+            Spacer(
                 Modifier
                     .size(size)
                     .background(
@@ -214,120 +204,39 @@ class ProductsScreen(private val categoryName: String? = null) : Screen {
                             Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
                         ), shape = MaterialTheme.shapes.extraLarge
                     )
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
 
-                Icon(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .background(
-                            shape = CircleShape, color = MaterialTheme.colorScheme.onSecondary
-                        )
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp),
-                    imageVector = Icons.Outlined.FavoriteBorder,
-                    contentDescription = stringResource(android.R.string.search_go)
-                )
-            }
-
-            ConstraintLayout(
-                modifier = Modifier.padding(vertical = 16.dp)
-            ) {
-
-                val (c1, c2, c3, s1, s2, colorsTxt, productName, price, discountPrice) = createRefs()
-
-                Spacer(modifier = Modifier
-                    .constrainAs(c1) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                    }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    ))
-
-                Spacer(modifier = Modifier
-                    .width(12.dp)
-                    .constrainAs(s1) {
-                        top.linkTo(c1.top)
-                        bottom.linkTo(c1.bottom)
-                        start.linkTo(c1.start)
-                        end.linkTo(c1.end)
-
-                    })
-
-                Spacer(modifier = Modifier
-                    .constrainAs(c2) {
-                        start.linkTo(s1.end)
-                        top.linkTo(parent.top)
-                    }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    ))
-
-                Spacer(modifier = Modifier
-                    .width(12.dp)
-                    .constrainAs(s2) {
-                        top.linkTo(c2.top)
-                        bottom.linkTo(c2.bottom)
-                        start.linkTo(c2.start)
-                        end.linkTo(c2.end)
-
-                    })
-                Spacer(modifier = Modifier
-                    .constrainAs(c3) {
-                        start.linkTo(s2.end)
-                        top.linkTo(parent.top)
-                    }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    ))
-
-                Text(modifier = Modifier
-                    .constrainAs(colorsTxt) {
-                        top.linkTo(parent.top)
-                        start.linkTo(c3.end)
-
-                    }
-                    .padding(horizontal = 16.dp),
-                    textDecoration = TextDecoration.Underline,
-                    text = "All ${Random.nextInt(2, 10)} colors",
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300))
-
-                Text(modifier = Modifier
-                    .constrainAs(productName) {
-                        top.linkTo(c1.bottom)
-                        start.linkTo(parent.start)
-                    }
-                    .padding(top = 16.dp),
-                    text = "Product $index",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500))
 
                 Text(
-                    modifier = Modifier.constrainAs(price) {
-                        top.linkTo(productName.bottom)
-                        start.linkTo(productName.start)
-                    },
+                    modifier = Modifier
+                        .padding(top = 16.dp),
+                    text = "Product $index",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
+                )
+
+                Text(
+                    modifier = Modifier,
                     text = "$${Random.nextInt(index, 500)}",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
                 )
 
                 Text(
-                    modifier = Modifier.constrainAs(discountPrice) {
-                        top.linkTo(price.bottom)
-                        start.linkTo(price.start)
-
-                    },
+                    modifier = Modifier,
                     textDecoration = TextDecoration.LineThrough,
                     text = "$${Random.nextInt(index, 500)}",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
+                )
+
+                Icon(
+                    modifier = Modifier.align(Alignment.End),
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = stringResource(android.R.string.search_go)
                 )
             }
         }
