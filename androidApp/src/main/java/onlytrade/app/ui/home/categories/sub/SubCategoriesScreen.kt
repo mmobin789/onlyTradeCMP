@@ -93,9 +93,12 @@ class SubCategoriesScreen(private val categoryName: String) : Screen {
                     modifier = Modifier.padding(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Column(Modifier.weight(1f).clickable {
-                        nav.pop()
-                    }) {
+                    Column(
+                        Modifier
+                            .weight(1f)
+                            .clickable {
+                                nav.pop()
+                            }) {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                             imageVector = Icons.Outlined.Home,
@@ -185,30 +188,31 @@ class SubCategoriesScreen(private val categoryName: String) : Screen {
 
 
     }
-}
-
-@Composable
-private fun SubCategoryUI(index: Int) {
-    val size = (LocalConfiguration.current.screenWidthDp / 2).dp
-    val nav = LocalNavigator.currentOrThrow
-    Column(modifier = Modifier.clickable {
-        nav.push(ProductsScreen("Subcategory ${index + 1}"))
-    }) {
-        Box(
-            Modifier
-                .size(size)
-                .background(
-                    color = Color(
-                        Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                    ), shape = MaterialTheme.shapes.extraLarge
-                )
-        )
-
-        Text(
-            text = "Subcategory ${index + 1}",
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
-        )
 
 
+    @Composable
+    private fun SubCategoryUI(index: Int) {
+        val size = (LocalConfiguration.current.screenWidthDp / 2).dp
+        val nav = LocalNavigator.currentOrThrow
+        Column(modifier = Modifier.clickable {
+            nav.push(ProductsScreen("Subcategory ${index + 1}"))
+        }) {
+            Box(
+                Modifier
+                    .size(size)
+                    .background(
+                        color = Color(
+                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                        ), shape = MaterialTheme.shapes.extraLarge
+                    )
+            )
+
+            Text(
+                text = "Subcategory ${index + 1}",
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
+            )
+
+
+        }
     }
 }
