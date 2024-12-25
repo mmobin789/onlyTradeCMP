@@ -28,7 +28,6 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -39,9 +38,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.text.font.FontWeight.Companion.W300
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
@@ -59,6 +61,7 @@ import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
 import onlytrade.app.ui.home.products.ProductsScreen
 import onlytrade.app.ui.home.products.add.AddProductScreen
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
+import onlytrade.app.ui.home.wishlist.WishListScreen
 import kotlin.random.Random
 
 class HomeScreen : Screen {
@@ -207,17 +210,22 @@ class HomeScreen : Screen {
                 Column(Modifier.weight(1f)) {
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.ShoppingCart,
+                        imageVector = ImageVector.vectorResource(R.drawable.outline_compare_arrows_24),
                         contentDescription = stringResource(R.string.app_name)
                     )
 
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "TradeCart",
+                        text = "My Trades",
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                     )
                 }
-                Column(Modifier.weight(1f)) {
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .clickable {
+                            nav.push(WishListScreen())
+                        }) {
 
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
