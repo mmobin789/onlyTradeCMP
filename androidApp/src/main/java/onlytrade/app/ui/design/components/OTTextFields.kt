@@ -4,6 +4,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.*
 
 @Composable
@@ -16,9 +17,46 @@ fun OTOutlinedTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Done,
     modifier: Modifier = Modifier,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    style: TextStyle = MaterialTheme.typography.labelSmall
 ) {
     OutlinedTextField(
+        isError = isError,
+        shape = MaterialTheme.shapes.large,
+        modifier = modifier
+            .fillMaxWidth(),
+        value = value,
+        trailingIcon = trailingIcon,
+        label = {
+            Text(
+                modifier = Modifier,
+                text = label,
+                style = style
+            )
+        },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyboardType,
+            imeAction = imeAction
+        ),
+        onValueChange = onValueChange,
+        visualTransformation = visualTransformation
+    )
+}
+
+@Composable
+fun OTTextField(
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    label: String,
+    isError: Boolean = false,
+    trailingIcon: @Composable() (() -> Unit)? = null,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    imeAction: ImeAction = ImeAction.Done,
+    modifier: Modifier = Modifier,
+    visualTransformation: VisualTransformation = VisualTransformation.None
+) {
+    TextField(
         isError = isError,
         shape = MaterialTheme.shapes.large,
         modifier = modifier

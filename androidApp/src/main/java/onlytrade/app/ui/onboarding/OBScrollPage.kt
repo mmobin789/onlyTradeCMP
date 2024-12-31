@@ -19,6 +19,7 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.launch
 import onlytrade.app.ui.design.components.DotsIndicator
+import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.login.LoginScreen
 
 class OBScrollPage : Screen {
@@ -39,46 +40,41 @@ private fun OnBoardingScreenContent(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.primary)
-        ) {
+    ) {
 
-            HorizontalPager(
-                modifier = Modifier,
-                state = pagerState,
-                beyondViewportPageCount = 1
-            ) { page ->
+        HorizontalPager(
+            modifier = Modifier, state = pagerState, beyondViewportPageCount = 1
+        ) { page ->
 
-                when (page) {
-                    0 -> OBPage1 {
-                       // nav.replaceAll(LoginScreen())
-                        coroutineScope.launch {
-                            pagerState.scrollToPage(1)
-                        }
+            when (page) {
+                0 -> OBPage1 {
+                    coroutineScope.launch {
+                        pagerState.scrollToPage(1)
                     }
-
-                    1 -> OBPage2 {
-                        coroutineScope.launch {
-                            pagerState.scrollToPage(2)
-                        }
-                    }
-
-                    2 -> OBPage3(onLoginClick = { nav.replaceAll(LoginScreen()) },
-                        onGetStartedClick = {  //todo
-
-                        })
-
-
                 }
 
+                1 -> OBPage2 {
+                    coroutineScope.launch {
+                        pagerState.scrollToPage(2)
+                    }
+                }
+
+                2 -> OBPage3(onLoginClick = { nav.replaceAll(LoginScreen()) },
+                    onGetStartedClick = { nav.replaceAll(HomeScreen()) })
+
+
             }
-            DotsIndicator(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 16.dp),
-                totalDots = 3,
-                selectedIndex = pagerState.currentPage,
-                selectedColor = MaterialTheme.colorScheme.tertiary,
-                unSelectedColor = Color(0xFFC0C0C0)
-            )
+
         }
+        DotsIndicator(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp),
+            totalDots = 3,
+            selectedIndex = pagerState.currentPage,
+            selectedColor = MaterialTheme.colorScheme.tertiary,
+            unSelectedColor = Color(0xFFC0C0C0)
+        )
     }
+}
 
