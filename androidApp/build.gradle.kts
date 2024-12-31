@@ -38,6 +38,10 @@ android {
 
 dependencies {
     implementation(projects.onlyTradeBusiness)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.viewmodel)
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
