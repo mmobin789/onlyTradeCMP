@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,9 +38,21 @@ import coil3.compose.AsyncImage
 import onlytrade.app.android.R
 import onlytrade.app.ui.design.components.OTOutlinedTextField
 import onlytrade.app.ui.design.components.PrimaryButton
+import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.login.forgotPassword.ForgotPasswordScreen
-import onlytrade.app.viewmodel.login.LoginViewModel
+import onlytrade.app.viewmodel.login.ui.LoginUiState.ApiError
+import onlytrade.app.viewmodel.login.ui.LoginUiState.BlankEmailInputError
+import onlytrade.app.viewmodel.login.ui.LoginUiState.BlankFormError
+import onlytrade.app.viewmodel.login.ui.LoginUiState.BlankMobileInputError
+import onlytrade.app.viewmodel.login.ui.LoginUiState.BlankPwdInputError
+import onlytrade.app.viewmodel.login.ui.LoginUiState.EmailFormatInputError
+import onlytrade.app.viewmodel.login.ui.LoginUiState.Idle
+import onlytrade.app.viewmodel.login.ui.LoginUiState.Loading
+import onlytrade.app.viewmodel.login.ui.LoginUiState.LoggedIn
+import onlytrade.app.viewmodel.login.ui.LoginUiState.MobileNoFormatInputError
+import onlytrade.app.viewmodel.login.ui.LoginUiState.SmallPwdInputError
+import onlytrade.app.viewmodel.login.ui.LoginViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 class LoginScreen : Screen {
@@ -47,14 +60,20 @@ class LoginScreen : Screen {
     @Composable
     override fun Content() {
         val loginViewModel = koinViewModel<LoginViewModel>()
-        loginViewModel.doMobileLogin("") //todo implement
+        val uiState by loginViewModel.uiState.collectAsState()
         val nav = LocalNavigator.currentOrThrow
         var email by remember { mutableStateOf(TextFieldValue()) }
         var phone by remember { mutableStateOf(TextFieldValue()) }
         var password by remember { mutableStateOf(TextFieldValue()) }
         var passwordVisible by remember { mutableStateOf(true) }
+
         val orLabelVisible = email.text.isBlank() && phone.text.isBlank()
-        val inputWrongError = false // TODO: condition from ViewModel
+
+        val inputMobileError =
+            uiState is BlankMobileInputError || uiState is MobileNoFormatInputError
+        val inputEmailError = uiState is BlankEmailInputError || uiState is EmailFormatInputError
+        val inputPwdError = uiState is BlankPwdInputError || uiState is SmallPwdInputError
+
 
         Column(
             modifier = Modifier
@@ -86,7 +105,7 @@ class LoginScreen : Screen {
                 OTOutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = "Email", isError = inputWrongError,
+                    label = "Email", isError = inputEmailError,
                     trailingIcon = {
                         if (email.text.isNotBlank()) {
                             Icon(
@@ -113,7 +132,7 @@ class LoginScreen : Screen {
                 OTOutlinedTextField(
                     value = phone,
                     onValueChange = { phone = it },
-                    label = "Mobile Number", isError = inputWrongError,
+                    label = "Mobile Number", isError = inputMobileError,
                     trailingIcon = {
                         if (phone.text.isNotBlank()) {
                             Icon(
@@ -131,7 +150,7 @@ class LoginScreen : Screen {
                 value = password,
                 onValueChange = { password = it },
                 label = stringResource(R.string.password),
-                isError = inputWrongError,
+                isError = inputPwdError,
                 trailingIcon = {
                     if (password.text.isNotEmpty()) {
                         val eyeIcon = if (passwordVisible) {
@@ -159,12 +178,70 @@ class LoginScreen : Screen {
 
             PrimaryButton(
                 text = stringResource(R.string.login),
-                onClick = { /* TODO: Handle login */ nav.replaceAll(HomeScreen()) // todo remove temp home page access.
+                onClick = {
+                    if (email.text.isBlank())
+                        loginViewModel.doMobileLogin(
+                            mobileNo = phone.text,
+                            pwd = password.text
+                        ) else loginViewModel.doEmailLogin(email = email.text, pwd = password.text)
+
+
                 },
                 modifier = Modifier
                     .fillMaxWidth()
 
             )
+
+            when (uiState) {
+                is LoggedIn -> nav.replaceAll(HomeScreen())
+                is ApiError -> {
+                    ShowToast("ApiError")
+                }
+
+                BlankEmailInputError -> {
+                    ShowToast("BlankEmail")
+                }
+
+                BlankFormError -> {
+                    ShowToast("BlankForm")
+                    loginViewModel.idle()
+                }
+
+                BlankMobileInputError -> {
+                    ShowToast("BlankMobileInputError")
+                    loginViewModel.idle()
+                }
+
+                BlankPwdInputError -> {
+                    ShowToast("BlankPwdInputError")
+                    loginViewModel.idle()
+                }
+
+                EmailFormatInputError -> {
+                    ShowToast("EmailFormatInputError")
+                    loginViewModel.idle()
+                }
+
+                Idle -> {
+                    // do nothing.
+                }
+
+                Loading -> {
+                    ShowToast("Loading")
+                    loginViewModel.idle()
+                }
+
+                MobileNoFormatInputError -> {
+                    ShowToast("MobileNoFormatInputError")
+                    loginViewModel.idle()
+                }
+
+                SmallPwdInputError -> {
+                    ShowToast("SmallPwdInputError")
+                    loginViewModel.idle()
+                }
+            }
         }
     }
+
 }
