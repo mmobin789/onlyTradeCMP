@@ -3,6 +3,7 @@ package onlytrade.app.ui.home
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,12 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.text.font.FontWeight.Companion.W300
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
@@ -55,16 +51,25 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
-import onlytrade.app.android.R
 import onlytrade.app.ui.design.components.DotsIndicator
+import onlytrade.app.ui.design.components.ScreenSize
 import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
 import onlytrade.app.ui.home.products.ProductsScreen
 import onlytrade.app.ui.home.products.add.AddProductScreen
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.wishlist.WishListScreen
+import onlytrade.composeapp.generated.resources.Res
+import onlytrade.composeapp.generated.resources.app_logo
+import onlytrade.composeapp.generated.resources.app_name
+import onlytrade.composeapp.generated.resources.ic_quickmart_intro
+import onlytrade.composeapp.generated.resources.ic_quickmart_intro_dark
+import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
+import onlytrade.composeapp.generated.resources.search
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 import kotlin.random.Random
 
-class HomeScreen : Screen {
+class HomeScreen(private val screenSize: ScreenSize) : Screen {
 
     @Composable
     override fun Content() {
@@ -85,9 +90,9 @@ class HomeScreen : Screen {
                 ) {
 
                     AsyncImage(
-                        model = R.drawable.ic_quickmart_intro,
+                        model = if (isSystemInDarkTheme()) Res.drawable.ic_quickmart_intro_dark else Res.drawable.ic_quickmart_intro,
                         contentScale = ContentScale.None,
-                        contentDescription = stringResource(R.string.app_logo),
+                        contentDescription = stringResource(Res.string.app_logo),
                         modifier = Modifier.padding(top = 32.dp)
                     )
 
@@ -96,14 +101,14 @@ class HomeScreen : Screen {
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Search,
-                            contentDescription = stringResource(android.R.string.search_go)
+                            contentDescription = stringResource(Res.string.search)
                         )
 
                         Spacer(modifier = Modifier.width(16.dp))
 
                         Icon(
                             imageVector = Icons.Outlined.Person,
-                            contentDescription = stringResource(android.R.string.search_go)
+                            contentDescription = stringResource(Res.string.search)
                         )
                     }
                 }
@@ -157,7 +162,7 @@ class HomeScreen : Screen {
                                         ), shape = MaterialTheme.shapes.medium
                                     )
                                     .fillMaxWidth()
-                                    .height((LocalConfiguration.current.screenHeightDp / 4).dp)
+                                    .height((screenSize.height / 4).dp)
                             )
 
 
@@ -186,7 +191,7 @@ class HomeScreen : Screen {
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         imageVector = Icons.Outlined.Home,
-                        contentDescription = stringResource(R.string.app_name)
+                        contentDescription = stringResource(Res.string.app_name)
                     )
 
                     Text(
@@ -210,8 +215,8 @@ class HomeScreen : Screen {
                 Column(Modifier.weight(1f)) {
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = ImageVector.vectorResource(R.drawable.outline_compare_arrows_24),
-                        contentDescription = stringResource(R.string.app_name)
+                        imageVector = vectorResource(Res.drawable.outline_compare_arrows_24),
+                        contentDescription = stringResource(Res.string.app_name)
                     )
 
                     Text(
@@ -224,13 +229,13 @@ class HomeScreen : Screen {
                     Modifier
                         .weight(1f)
                         .clickable {
-                            nav.push(WishListScreen())
+                            nav.push(WishListScreen(screenSize))
                         }) {
 
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         imageVector = Icons.Outlined.Favorite,
-                        contentDescription = stringResource(R.string.app_name)
+                        contentDescription = stringResource(Res.string.app_name)
                     )
 
                     Text(
@@ -244,7 +249,7 @@ class HomeScreen : Screen {
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         imageVector = Icons.Outlined.Person,
-                        contentDescription = stringResource(R.string.app_name)
+                        contentDescription = stringResource(Res.string.app_name)
                     )
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -257,7 +262,7 @@ class HomeScreen : Screen {
         }, floatingActionButton = {
 
             val addProductClicked = {
-                nav.push(AddProductScreen())
+                nav.push(AddProductScreen(screenSize))
             }
 
             if (productGridState.isScrollInProgress)
@@ -309,13 +314,20 @@ class HomeScreen : Screen {
                             repeat(4) { i ->
 
                                 Column(
-                                    modifier = Modifier.clickable { nav.push(SubCategoriesScreen("Category ${i + 1}")) },
+                                    modifier = Modifier.clickable {
+                                        nav.push(
+                                            SubCategoriesScreen(
+                                                "Category ${i + 1}",
+                                                screenSize
+                                            )
+                                        )
+                                    },
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.SpaceAround
                                 ) {
                                     Icon(
                                         imageVector = Icons.Outlined.FavoriteBorder,
-                                        contentDescription = stringResource(R.string.app_name)
+                                        contentDescription = stringResource(Res.string.app_name)
                                     )
 
                                     Text(
@@ -348,7 +360,7 @@ class HomeScreen : Screen {
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .clickable {
-                                nav.push(ProductsScreen())
+                                nav.push(ProductsScreen(screenSize = screenSize))
                             },
                         text = "SEE All",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = W700)
@@ -377,10 +389,10 @@ class HomeScreen : Screen {
 
     @Composable
     private fun ProductUI(index: Int) {
-        val size = (LocalConfiguration.current.screenWidthDp / 2).dp
+        val size = (screenSize.width / 2).dp
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = Modifier.clickable {
-            nav.push(ProductDetailScreen(index))
+            nav.push(ProductDetailScreen(index, screenSize))
         }) {
             Box(
                 Modifier
@@ -401,7 +413,7 @@ class HomeScreen : Screen {
                         .align(Alignment.TopEnd)
                         .padding(8.dp),
                     imageVector = Icons.Outlined.FavoriteBorder,
-                    contentDescription = stringResource(android.R.string.search_go)
+                    contentDescription = stringResource(Res.string.search)
                 )
             }
 
