@@ -1,14 +1,9 @@
 package onlytrade.app.ui.onboarding
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,6 +21,7 @@ import onlytrade.composeapp.generated.resources.app_logo
 import onlytrade.composeapp.generated.resources.ic_quickmart
 import onlytrade.composeapp.generated.resources.ic_quickmart_dark
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun OBPage2(onNextClick: () -> Unit) {
@@ -50,9 +46,10 @@ fun OBPage2(onNextClick: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                model = if (isSystemInDarkTheme()) Res.drawable.ic_quickmart_dark else Res.drawable.ic_quickmart,
-                contentScale = ContentScale.None,
+            Image(
+                modifier = Modifier.width(100.dp).height(30.dp),
+                imageVector = vectorResource(if (isSystemInDarkTheme()) Res.drawable.ic_quickmart_dark else Res.drawable.ic_quickmart),
+                contentScale = ContentScale.FillBounds,
                 contentDescription = stringResource(Res.string.app_logo)
             )
 

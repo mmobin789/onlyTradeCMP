@@ -1,5 +1,6 @@
 package onlytrade.app.ui.splash
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
 import onlytrade.app.ui.design.components.ScreenSize
 import onlytrade.app.ui.onboarding.OBScrollPage
@@ -27,11 +27,15 @@ import onlytrade.composeapp.generated.resources.app_desc
 import onlytrade.composeapp.generated.resources.app_logo
 import onlytrade.composeapp.generated.resources.ic_quickmart
 import onlytrade.composeapp.generated.resources.ic_quickmart_dark
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 class SplashScreen(private val screenSize: ScreenSize) : Screen {
     @Composable
+    @Preview
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
 
@@ -42,8 +46,8 @@ class SplashScreen(private val screenSize: ScreenSize) : Screen {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AsyncImage(
-                model = if (isSystemInDarkTheme()) Res.drawable.ic_quickmart_dark else Res.drawable.ic_quickmart,
+            Image(
+                imageVector = vectorResource(if (isSystemInDarkTheme()) Res.drawable.ic_quickmart_dark else Res.drawable.ic_quickmart),
                 contentScale = ContentScale.None,
                 contentDescription = stringResource(Res.string.app_logo)
             )

@@ -1,15 +1,10 @@
 package onlytrade.app.ui.onboarding
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import onlytrade.app.ui.design.components.PrimaryButton
 import onlytrade.app.ui.design.theme.onlyTradePrimary
 import onlytrade.composeapp.generated.resources.Res
@@ -27,6 +21,7 @@ import onlytrade.composeapp.generated.resources.app_logo
 import onlytrade.composeapp.generated.resources.ic_quickmart
 import onlytrade.composeapp.generated.resources.ic_quickmart_dark
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun OBPage1(onNextClick: () -> Unit) {
@@ -51,11 +46,12 @@ fun OBPage1(onNextClick: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
             ) {
-                AsyncImage(
-                    model = if (isSystemInDarkTheme()) Res.drawable.ic_quickmart_dark else Res.drawable.ic_quickmart,
-                    contentScale = ContentScale.None,
-                    contentDescription = stringResource(Res.string.app_logo)
-                )
+                Image(
+                modifier = Modifier.width(100.dp).height(30.dp),
+                imageVector = vectorResource(if (isSystemInDarkTheme()) Res.drawable.ic_quickmart_dark else Res.drawable.ic_quickmart),
+                contentScale = ContentScale.FillBounds,
+                contentDescription = stringResource(Res.string.app_logo)
+            )
 
                 Text(
                     style = MaterialTheme.typography.bodyMedium,
