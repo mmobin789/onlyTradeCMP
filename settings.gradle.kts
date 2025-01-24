@@ -28,6 +28,6 @@ dependencyResolutionManagement {
 }
 
 include(":composeApp")
-include(":server")
+include(":onlyTradeBE")
 include(":onlyTradeBusiness")
 rootProject.name = "OnlyTrade"
