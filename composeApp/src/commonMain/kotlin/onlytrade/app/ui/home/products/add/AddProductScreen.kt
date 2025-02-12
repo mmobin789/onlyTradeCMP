@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -28,6 +30,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight.Companion.W400
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.text.input.ImeAction
@@ -37,9 +41,9 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import onlytrade.app.ui.design.components.OTOutlinedTextField
 import onlytrade.app.ui.design.components.ScreenSize
 import onlytrade.app.ui.design.components.getToast
+import onlytrade.app.ui.home.products.add.colorScheme.addProductColorScheme
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.outline_clear_24
@@ -59,10 +63,10 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
                 Column {
                     Row(
                         modifier = Modifier
-                            .background(MaterialTheme.colorScheme.surface)
+                            .background(addProductColorScheme.topBarBG)
+                            .fillMaxWidth()
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
 
 
@@ -83,7 +87,7 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
 
                     Spacer(
                         modifier = Modifier
-                            .background(color = MaterialTheme.colorScheme.tertiary)
+                            .background(addProductColorScheme.topBarBG)
                             .height(1.dp)
                             .fillMaxWidth()
                     )
@@ -94,7 +98,7 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
             Column(
                 modifier = Modifier
                     .padding(paddingValues)
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(addProductColorScheme.screenBG)
                     .fillMaxSize()
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -106,34 +110,46 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
                     text = "Product Name or Title",
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500)
                 )
-                OTOutlinedTextField(
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500),
-                    value = productTitle,
-                    onValueChange = { productTitle = it },
-                    label = "Product Title",
+                OutlinedTextField(
                     isError = inputWrongError,
+                    shape = MaterialTheme.shapes.extraSmall,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    value = productTitle,
                     trailingIcon = {
                         if (productTitle.text.isNotBlank()) {
-                            Icon(painter = painterResource(Res.drawable.outline_clear_24),
+                            Icon(
+                                painter = painterResource(Res.drawable.outline_clear_24),
                                 tint = MaterialTheme.colorScheme.secondary,
                                 contentDescription = null,
                                 modifier = Modifier.clickable { productTitle = TextFieldValue("") })
                         }
                     },
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
+                    label = {
+                        Text(
+                            modifier = Modifier,
+                            text = "Product Title",
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500),
+                        )
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    ),
+                    onValueChange = { productTitle = it },
                 )
 
                 Text(
                     text = "Product Details",
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500)
                 )
-                OTOutlinedTextField(
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500),
-                    value = productDesc,
-                    onValueChange = { productDesc = it },
-                    label = "Product Details",
+
+                OutlinedTextField(
                     isError = inputWrongError,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    value = productDesc,
                     trailingIcon = {
                         if (productDesc.text.isNotBlank()) {
                             Icon(painter = painterResource(Res.drawable.outline_clear_24),
@@ -142,8 +158,19 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
                                 modifier = Modifier.clickable { productDesc = TextFieldValue("") })
                         }
                     },
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
+                    label = {
+                        Text(
+                            modifier = Modifier,
+                            text = "Product Details",
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500),
+                        )
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    ),
+                    onValueChange = { productDesc = it },
                 )
 
                 Text(
@@ -165,7 +192,7 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
                         }
                         .background(
                             shape = MaterialTheme.shapes.large,
-                            color = MaterialTheme.colorScheme.tertiary
+                            color = addProductColorScheme.addProductBtn
                         )
                         .size(size)
                 )

@@ -7,12 +7,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -22,6 +22,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.delay
 import onlytrade.app.ui.design.components.ScreenSize
 import onlytrade.app.ui.onboarding.OBScrollPage
+import onlytrade.app.ui.splash.colorScheme.splashColorScheme
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_desc
 import onlytrade.composeapp.generated.resources.app_logo
@@ -41,7 +42,7 @@ class SplashScreen(private val screenSize: ScreenSize) : Screen {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+                .background(splashColorScheme.screenBG),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -53,7 +54,8 @@ class SplashScreen(private val screenSize: ScreenSize) : Screen {
             Text(
                 modifier = Modifier.padding(vertical = 8.dp),
                 text = stringResource(Res.string.app_desc),
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = splashColorScheme.appDesc
             )
 
         }

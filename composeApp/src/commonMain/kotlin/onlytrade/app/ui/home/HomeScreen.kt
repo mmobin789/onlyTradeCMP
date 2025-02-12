@@ -54,6 +54,7 @@ import coil3.compose.AsyncImage
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.ScreenSize
 import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
+import onlytrade.app.ui.home.colorScheme.homeColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
 import onlytrade.app.ui.home.products.add.AddProductScreen
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
@@ -83,7 +84,7 @@ class HomeScreen(private val screenSize: ScreenSize) : Screen {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surface)
+                        .background(homeColorScheme.topSearchBarBG)
                         .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -97,7 +98,8 @@ class HomeScreen(private val screenSize: ScreenSize) : Screen {
                     )
 
                     Row(
-                        modifier = Modifier.padding(top = 32.dp)
+                        modifier = Modifier
+                            .padding(top = 32.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Search,
@@ -143,6 +145,7 @@ class HomeScreen(private val screenSize: ScreenSize) : Screen {
                 AnimatedVisibility(visible = headerVisible) {
                     Box(
                         modifier = Modifier
+                            .background(homeColorScheme.pagerCardBG)
                             .padding(16.dp)
                             .fillMaxWidth()
                     ) {
@@ -184,7 +187,7 @@ class HomeScreen(private val screenSize: ScreenSize) : Screen {
         }, bottomBar = {
             Row(
                 modifier = Modifier
-                    .background(color = MaterialTheme.colorScheme.surface)
+                    .background(homeColorScheme.botBarBG)
                     .padding(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Column(Modifier.weight(1f)) {
@@ -285,6 +288,7 @@ class HomeScreen(private val screenSize: ScreenSize) : Screen {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(homeColorScheme.screenBG)
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp)
             ) {

@@ -22,6 +22,11 @@ import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.ScreenSize
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.login.LoginScreen
+import onlytrade.app.ui.onboarding.obPage1.OBPage1
+import onlytrade.app.ui.onboarding.obPage1.colorScheme.ob1ColorScheme
+import onlytrade.app.ui.onboarding.obPage2.OBPage2
+import onlytrade.app.ui.onboarding.obPage3.OBPage3
+import onlytrade.app.ui.splash.colorScheme.splashColorScheme
 
 class OBScrollPage(private val screenSize: ScreenSize) : Screen {
 
@@ -41,7 +46,6 @@ private fun OnBoardingScreenContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary)
     ) {
 
         HorizontalPager(
@@ -74,8 +78,8 @@ private fun OnBoardingScreenContent(
                 .padding(bottom = 16.dp),
             totalDots = 3,
             selectedIndex = pagerState.currentPage,
-            selectedColor = MaterialTheme.colorScheme.tertiary,
-            unSelectedColor = Color(0xFFC0C0C0)
+            selectedColor = Color(0xFF474567),
+            unSelectedColor = Color(0xFFF4EAE9)
         )
     }
 }

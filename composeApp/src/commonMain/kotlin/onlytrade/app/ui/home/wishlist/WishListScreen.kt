@@ -39,6 +39,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.ScreenSize
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
+import onlytrade.app.ui.home.wishlist.colorScheme.wishlistColorScheme
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.cancel
@@ -61,10 +62,10 @@ class WishListScreen(private val screenSize: ScreenSize) : Screen {
                 Column {
                     Row(
                         modifier = Modifier
-                            .background(MaterialTheme.colorScheme.surface)
+                            .background(wishlistColorScheme.wishlistBarBG)
+                            .fillMaxWidth()
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
 
 
@@ -85,7 +86,7 @@ class WishListScreen(private val screenSize: ScreenSize) : Screen {
 
                     Spacer(
                         modifier = Modifier
-                            .background(color = MaterialTheme.colorScheme.tertiary)
+                            .background(wishlistColorScheme.wishlistBarBG)
                             .height(1.dp)
                             .fillMaxWidth()
                     )
@@ -94,7 +95,9 @@ class WishListScreen(private val screenSize: ScreenSize) : Screen {
             }
         }, bottomBar = {
             Row(
-                modifier = Modifier.padding(8.dp),
+                modifier = Modifier
+                    .background(wishlistColorScheme.botBarBG)
+                    .padding(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Column(
@@ -174,6 +177,7 @@ class WishListScreen(private val screenSize: ScreenSize) : Screen {
             LazyColumn(
                 state = wishListState,
                 modifier = Modifier
+                    .background(wishlistColorScheme.screenBG)
                     .padding(paddingValues)
                     .padding(16.dp)
                     .fillMaxSize(),
