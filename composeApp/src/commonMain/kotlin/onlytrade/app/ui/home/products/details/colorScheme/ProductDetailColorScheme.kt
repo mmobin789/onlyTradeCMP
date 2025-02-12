@@ -9,6 +9,8 @@ interface ProductDetailColorScheme {
     val screenBG: Color
     val productTagsBG: Color
     val offerTradeBtn: Color
+    val offerTradeBtnText: Color
+    val offerTradeBtnBorder: Color
     val buyProductBtn: Color
 }
 

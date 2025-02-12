@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +35,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
+import onlytrade.app.ui.login.colorScheme.loginColorScheme
 import onlytrade.app.ui.login.forgotPassword.colorScheme.forgotPassColorScheme
 import onlytrade.app.ui.login.newPassword.NewPasswordScreen
 import onlytrade.composeapp.generated.resources.Res
@@ -202,13 +204,14 @@ class ForgotPasswordScreen : Screen {
 
             Button(
                 modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(forgotPassColorScheme.sendBtn),
                 onClick = {
                     //todo add dialog to verify otp 1st.
                     nav.push(NewPasswordScreen())
 
                 }
             ){
-                Text(text = "Send", color = forgotPassColorScheme.sendBtn, modifier = Modifier)
+                Text(text = "Send", color = MaterialTheme.colorScheme.onBackground ,modifier = Modifier)
             }
 
         }

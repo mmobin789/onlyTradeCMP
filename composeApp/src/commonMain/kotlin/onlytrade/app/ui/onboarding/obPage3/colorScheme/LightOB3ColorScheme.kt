@@ -16,4 +16,8 @@ object LightOB3ColorScheme : OB3ColorScheme {
         get() = Color(0xFFB26560)
     override val loginBtn: Color
         get() = Color(0xFFD7F0D8)
+    override val loginBtnBorder: Color
+        get() = Color(0xFFB26560)
+    override val loginBtnText: Color
+        get() = Color(0xFFB26560)
 }

@@ -12,6 +12,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -181,10 +183,11 @@ class NewPasswordScreen : Screen {
 
             Button(
                 onClick = { },
+                colors = ButtonDefaults.buttonColors(newPassColorScheme.saveBtn),
                 modifier = Modifier
                     .fillMaxWidth()
             ){
-                Text(text = "Save", color = Color.White, modifier = Modifier)
+                Text(text = "Save", color = MaterialTheme.colorScheme.onBackground)
             }
 
         }

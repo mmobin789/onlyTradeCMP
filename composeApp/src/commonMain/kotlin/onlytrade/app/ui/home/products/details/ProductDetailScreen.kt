@@ -1,5 +1,6 @@
 package onlytrade.app.ui.home.products.details
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +42,6 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.ScreenSize
-import onlytrade.app.ui.home.products.colorScheme.productsColorScheme
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
@@ -229,9 +229,10 @@ class ProductDetailScreen(private val id: Int, private val screenSize: ScreenSiz
                         modifier = Modifier.weight(1f),
                         onClick = { },
                         shape = MaterialTheme.shapes.medium,
+                        border = BorderStroke(1.dp, productDetailColorScheme.offerTradeBtnBorder),
                     ) {
                         Text(
-                            text = "Offer Trade", modifier = Modifier.padding(vertical = 8.dp)
+                            text = "Offer Trade", color = productDetailColorScheme.offerTradeBtnText, modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
 

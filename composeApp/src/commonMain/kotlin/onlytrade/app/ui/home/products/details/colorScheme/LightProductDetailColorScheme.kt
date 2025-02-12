@@ -10,6 +10,10 @@ object LightProductDetailColorScheme : ProductDetailColorScheme {
         get() = Color.Cyan
     override val offerTradeBtn: Color
         get() = Color(0xFFB26560)
+    override val offerTradeBtnText: Color
+        get() = Color(0xFFB26560)
+    override val offerTradeBtnBorder: Color
+        get() = Color(0xFFB26560)
     override val buyProductBtn: Color
         get() = Color(0xFFB26560)
 }

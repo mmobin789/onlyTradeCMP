@@ -1,5 +1,6 @@
 package onlytrade.app.ui.onboarding.obPage3
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -25,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -50,11 +50,14 @@ fun OBPage3(onLoginClick: () -> Unit, onGetStartedClick: () -> Unit) {
         ) {
             OutlinedButton(
                 modifier = Modifier
-                    .weight(1f), onClick = onLoginClick, shape = MaterialTheme.shapes.medium
+                    .weight(1f), onClick = onLoginClick,
+                shape = MaterialTheme.shapes.medium,
+                border = BorderStroke(1.dp, ob3ColorScheme.loginBtnBorder),
             ) {
                 Text(
                     "Login",
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    color = ob3ColorScheme.loginBtnText
                 )
             }
 

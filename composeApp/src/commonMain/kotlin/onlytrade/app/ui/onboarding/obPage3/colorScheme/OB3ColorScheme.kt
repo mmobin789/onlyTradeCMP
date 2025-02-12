@@ -11,6 +11,8 @@ interface OB3ColorScheme {
     val loginBtn: Color
     val topBarBG: Color
     val botBarBG: Color
+    val loginBtnBorder: Color
+    val loginBtnText: Color
 }
 
 
