@@ -3,7 +3,6 @@ package onlytrade.app.ui.design.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
@@ -59,6 +58,9 @@ val onlyTradePrimary
         } else {
             onlyTradePrimaryLight
         }
+
+
+
 
 private val darkScheme =
     darkColorScheme(
@@ -274,11 +276,11 @@ fun AppTheme(
 ) {
     val colorScheme =
         when {
-           /* dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-                val context = LocalContext.current
-                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-            }
-*/
+            /* dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+                 val context = LocalContext.current
+                 if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+             }
+ */
             darkTheme -> darkScheme
             else -> lightScheme
         }

@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,8 +35,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
-import onlytrade.app.ui.design.components.OTOutlinedTextField
-import onlytrade.app.ui.design.components.PrimaryButton
+import onlytrade.app.ui.login.forgotPassword.colorScheme.forgotPassColorScheme
 import onlytrade.app.ui.login.newPassword.NewPasswordScreen
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_logo
@@ -42,7 +45,6 @@ import onlytrade.composeapp.generated.resources.outline_clear_24
 import onlytrade.composeapp.generated.resources.password
 import onlytrade.composeapp.generated.resources.pwd_visibility_24
 import onlytrade.composeapp.generated.resources.pwd_visibility_off_24
-import onlytrade.composeapp.generated.resources.send
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -61,7 +63,7 @@ class ForgotPasswordScreen : Screen {
 
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surface)
+                .background(forgotPassColorScheme.screenBG)
                 .fillMaxSize()
                 .padding(horizontal = 16.dp), horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -77,19 +79,23 @@ class ForgotPasswordScreen : Screen {
 
             Text(
                 text = "Forgot Password",
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = W700)
             )
 
             Text(
                 text = "Enter your email or mobile number",
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.labelLarge
             )
 
             if (phone.text.isBlank()) {
-                OTOutlinedTextField(
+                OutlinedTextField(
+                    isError = inputWrongError,
+                    shape = MaterialTheme.shapes.extraSmall,
+                    modifier = Modifier
+                        .fillMaxWidth(),
                     value = email,
-                    onValueChange = { email = it },
-                    label = "Email", isError = inputWrongError,
                     trailingIcon = {
                         if (email.text.isNotBlank()) {
                             Icon(
@@ -100,23 +106,39 @@ class ForgotPasswordScreen : Screen {
                             )
                         }
                     },
-                    keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
+                    label = {
+                        Text(
+                            modifier = Modifier,
+                            text = "Email",
+                            style = MaterialTheme.typography.bodySmall,
+
+                        )
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    onValueChange = { email = it },
                 )
             }
 
             if (orLabelVisible) {
                 Text(
                     text = "OR",
+                    color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.headlineMedium.copy(textAlign = TextAlign.Center),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
             if (email.text.isBlank()) {
-                OTOutlinedTextField(
+                OutlinedTextField(
+                    isError = inputWrongError,
+                    shape = MaterialTheme.shapes.extraSmall,
+                    modifier = Modifier
+                        .fillMaxWidth(),
                     value = phone,
-                    onValueChange = { phone = it },
-                    label = "Mobile Number", isError = inputWrongError,
                     trailingIcon = {
                         if (phone.text.isNotBlank()) {
                             Icon(
@@ -126,15 +148,30 @@ class ForgotPasswordScreen : Screen {
                                 modifier = Modifier.clickable { phone = TextFieldValue("") }
                             )
                         }
-                    }, keyboardType = KeyboardType.Phone, imeAction = ImeAction.Next
+                    },
+                    label = {
+                        Text(
+                            modifier = Modifier,
+                            text = "Mobile Number",
+                            color = MaterialTheme.colorScheme.onBackground,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Next
+                    ),
+                    onValueChange = { phone = it },
                 )
             }
 
-            OTOutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = stringResource(Res.string.password),
+            OutlinedTextField(
                 isError = inputWrongError,
+                shape = MaterialTheme.shapes.extraSmall,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                value = password,
                 trailingIcon = {
                     if (password.text.isNotEmpty()) {
                         val eyeIcon = if (passwordVisible) {
@@ -145,25 +182,36 @@ class ForgotPasswordScreen : Screen {
                         Icon(imageVector = eyeIcon,
                             tint = MaterialTheme.colorScheme.secondary,
                             contentDescription = null,
-                            modifier = Modifier.clickable {
-                                passwordVisible = !passwordVisible
-                            })
+                            modifier = Modifier.clickable { passwordVisible = !passwordVisible })
                     }
                 },
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done,
+                label = {
+                    Text(
+                        modifier = Modifier,
+                        text = stringResource(Res.string.password),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                onValueChange = { password = it },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
             )
 
-            PrimaryButton(
+            Button(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.send),
+                colors = ButtonDefaults.buttonColors(forgotPassColorScheme.sendBtn),
                 onClick = {
                     //todo add dialog to verify otp 1st.
                     nav.push(NewPasswordScreen())
 
                 }
-            )
+            ){
+                Text(text = "Send", color = MaterialTheme.colorScheme.onBackground ,modifier = Modifier)
+            }
 
         }
     }

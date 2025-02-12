@@ -8,10 +8,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,8 +35,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import coil3.compose.AsyncImage
-import onlytrade.app.ui.design.components.OTOutlinedTextField
-import onlytrade.app.ui.design.components.PrimaryButton
+import onlytrade.app.ui.login.newPassword.colorScheme.newPassColorScheme
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_logo
 import onlytrade.composeapp.generated.resources.confirm_password
@@ -42,7 +45,6 @@ import onlytrade.composeapp.generated.resources.new_password
 import onlytrade.composeapp.generated.resources.password
 import onlytrade.composeapp.generated.resources.pwd_visibility_24
 import onlytrade.composeapp.generated.resources.pwd_visibility_off_24
-import onlytrade.composeapp.generated.resources.save
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -58,7 +60,7 @@ class NewPasswordScreen : Screen {
 
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
+                .background(newPassColorScheme.screenBG)
                 .fillMaxSize()
                 .padding(16.dp),
             horizontalAlignment = Alignment.Start,
@@ -72,6 +74,7 @@ class NewPasswordScreen : Screen {
 
             Text(
                 text = stringResource(Res.string.new_password),
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.W700,
                 ),
@@ -79,14 +82,16 @@ class NewPasswordScreen : Screen {
 
             Text(
                 text = "Enter your new password",
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.bodyMedium
             )
 
-            OTOutlinedTextField(
+            OutlinedTextField(
+                isError = false, //todo,
+                shape = MaterialTheme.shapes.extraSmall,
+                modifier = Modifier
+                    .fillMaxWidth(),
                 value = password,
-                onValueChange = { password = it },
-                label = stringResource(Res.string.password),
-                isError = false, //todo
                 trailingIcon = {
                     if (password.text.isNotBlank()) {
                         val eyeIcon = if (passwordVisible) {
@@ -111,18 +116,28 @@ class NewPasswordScreen : Screen {
                         )
                     }
                 },
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done,
-                modifier = Modifier
-                    .fillMaxWidth(),
+                label = {
+                    Text(
+                        modifier = Modifier,
+                        text = stringResource(Res.string.password),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                onValueChange = { password = it },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
             )
 
-            OTOutlinedTextField(
+            OutlinedTextField(
+                isError = false, //todo,
+                shape = MaterialTheme.shapes.extraSmall,
+                modifier = Modifier
+                    .fillMaxWidth(),
                 value = confirmPassword,
-                onValueChange = { confirmPassword = it },
-                label = stringResource(Res.string.confirm_password),
-                isError = false, //todo
                 trailingIcon = {
                     if (confirmPassword.text.isNotBlank()) {
                         val eyeIcon = if (confirmPasswordVisible) {
@@ -149,18 +164,30 @@ class NewPasswordScreen : Screen {
                         )
                     }
                 },
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done,
-                modifier = Modifier
-                    .fillMaxWidth(),
+                label = {
+                    Text(
+                        modifier = Modifier,
+                        text = stringResource(Res.string.confirm_password),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                onValueChange = { confirmPassword = it },
                 visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation()
             )
-            PrimaryButton(
-                text = stringResource(Res.string.save),
+
+            Button(
                 onClick = { },
+                colors = ButtonDefaults.buttonColors(newPassColorScheme.saveBtn),
                 modifier = Modifier
                     .fillMaxWidth()
-            )
+            ){
+                Text(text = "Save", color = MaterialTheme.colorScheme.onBackground)
+            }
 
         }
     }
