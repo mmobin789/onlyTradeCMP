@@ -15,7 +15,6 @@ uiTextGoogleFonts = "1.7.7"
 viewmodel = "2.8.3"
 koin = "4.1.0-Beta1"
 ktor = "3.0.3"
-ktor-gson = "1.6.8"
 coroutines = "1.10.1"
 android-compileSdk = "35"
 android-minSdk = "24"
@@ -50,7 +49,6 @@ compose-material3 = { module = "androidx.compose.material3:material3", version.r
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
-ktor-gson = { module = "io.ktor:ktor-gson", version.ref = "ktor-gson" }
 ktor-network-tls-certificates = { module = "io.ktor:ktor-network-tls-certificates", version.ref = "ktor" }
 ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
