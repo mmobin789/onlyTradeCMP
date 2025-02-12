@@ -10,7 +10,7 @@ object DarkOB2ColorScheme: OB2ColorScheme {
     override val screenBG: Color
         get() = Color(0xFF101D25)
     override val obLogoBar: Color
-        get() = Color(0xFFB26560)
+        get() = Color(0xFF232D36)
     override val nextBtn: Color
-        get() = Color(0xFFB26560)
+        get() = Color(0xFF232D36)
 }

@@ -1,12 +1,10 @@
 package onlytrade.app.ui.onboarding
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -23,10 +21,8 @@ import onlytrade.app.ui.design.components.ScreenSize
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.login.LoginScreen
 import onlytrade.app.ui.onboarding.obPage1.OBPage1
-import onlytrade.app.ui.onboarding.obPage1.colorScheme.ob1ColorScheme
 import onlytrade.app.ui.onboarding.obPage2.OBPage2
 import onlytrade.app.ui.onboarding.obPage3.OBPage3
-import onlytrade.app.ui.splash.colorScheme.splashColorScheme
 
 class OBScrollPage(private val screenSize: ScreenSize) : Screen {
 

@@ -9,12 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +34,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import coil3.compose.AsyncImage
-import onlytrade.app.ui.login.forgotPassword.colorScheme.forgotPassColorScheme
+import onlytrade.app.ui.login.newPassword.colorScheme.newPassColorScheme
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_logo
 import onlytrade.composeapp.generated.resources.confirm_password
@@ -44,7 +44,6 @@ import onlytrade.composeapp.generated.resources.new_password
 import onlytrade.composeapp.generated.resources.password
 import onlytrade.composeapp.generated.resources.pwd_visibility_24
 import onlytrade.composeapp.generated.resources.pwd_visibility_off_24
-import onlytrade.composeapp.generated.resources.save
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -60,7 +59,7 @@ class NewPasswordScreen : Screen {
 
         Column(
             modifier = Modifier
-                .background(forgotPassColorScheme.screenBG)
+                .background(newPassColorScheme.screenBG)
                 .fillMaxSize()
                 .padding(16.dp),
             horizontalAlignment = Alignment.Start,
