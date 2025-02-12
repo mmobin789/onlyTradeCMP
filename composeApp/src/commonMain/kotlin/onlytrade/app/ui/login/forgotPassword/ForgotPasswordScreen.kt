@@ -35,7 +35,6 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
-import onlytrade.app.ui.login.colorScheme.loginColorScheme
 import onlytrade.app.ui.login.forgotPassword.colorScheme.forgotPassColorScheme
 import onlytrade.app.ui.login.newPassword.NewPasswordScreen
 import onlytrade.composeapp.generated.resources.Res
