@@ -1,3 +1,0 @@
-container_commands:
-  01-move-compose:
-    command: "cp /var/app/staging/onlyTradeBE/docker-compose.yml /var/app/staging/"
