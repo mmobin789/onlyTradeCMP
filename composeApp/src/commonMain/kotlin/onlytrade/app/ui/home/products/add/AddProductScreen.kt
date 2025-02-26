@@ -1,10 +1,11 @@
 package onlytrade.app.ui.home.products.add
 
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,14 +14,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight.Companion.W400
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.text.input.ImeAction
@@ -42,13 +45,14 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.ScreenSize
-import onlytrade.app.ui.design.components.getToast
+import onlytrade.app.ui.design.components.isValidPrice
 import onlytrade.app.ui.home.products.add.colorScheme.addProductColorScheme
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.outline_clear_24
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.random.Random
 
 class AddProductScreen(private val screenSize: ScreenSize) : Screen {
 
@@ -57,6 +61,7 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
         val nav = LocalNavigator.currentOrThrow
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
+
 
         Scaffold(topBar = {
             AnimatedVisibility(visible = headerVisible) {
@@ -68,8 +73,6 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-
-
                         Icon(
                             modifier = Modifier.clickable { nav.pop() },
                             imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
@@ -81,8 +84,6 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
                             text = "Add a New Trade Product",
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
                         )
-
-
                     }
 
                     Spacer(
@@ -101,15 +102,13 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
                     .background(addProductColorScheme.screenBG)
                     .fillMaxSize()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 var productTitle by remember { mutableStateOf(TextFieldValue()) }
                 var productDesc by remember { mutableStateOf(TextFieldValue()) }
+                var productPrice by remember { mutableStateOf("") }
                 val inputWrongError = false // TODO: condition from ViewModel
-                Text(
-                    text = "Product Name or Title",
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500)
-                )
+
                 OutlinedTextField(
                     isError = inputWrongError,
                     shape = MaterialTheme.shapes.extraSmall,
@@ -128,7 +127,7 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
                     label = {
                         Text(
                             modifier = Modifier,
-                            text = "Product Title",
+                            text = "Product Name or Title",
                             style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500),
                         )
                     },
@@ -140,14 +139,9 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
                     onValueChange = { productTitle = it },
                 )
 
-                Text(
-                    text = "Product Details",
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500)
-                )
-
                 OutlinedTextField(
                     isError = inputWrongError,
-                    modifier = Modifier
+                    modifier = Modifier.padding(vertical = 16.dp)
                         .fillMaxWidth(),
                     value = productDesc,
                     trailingIcon = {
@@ -161,44 +155,110 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
                     label = {
                         Text(
                             modifier = Modifier,
-                            text = "Product Details",
+                            text = "Describe your product!",
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500),
+                        )
+                    },
+                    minLines = 2,
+                    maxLines = 2,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Default
+                    ),
+                    onValueChange = { productDesc = it },
+                )
+
+                OutlinedTextField(
+                    isError = inputWrongError,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    value = productPrice,
+                    trailingIcon = {
+                        if (productPrice.isNotBlank()) {
+                            Icon(painter = painterResource(Res.drawable.outline_clear_24),
+                                tint = MaterialTheme.colorScheme.secondary,
+                                contentDescription = null,
+                                modifier = Modifier.clickable { productPrice = "" })
+                        }
+                    },
+                    label = {
+                        Text(
+                            modifier = Modifier,
+                            text = "Enter valid amount",
                             style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500),
                         )
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
+                        keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
                     ),
-                    onValueChange = { productDesc = it },
+                    onValueChange = { input ->
+                        if (input.isValidPrice()) {
+                            productPrice = input
+                        }
+                    }
                 )
 
                 Text(
                     modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
                         .padding(vertical = 16.dp),
-                    text = "Add Product Pictures",
+                    text = "Add Product Images",
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = W700)
                 )
-                val size = (screenSize.width / 4).dp
 
-                Icon(
-                    Icons.Filled.Add,
-                    "Add Product",
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .clickable {
-                            getToast().showToast("clicked")
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.height((screenSize.height / 3).dp).border(
+                            color = Color.LightGray, //todo
+                            width = 1.dp,
+                            shape = MaterialTheme.shapes.extraSmall
+                        ).padding(16.dp)
+                    ) {
+                        items(10) { i ->
+                            ProductUI(i)
                         }
-                        .background(
-                            shape = MaterialTheme.shapes.large,
-                            color = addProductColorScheme.addProductBtn
+                    }
+                    Button(
+                        onClick = { },
+                        colors = ButtonDefaults.buttonColors(addProductColorScheme.addProductBtn),
+                        modifier = Modifier.padding(16.dp).fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Submit Product",
+                            color = MaterialTheme.colorScheme.onBackground
                         )
-                        .size(size)
-                )
+                    }
+                }
+
             }
+
         }
 
-
     }
+
+    @Composable
+    private fun ProductUI(index: Int) {
+        val size = (screenSize.width / 3).dp
+        //  val nav = LocalNavigator.currentOrThrow
+        Column {
+            Box(
+                Modifier
+                    .size(size)
+                    .background(
+                        color = Color(
+                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                        ), shape = MaterialTheme.shapes.extraLarge
+                    )
+            )
+
+        }
+    }
+
+
 }
