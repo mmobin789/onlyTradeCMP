@@ -8,8 +8,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,11 +36,10 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
-import onlytrade.app.ui.design.components.OTOutlinedTextField
-import onlytrade.app.ui.design.components.PrimaryButton
 import onlytrade.app.ui.design.components.ScreenSize
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.home.HomeScreen
+import onlytrade.app.ui.login.colorScheme.loginColorScheme
 import onlytrade.app.ui.login.forgotPassword.ForgotPasswordScreen
 import onlytrade.app.viewmodel.login.ui.LoginUiState.ApiError
 import onlytrade.app.viewmodel.login.ui.LoginUiState.BlankEmailInputError
@@ -55,7 +58,6 @@ import onlytrade.composeapp.generated.resources.app_logo
 import onlytrade.composeapp.generated.resources.forgot_pwd
 import onlytrade.composeapp.generated.resources.ic_quickmart_intro
 import onlytrade.composeapp.generated.resources.ic_quickmart_intro_dark
-import onlytrade.composeapp.generated.resources.login
 import onlytrade.composeapp.generated.resources.outline_clear_24
 import onlytrade.composeapp.generated.resources.password
 import onlytrade.composeapp.generated.resources.pwd_visibility_24
@@ -72,12 +74,12 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
         val loginViewModel = koinViewModel<LoginViewModel>()
         val uiState by loginViewModel.uiState.collectAsState()
         val nav = LocalNavigator.currentOrThrow
-        var email by remember { mutableStateOf(TextFieldValue()) }
+        var email by remember { mutableStateOf("") }
         var phone by remember { mutableStateOf(TextFieldValue()) }
         var password by remember { mutableStateOf(TextFieldValue()) }
         var passwordVisible by remember { mutableStateOf(true) }
 
-        val orLabelVisible = email.text.isBlank() && phone.text.isBlank()
+        val orLabelVisible = email.isBlank() && phone.text.isBlank()
 
         val inputMobileError =
             uiState is BlankMobileInputError || uiState is MobileNoFormatInputError
@@ -87,7 +89,7 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
 
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surface)
+                .background(loginColorScheme.screenBG)
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -103,46 +105,65 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
 
             Text(
                 text = "Login",
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = W700)
             )
 
             Text(
                 text = "Enter your email or mobile number",
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.labelLarge
             )
 
             if (phone.text.isBlank()) {
-                OTOutlinedTextField(
+                OutlinedTextField(
+                    isError = inputEmailError,
+                    shape = MaterialTheme.shapes.extraSmall,
+                    modifier = Modifier
+                        .fillMaxWidth(),
                     value = email,
-                    onValueChange = { email = it },
-                    label = "Email", isError = inputEmailError,
                     trailingIcon = {
-                        if (email.text.isNotBlank()) {
+                        if (email.isNotBlank()) {
                             Icon(
                                 painter = painterResource(Res.drawable.outline_clear_24),
                                 tint = MaterialTheme.colorScheme.secondary,
                                 contentDescription = null,
-                                modifier = Modifier.clickable { email = TextFieldValue("") }
+                                modifier = Modifier.clickable { email = "" }
                             )
                         }
                     },
-                    keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
+                    label = {
+                        Text(
+                            modifier = Modifier,
+                            text = "Email",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    onValueChange = { email = it },
                 )
             }
 
             if (orLabelVisible) {
                 Text(
                     text = "OR",
+                    color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.headlineMedium.copy(textAlign = TextAlign.Center),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            if (email.text.isBlank()) {
-                OTOutlinedTextField(
+            if (email.isBlank()) {
+                OutlinedTextField(
+                    isError = inputMobileError,
+                    shape = MaterialTheme.shapes.extraSmall,
+                    modifier = Modifier
+                        .fillMaxWidth(),
                     value = phone,
-                    onValueChange = { phone = it },
-                    label = "Mobile Number", isError = inputMobileError,
                     trailingIcon = {
                         if (phone.text.isNotBlank()) {
                             Icon(
@@ -152,15 +173,29 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
                                 modifier = Modifier.clickable { phone = TextFieldValue("") }
                             )
                         }
-                    }, keyboardType = KeyboardType.Phone, imeAction = ImeAction.Next
+                    },
+                    label = {
+                        Text(
+                            modifier = Modifier,
+                            text = "Mobile Number",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Next
+                    ),
+                    onValueChange = { phone = it },
                 )
             }
 
-            OTOutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = stringResource(Res.string.password),
+            OutlinedTextField(
                 isError = inputPwdError,
+                shape = MaterialTheme.shapes.extraSmall,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                value = password,
                 trailingIcon = {
                     if (password.text.isNotEmpty()) {
                         val eyeIcon = if (passwordVisible) {
@@ -174,33 +209,46 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
                             modifier = Modifier.clickable { passwordVisible = !passwordVisible })
                     }
                 },
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done,
+                label = {
+                    Text(
+                        modifier = Modifier,
+                        text = stringResource(Res.string.password),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                onValueChange = { password = it },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
             )
 
             Text(
                 text = stringResource(Res.string.forgot_pwd),
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = W700),
                 modifier = Modifier
                     .align(Alignment.End)
                     .clickable { nav.push(ForgotPasswordScreen()) })
 
-            PrimaryButton(
-                text = stringResource(Res.string.login),
+            Button(
                 onClick = {
-                    if (email.text.isBlank())
+                    if (email.isBlank())
                         loginViewModel.doMobileLogin(
                             mobileNo = phone.text,
                             pwd = password.text
-                        ) else loginViewModel.doEmailLogin(email = email.text, pwd = password.text)
+                        ) else loginViewModel.doEmailLogin(email = email, pwd = password.text)
 
 
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(loginColorScheme.loginBtn),
 
-            )
+            ){
+                Text(text = "Login", color = MaterialTheme.colorScheme.onBackground,)
+            }
 
             when (uiState) {
                 is LoggedIn -> nav.replaceAll(HomeScreen(screenSize))

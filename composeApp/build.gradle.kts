@@ -61,7 +61,6 @@ kotlin {
             //implementation(libs.constraintLayout)
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
-            implementation(libs.androidx.ui.text.google.fonts)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

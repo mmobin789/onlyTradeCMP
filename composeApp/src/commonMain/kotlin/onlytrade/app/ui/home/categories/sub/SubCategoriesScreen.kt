@@ -37,6 +37,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.ScreenSize
 import onlytrade.app.ui.home.HomeScreen
+import onlytrade.app.ui.home.categories.sub.colorScheme.subCategoriesColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
 import onlytrade.app.ui.home.wishlist.WishListScreen
 import onlytrade.composeapp.generated.resources.Res
@@ -62,10 +63,10 @@ class SubCategoriesScreen(private val categoryName: String, private val screenSi
                     Column {
                         Row(
                             modifier = Modifier
-                                .background(MaterialTheme.colorScheme.surface)
-                                .padding(16.dp),
+                                .background(subCategoriesColorScheme.categoryBarBG)
+                                .padding(16.dp)
+                                .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
 
 
@@ -86,7 +87,7 @@ class SubCategoriesScreen(private val categoryName: String, private val screenSi
 
                         Spacer(
                             modifier = Modifier
-                                .background(color = MaterialTheme.colorScheme.tertiary)
+                                .background(subCategoriesColorScheme.categoryBarBG)
                                 .height(1.dp)
                                 .fillMaxWidth()
                         )
@@ -96,7 +97,9 @@ class SubCategoriesScreen(private val categoryName: String, private val screenSi
             },
             bottomBar = {
                 Row(
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier
+                        .background(subCategoriesColorScheme.botBarBG)
+                        .padding(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Column(
@@ -183,6 +186,7 @@ class SubCategoriesScreen(private val categoryName: String, private val screenSi
             LazyVerticalGrid(
                 state = productGridState,
                 modifier = Modifier
+                    .background(subCategoriesColorScheme.screenBG)
                     .padding(paddingValues)
                     .padding(16.dp)
                     .fillMaxSize(),

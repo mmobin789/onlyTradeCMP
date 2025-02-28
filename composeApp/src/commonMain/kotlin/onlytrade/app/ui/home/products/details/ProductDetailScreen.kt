@@ -1,5 +1,6 @@
 package onlytrade.app.ui.home.products.details
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -40,6 +42,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.ScreenSize
+import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.ok
@@ -54,7 +57,7 @@ class ProductDetailScreen(private val id: Int, private val screenSize: ScreenSiz
         // var headerVisible by remember { mutableStateOf(true) }
         // var headerVisible = true
 
-        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+        ConstraintLayout(modifier = Modifier.fillMaxSize().background(color = Color.Green)) {
             val (header, back, like, dots, space, content) = createRefs()
 
             //    AnimatedVisibility(visible = headerVisible) {
@@ -118,8 +121,8 @@ class ProductDetailScreen(private val id: Int, private val screenSize: ScreenSiz
 
                 totalDots = 5,
                 selectedIndex = pagerState.currentPage,
-                selectedColor = MaterialTheme.colorScheme.tertiary,
-                unSelectedColor = MaterialTheme.colorScheme.secondary
+                selectedColor = Color(0xFF474567),
+                unSelectedColor = Color(0xFFF4EAE9)
             )
 
 
@@ -142,7 +145,7 @@ class ProductDetailScreen(private val id: Int, private val screenSize: ScreenSiz
             ConstraintLayout(modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    color = MaterialTheme.colorScheme.background,
+                    color = productDetailColorScheme.screenBG,
                     shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
                 )
                 .constrainAs(content) {
@@ -165,28 +168,21 @@ class ProductDetailScreen(private val id: Int, private val screenSize: ScreenSiz
                         .padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        modifier = Modifier
-                            .background(
-                                color = Color(
-                                    Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                                ), shape = MaterialTheme.shapes.medium
-                            )
-                            .padding(8.dp),
-                        text = "1st Hand",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                    Text(
-                        modifier = Modifier
-                            .background(
-                                color = Color(
-                                    Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                                ), shape = MaterialTheme.shapes.medium
-                            )
-                            .padding(8.dp),
-                        text = "In Demand",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
+                    repeat(times = 2) { i ->
+
+
+                        Text(
+                            modifier = Modifier
+                                .background(
+                                    color = productDetailColorScheme.productTagsBG,
+                                    shape = MaterialTheme.shapes.medium
+                                )
+                                .padding(8.dp),
+                            text = if (i == 0) "1st Hand" else "In Demand",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+
+                    }
                 }
 
                 Text(
@@ -197,6 +193,7 @@ class ProductDetailScreen(private val id: Int, private val screenSize: ScreenSiz
                             start.linkTo(tags.start)
                         }
                         .padding(16.dp),
+                    color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
                 )
 
@@ -213,6 +210,7 @@ class ProductDetailScreen(private val id: Int, private val screenSize: ScreenSiz
                             end.linkTo(parent.end)
 
                         },
+                    color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W300)
                 )
 
@@ -230,10 +228,11 @@ class ProductDetailScreen(private val id: Int, private val screenSize: ScreenSiz
                     OutlinedButton(
                         modifier = Modifier.weight(1f),
                         onClick = { },
-                        shape = MaterialTheme.shapes.medium
+                        shape = MaterialTheme.shapes.medium,
+                        border = BorderStroke(1.dp, productDetailColorScheme.offerTradeBtnBorder),
                     ) {
                         Text(
-                            text = "Offer Trade", modifier = Modifier.padding(vertical = 8.dp)
+                            text = "Offer Trade", color = productDetailColorScheme.offerTradeBtnText, modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
 
@@ -241,6 +240,7 @@ class ProductDetailScreen(private val id: Int, private val screenSize: ScreenSiz
                         modifier = Modifier.weight(1f),
                         onClick = {},
                         shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(

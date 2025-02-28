@@ -9,13 +9,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import onlytrade.app.ui.design.theme.onlyTradePrimary
 
 @Composable
 fun DotsIndicator(
@@ -29,10 +27,6 @@ fun DotsIndicator(
         modifier = modifier
             .wrapContentWidth()
             .wrapContentHeight()
-            .background(
-                shape = MaterialTheme.shapes.small,
-                color = onlyTradePrimary
-            )
             .padding(8.dp)
 
     ) {

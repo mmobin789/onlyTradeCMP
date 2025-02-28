@@ -44,6 +44,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.ScreenSize
 import onlytrade.app.ui.home.HomeScreen
+import onlytrade.app.ui.home.products.colorScheme.productsColorScheme
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.wishlist.WishListScreen
 import onlytrade.composeapp.generated.resources.Res
@@ -69,10 +70,10 @@ class ProductsScreen(private val categoryName: String? = null, private val scree
                 Column {
                     Row(
                         modifier = Modifier
-                            .background(MaterialTheme.colorScheme.surface)
+                            .fillMaxWidth()
+                            .background(productsColorScheme.topBarBG)
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
 
 
@@ -93,7 +94,7 @@ class ProductsScreen(private val categoryName: String? = null, private val scree
 
                     Spacer(
                         modifier = Modifier
-                            .background(color = MaterialTheme.colorScheme.tertiary)
+                            .background(productsColorScheme.topBarBG)
                             .height(1.dp)
                             .fillMaxWidth()
                     )
@@ -102,8 +103,9 @@ class ProductsScreen(private val categoryName: String? = null, private val scree
             }
         }, bottomBar = {
             Row(
-                modifier = Modifier.padding(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier
+                    .background(productsColorScheme.botBarBG)
+                    .padding(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Column(
                     Modifier
@@ -188,6 +190,7 @@ class ProductsScreen(private val categoryName: String? = null, private val scree
                 state = productGridState,
                 modifier = Modifier
                     .padding(paddingValues)
+                    .background(productsColorScheme.screenBG)
                     .padding(16.dp)
                     .fillMaxSize(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -195,7 +198,7 @@ class ProductsScreen(private val categoryName: String? = null, private val scree
                 columns = GridCells.Fixed(2)
             ) {
 
-                items(10) { i ->
+                items(16) { i ->
                     ProductUI(i)
                 }
             }
