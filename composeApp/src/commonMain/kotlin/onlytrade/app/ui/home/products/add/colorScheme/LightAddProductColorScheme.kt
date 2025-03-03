@@ -9,6 +9,10 @@ object LightAddProductColorScheme : AddProductColorScheme {
         get() = Color(0xFFD2D3BD)
     override val topBarBG: Color
         get() = Color(0xFFD2D3BD)
-    override val addProductBtn: Color
-        get() = Color(0xFFFAFAFA)
+    override val bottomBarBG: Color
+        get() = Color(0xFFD2D3BD)
+    override val submitProductBtn: Color
+        get() = Color(0xFFB26560)
+    override val lazyVerticalGridBorder: Color
+        get() = Color(0xFFB26560)
 }

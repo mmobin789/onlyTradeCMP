@@ -381,7 +381,7 @@ class HomeScreen(private val screenSize: ScreenSize) : Screen {
                     columns = GridCells.Fixed(2)
                 ) {
 
-                    items(10) { i ->
+                    items(6) { i ->
                         ProductUI(i)
                     }
                 }
