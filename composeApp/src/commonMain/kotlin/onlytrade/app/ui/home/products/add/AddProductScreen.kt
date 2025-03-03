@@ -111,7 +111,7 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = "Add Image",
+                        text = "Add Product Image",
                     )
                 }
 
@@ -125,7 +125,7 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = "Submit",
+                        text = "Add Product",
                     )
                 }
 
