@@ -1,14 +1,19 @@
 package onlytrade.app
 
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.Navigator
 import onlytrade.app.di.OTBusinessModule
-import onlytrade.app.ui.design.components.ScreenSize
+import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.theme.AppTheme
 import onlytrade.app.ui.splash.SplashScreen
 import org.koin.android.ext.koin.androidContext
@@ -28,13 +33,42 @@ class MainActivity : ComponentActivity() {
             val screenHeight = localConfig.screenHeightDp
             KoinContext {
                 AppTheme {
-                    Navigator(SplashScreen(object : ScreenSize {
-                        override val width: Int
+                    Navigator(SplashScreen(object : SharedCMP {
+                        override val screenWidth: Int
                             get() = screenWidth
-                        override val height: Int
+                        override val screenHeight: Int
                             get() = screenHeight
+
+                        @Composable
+                        override fun GetImageFromGallery(onImagePicked: (ByteArray) -> Unit) {
+                            LoadImageFromGallery(onImagePicked)
+                        }
                     }))
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LoadImageFromGallery(onImagePicked: (ByteArray) -> Unit) {
+    val context = LocalContext.current
+    rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.run {
+            try {
+
+                context.contentResolver.openInputStream(this)?.also {
+                    onImagePicked(
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            it.readAllBytes()
+                        } else it.readBytes()
+                    )
+                    it.close()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

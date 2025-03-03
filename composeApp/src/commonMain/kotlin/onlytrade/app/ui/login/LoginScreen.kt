@@ -36,7 +36,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
-import onlytrade.app.ui.design.components.ScreenSize
+import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.login.colorScheme.loginColorScheme
@@ -67,7 +67,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 
-class LoginScreen(private val screenSize: ScreenSize) : Screen {
+class LoginScreen(private val sharedCMP: SharedCMP) : Screen {
 
     @Composable
     override fun Content() {
@@ -251,7 +251,7 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
             }
 
             when (uiState) {
-                is LoggedIn -> nav.replaceAll(HomeScreen(screenSize))
+                is LoggedIn -> nav.replaceAll(HomeScreen(sharedCMP))
                 is ApiError -> {
                     ShowToast("ApiError")
                 }

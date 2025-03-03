@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import onlytrade.app.ui.design.components.ScreenSize
+import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.home.categories.sub.colorScheme.subCategoriesColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
@@ -48,7 +48,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import kotlin.random.Random
 
-class SubCategoriesScreen(private val categoryName: String, private val screenSize: ScreenSize) :
+class SubCategoriesScreen(private val categoryName: String, private val sharedCMP: SharedCMP) :
     Screen {
 
     @Composable
@@ -106,7 +106,7 @@ class SubCategoriesScreen(private val categoryName: String, private val screenSi
                         Modifier
                             .weight(1f)
                             .clickable {
-                                nav.replace(HomeScreen(screenSize))
+                                nav.replace(HomeScreen(sharedCMP))
                             }) {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -150,7 +150,7 @@ class SubCategoriesScreen(private val categoryName: String, private val screenSi
                         Modifier
                             .weight(1f)
                             .clickable {
-                                nav.push(WishListScreen(screenSize))
+                                nav.push(WishListScreen(sharedCMP))
                             }) {
 
                         Icon(
@@ -207,10 +207,10 @@ class SubCategoriesScreen(private val categoryName: String, private val screenSi
 
     @Composable
     private fun SubCategoryUI(index: Int) {
-        val size = (screenSize.width / 2).dp
+        val size = (sharedCMP.screenWidth / 2).dp
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = Modifier.clickable {
-            nav.push(ProductsScreen("Subcategory ${index + 1}", screenSize))
+            nav.push(ProductsScreen("Subcategory ${index + 1}", sharedCMP))
         }) {
             Box(
                 Modifier

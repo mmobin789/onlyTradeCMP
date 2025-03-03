@@ -42,7 +42,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import onlytrade.app.ui.design.components.ScreenSize
+import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.home.products.colorScheme.productsColorScheme
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
@@ -56,7 +56,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import kotlin.random.Random
 
-class ProductsScreen(private val categoryName: String? = null, private val screenSize: ScreenSize) :
+class ProductsScreen(private val categoryName: String? = null, private val sharedCMP: SharedCMP) :
     Screen {
 
     @Composable
@@ -111,7 +111,7 @@ class ProductsScreen(private val categoryName: String? = null, private val scree
                     Modifier
                         .weight(1f)
                         .clickable {
-                            nav.replaceAll(HomeScreen(screenSize))
+                            nav.replaceAll(HomeScreen(sharedCMP))
                         }) {
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -154,7 +154,7 @@ class ProductsScreen(private val categoryName: String? = null, private val scree
                     Modifier
                         .weight(1f)
                         .clickable {
-                            nav.push(WishListScreen(screenSize))
+                            nav.push(WishListScreen(sharedCMP))
                         }) {
 
                     Icon(
@@ -209,10 +209,10 @@ class ProductsScreen(private val categoryName: String? = null, private val scree
 
     @Composable
     private fun ProductUI(index: Int) {
-        val size = (screenSize.width / 2).dp
+        val size = (sharedCMP.screenWidth / 2).dp
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = Modifier.clickable {
-            nav.push(ProductDetailScreen(index, screenSize))
+            nav.push(ProductDetailScreen(index, sharedCMP))
         }) {
             Box(
                 Modifier

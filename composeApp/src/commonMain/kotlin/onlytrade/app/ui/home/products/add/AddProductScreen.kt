@@ -46,7 +46,8 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import onlytrade.app.ui.design.components.ScreenSize
+import onlytrade.app.ui.design.components.SharedCMP
+import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.design.components.isValidPrice
 import onlytrade.app.ui.home.products.add.colorScheme.addProductColorScheme
 import onlytrade.composeapp.generated.resources.Res
@@ -56,84 +57,88 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.random.Random
 
-class AddProductScreen(private val screenSize: ScreenSize) : Screen {
+class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
 
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
         val productGridState = rememberLazyGridState()
+        //   val scope = rememberCoroutineScope()
         val headerVisible = productGridState.canScrollBackward.not()
+        var showImagePicker by remember { mutableStateOf(false) }
+        var toastMsg by remember { mutableStateOf("") }
 
+        Scaffold(
+            topBar = {
+                AnimatedVisibility(visible = headerVisible) {
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .background(addProductColorScheme.topBarBG)
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp).padding(top = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                modifier = Modifier.clickable { nav.pop() },
+                                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                                contentDescription = stringResource(Res.string.cancel)
+                            )
 
-        Scaffold(topBar = {
-            AnimatedVisibility(visible = headerVisible) {
-                Column {
-                    Row(
-                        modifier = Modifier
-                            .background(addProductColorScheme.topBarBG)
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp).padding(top = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            modifier = Modifier.clickable { nav.pop() },
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = stringResource(Res.string.cancel)
+                            Text(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                text = "Add a New Trade Product",
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
+                            )
+                        }
+
+                        Spacer(
+                            modifier = Modifier
+                                .background(addProductColorScheme.topBarBG)
+                                .height(1.dp)
+                                .fillMaxWidth()
                         )
 
+                    }
+                }
+            },
+            bottomBar = {
+
+                Column(modifier = Modifier.background(addProductColorScheme.screenBG))
+                {
+
+                    Button(
+                        onClick = { showImagePicker = true },
+                        colors = ButtonDefaults.buttonColors(addProductColorScheme.submitProductBtn),
+                        shape = MaterialTheme.shapes.extraSmall,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxWidth()
+                    ) {
                         Text(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            text = "Add a New Trade Product",
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
+                            text = "Add Product Image",
                         )
                     }
 
-                    Spacer(
+                    Button(
+                        onClick = { },
+                        colors = ButtonDefaults.buttonColors(addProductColorScheme.submitProductBtn),
+                        shape = MaterialTheme.shapes.extraSmall,
                         modifier = Modifier
-                            .background(addProductColorScheme.topBarBG)
-                            .height(1.dp)
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 8.dp)
                             .fillMaxWidth()
-                    )
+                    ) {
+                        Text(
+                            text = "Add Product",
+                        )
+                    }
 
                 }
-            }
-        }, bottomBar = {
 
-            Column (modifier = Modifier.background(addProductColorScheme.screenBG))
-            {
+            },
 
-                Button(
-                    onClick = { },
-                    colors = ButtonDefaults.buttonColors(addProductColorScheme.submitProductBtn),
-                    shape = MaterialTheme.shapes.extraSmall,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Add Product Image",
-                    )
-                }
-
-                Button(
-                    onClick = { },
-                    colors = ButtonDefaults.buttonColors(addProductColorScheme.submitProductBtn),
-                    shape = MaterialTheme.shapes.extraSmall,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 8.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Add Product",
-                    )
-                }
-
-            }
-
-        },
-
-        ) { paddingValues ->
+            ) { paddingValues ->
             Column(
                 modifier = Modifier
                     .padding(paddingValues)
@@ -166,7 +171,7 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
                     label = {
                         Text(
                             modifier = Modifier,
-                            text = "Product Name/Title",
+                            text = "Product Name",
                             style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500),
                         )
                     },
@@ -268,12 +273,23 @@ class AddProductScreen(private val screenSize: ScreenSize) : Screen {
             }
 
         }
+        if (showImagePicker) {
+            sharedCMP.GetImageFromGallery {
+                toastMsg = "${it.size}"
+                showImagePicker = false
+
+            }
+        }
+
+        if (toastMsg.isNotBlank()) {
+            ShowToast(toastMsg)
+        }
 
     }
 
     @Composable
     private fun ProductUI(index: Int) {
-        val size = (screenSize.width / 4).dp
+        val size = (sharedCMP.screenWidth / 4).dp
         //  val nav = LocalNavigator.currentOrThrow
         Column {
             Box(

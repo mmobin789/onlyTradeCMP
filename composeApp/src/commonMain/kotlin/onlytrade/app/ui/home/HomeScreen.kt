@@ -52,7 +52,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import onlytrade.app.ui.design.components.DotsIndicator
-import onlytrade.app.ui.design.components.ScreenSize
+import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
 import onlytrade.app.ui.home.colorScheme.homeColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
@@ -70,7 +70,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import kotlin.random.Random
 
-class HomeScreen(private val screenSize: ScreenSize) : Screen {
+class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
 
     @Composable
     override fun Content() {
@@ -165,7 +165,7 @@ class HomeScreen(private val screenSize: ScreenSize) : Screen {
                                         ), shape = MaterialTheme.shapes.medium
                                     )
                                     .fillMaxWidth()
-                                    .height((screenSize.height / 4).dp)
+                                    .height((sharedCMP.screenHeight / 4).dp)
                             )
 
 
@@ -232,7 +232,7 @@ class HomeScreen(private val screenSize: ScreenSize) : Screen {
                     Modifier
                         .weight(1f)
                         .clickable {
-                            nav.push(WishListScreen(screenSize))
+                            nav.push(WishListScreen(sharedCMP))
                         }) {
 
                     Icon(
@@ -265,7 +265,7 @@ class HomeScreen(private val screenSize: ScreenSize) : Screen {
         }, floatingActionButton = {
 
             val addProductClicked = {
-                nav.push(AddProductScreen(screenSize))
+                nav.push(AddProductScreen(sharedCMP))
             }
 
             if (productGridState.isScrollInProgress)
@@ -322,7 +322,7 @@ class HomeScreen(private val screenSize: ScreenSize) : Screen {
                                         nav.push(
                                             SubCategoriesScreen(
                                                 "Category ${i + 1}",
-                                                screenSize
+                                                sharedCMP
                                             )
                                         )
                                     },
@@ -364,7 +364,7 @@ class HomeScreen(private val screenSize: ScreenSize) : Screen {
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .clickable {
-                                nav.push(ProductsScreen(screenSize = screenSize))
+                                nav.push(ProductsScreen(sharedCMP = sharedCMP))
                             },
                         text = "SEE All",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = W700)
@@ -393,10 +393,10 @@ class HomeScreen(private val screenSize: ScreenSize) : Screen {
 
     @Composable
     private fun ProductUI(index: Int) {
-        val size = (screenSize.width / 2).dp
+        val size = (sharedCMP.screenWidth / 2).dp
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = Modifier.clickable {
-            nav.push(ProductDetailScreen(index, screenSize))
+            nav.push(ProductDetailScreen(index, sharedCMP))
         }) {
             Box(
                 Modifier
