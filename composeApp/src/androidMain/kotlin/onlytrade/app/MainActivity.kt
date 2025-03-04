@@ -57,14 +57,21 @@ class MainActivity : ComponentActivity() {
 
 
     @Composable
-    private fun LoadImageFromGallery(onImagesPicked: (List<ByteArray>) -> Unit) {
+    private fun LoadImageFromGallery(
+        onImagesPicked: (List<ByteArray>) -> Unit,
+    ) {
         val scope = rememberCoroutineScope()
         val imagePicker = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetMultipleContents()
         ) { uris: List<Uri> ->
             scope.launch {
                 //todo this will cause OOM need to optimize.
-                val images = withContext(Dispatchers.IO) { uris.mapNotNull { uriToFullSizeByteArray(it) } }
+                val images =
+                    withContext(Dispatchers.IO) {
+                        uris.mapNotNull {
+                            uriToByteArray(it)
+                        }
+                    }
                 withContext(Dispatchers.Main.immediate) { onImagesPicked(images) }
             }
         }
@@ -75,14 +82,40 @@ class MainActivity : ComponentActivity() {
 
     }
 
-    private fun uriToFullSizeByteArray(uri: Uri): ByteArray? {
+    /*    private fun uriToByteArray(uri: Uri, width: Int, height: Int): ByteArray? {
+            return try {
+                val inputStream = contentResolver.openInputStream(uri) ?: return null
+                val options = BitmapFactory.Options().apply {
+                    inJustDecodeBounds = true
+                    BitmapFactory.decodeStream(inputStream, null, this)
+                    inJustDecodeBounds = false
+                    inSampleSize = calculateInSampleSize(this, width, height)
+                }
+
+                // Reopen input stream for actual decoding
+                val newInputStream = contentResolver.openInputStream(uri) ?: return null
+                val bitmap = BitmapFactory.decodeStream(newInputStream, null, options)
+
+                // Compress and convert to ByteArray
+                val outputStream = ByteArrayOutputStream()
+                bitmap?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                bitmap?.recycle() // Free memory
+
+                outputStream.toByteArray()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }*/
+
+    private fun uriToByteArray(uri: Uri): ByteArray? {
         return try {
             val inputStream = contentResolver.openInputStream(uri) ?: return null
             val bitmap = BitmapFactory.decodeStream(inputStream) // Decode full image
             inputStream.close()
 
             val outputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream) // Preserve quality
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, outputStream) // Preserve quality
             val byteArray = outputStream.toByteArray() // Convert to ByteArray
             outputStream.close()
             byteArray
@@ -91,6 +124,26 @@ class MainActivity : ComponentActivity() {
             null
         }
     }
+
+/*    private fun calculateInSampleSize(
+        options: BitmapFactory.Options,
+        reqWidth: Int,
+        reqHeight: Int
+    ): Int {
+        val height = options.outHeight
+        val width = options.outWidth
+        var inSampleSize = 1
+
+        if (height > reqHeight || width > reqWidth) {
+            val halfHeight = height / 2
+            val halfWidth = width / 2
+
+            while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+        return inSampleSize
+    }*/
 
 }
 

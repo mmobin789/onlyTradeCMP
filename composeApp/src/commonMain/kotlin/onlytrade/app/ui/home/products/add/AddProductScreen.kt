@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -34,7 +34,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
@@ -46,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import coil3.compose.AsyncImage
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.design.components.isValidPrice
@@ -67,6 +70,9 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
         val headerVisible = productGridState.canScrollBackward.not()
         var showImagePicker by remember { mutableStateOf(false) }
         var toastMsg by remember { mutableStateOf("") }
+        var galleryImages by remember {
+            mutableStateOf(listOf<ByteArray>())
+        }
 
         Scaffold(
             topBar = {
@@ -263,8 +269,12 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                             shape = MaterialTheme.shapes.extraSmall
                         ).padding(16.dp)
                     ) {
-                        items(12) { i ->
-                            ProductUI(i)
+                        if (galleryImages.isEmpty())
+                            items(12) {
+                                ProductUI()
+                            }
+                        else items(galleryImages) {
+                            ProductUI(it)
                         }
                     }
 
@@ -277,6 +287,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
             sharedCMP.GetImagesFromGallery {
                 showImagePicker = false
                 toastMsg = "${it.size}"
+                galleryImages = it
             }
 
         }
@@ -290,13 +301,16 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
     }
 
     @Composable
-    private fun ProductUI(index: Int) {
+    private fun ProductUI(byteArray: ByteArray? = null) {
         val size = (sharedCMP.screenWidth / 4).dp
         //  val nav = LocalNavigator.currentOrThrow
         Column {
-            Box(
-                Modifier
-                    .size(size)
+            AsyncImage(
+                model = byteArray,
+                contentScale = ContentScale.Crop,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(size).clip(MaterialTheme.shapes.small)
                     .background(
                         color = Color(
                             Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
