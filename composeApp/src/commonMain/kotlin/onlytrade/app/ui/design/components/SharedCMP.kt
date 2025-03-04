@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 interface SharedCMP {
     val screenWidth: Int
     val screenHeight: Int
+
     @Composable
-    fun GetImageFromGallery(onImagePicked: (ByteArray) -> Unit)
+    fun GetImagesFromGallery(onImagesPicked: (List<ByteArray>) -> Unit)
 }

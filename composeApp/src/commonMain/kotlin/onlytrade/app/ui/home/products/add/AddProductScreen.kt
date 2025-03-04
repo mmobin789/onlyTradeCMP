@@ -274,15 +274,17 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
 
         }
         if (showImagePicker) {
-            sharedCMP.GetImageFromGallery {
-                toastMsg = "${it.size}"
+            sharedCMP.GetImagesFromGallery {
                 showImagePicker = false
-
+                toastMsg = "${it.size}"
             }
+
         }
 
         if (toastMsg.isNotBlank()) {
             ShowToast(toastMsg)
+            toastMsg = ""
+
         }
 
     }
