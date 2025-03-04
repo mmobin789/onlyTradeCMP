@@ -1,7 +1,6 @@
 package onlytrade.app
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,6 +13,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.Navigator
+import coil3.ImageLoader
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
+import coil3.request.allowHardware
+import coil3.size.Size
+import coil3.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -72,7 +77,7 @@ class MainActivity : ComponentActivity() {
                 val images =
                     withContext(Dispatchers.IO) {
                         uris.mapNotNull {
-                            uriToByteArray(it)
+                            loadImageAsByteArray(it)
                         }
                     }
                 withContext(Dispatchers.Main.immediate) { onImagesPicked(images) }
@@ -85,64 +90,24 @@ class MainActivity : ComponentActivity() {
     }
 
 
-    private fun uriToByteArray(
-        uri: Uri,
-        compressQuality: Int = 70,
-        maxWidth: Int = 1000,
-        maxHeight: Int = 1000
-    ): ByteArray? {
-        return try {
-            val options = BitmapFactory.Options().apply {
-                inJustDecodeBounds = true
+    private suspend fun loadImageAsByteArray(uri: Uri): ByteArray? {
+        val imageLoader = ImageLoader(this)
+        val request = ImageRequest.Builder(this)
+            .data(uri)
+            .build()
+
+        return when (val result = imageLoader.execute(request)) {
+            is SuccessResult -> {
+                result.image.toBitmap().let { bitmap ->
+                    val outputStream = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, outputStream)
+                    bitmap.recycle() // Free memory
+                    outputStream.toByteArray()
+                }
             }
 
-
-            // 1. Open input stream just to get image dimensions
-            contentResolver.openInputStream(uri)?.use { stream ->
-                BitmapFactory.decodeStream(stream, null, options)
-            }
-
-            // 2. Calculate optimal inSampleSize to downscale the image
-            options.inSampleSize = calculateInSampleSize(options, maxWidth, maxHeight)
-            options.inJustDecodeBounds = false
-
-            // 3. Decode downscaled bitmap
-            val inputStream = contentResolver.openInputStream(uri) ?: return null
-            val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
-            inputStream.close()
-
-            // 4. Convert to ByteArray after compression
-            val outputStream = ByteArrayOutputStream()
-            bitmap?.compress(Bitmap.CompressFormat.JPEG, compressQuality, outputStream)
-            bitmap?.recycle() // Free memory
-
-            val byteArray = outputStream.toByteArray()
-            outputStream.close()
-            byteArray
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
+            else -> null
         }
-    }
-
-    private fun calculateInSampleSize(
-        options: BitmapFactory.Options,
-        reqWidth: Int,
-        reqHeight: Int
-    ): Int {
-        val height = options.outHeight
-        val width = options.outWidth
-        var inSampleSize = 1
-
-        if (height > reqHeight || width > reqWidth) {
-            val halfHeight = height / 2
-            val halfWidth = width / 2
-
-            while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
-                inSampleSize *= 2
-            }
-        }
-        return inSampleSize
     }
 
 
