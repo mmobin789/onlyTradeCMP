@@ -3,6 +3,7 @@ package onlytrade.app
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -91,6 +92,7 @@ class MainActivity : ComponentActivity() {
     private suspend fun loadImageAsByteArray(uri: Uri): ByteArray? {
         val imageLoader = ImageLoader(this)
         val request = ImageRequest.Builder(this)
+            .size(800)
             .data(uri)
             .build()
 
@@ -98,7 +100,11 @@ class MainActivity : ComponentActivity() {
             is SuccessResult -> {
                 result.image.toBitmap().let { bitmap ->
                     val outputStream = ByteArrayOutputStream()
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, outputStream)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 60, outputStream)
+                    Log.d(
+                        "ImagePicker",
+                        "Bitmap size in kbs = ${bitmap.allocationByteCount / 1024}"
+                    )
                     bitmap.recycle() // Free memory
                     outputStream.toByteArray()
                 }
