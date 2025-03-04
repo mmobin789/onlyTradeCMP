@@ -92,23 +92,23 @@ class MainActivity : ComponentActivity() {
     private suspend fun loadImageAsByteArray(uri: Uri): ByteArray? {
         val imageLoader = ImageLoader(this)
         val request = ImageRequest.Builder(this)
-            //    .size(800)
+            .size(1600)
             .data(uri)
             .build()
 
         return when (val result = imageLoader.execute(request)) {
             is SuccessResult -> {
                 result.image.toBitmap().let { bitmap ->
-                    val resizedBitmap = bitmap.resize(1600)
-                    val byteArray = resizedBitmap.toByteArray(70)
+                    //  val resizedBitmap = bitmap.resize(1600)
+                    //   val byteArray = resizedBitmap.toByteArray(70)
+                    val byteArray = bitmap.toByteArray(70)
                     Log.d(
                         "ImagePicker",
-                        "Original size: ${bitmap.allocationByteCount / 1024} KB | " +
-                                "Resized size: ${resizedBitmap.allocationByteCount / 1024} KB | " +
+                        "Resized size: ${bitmap.allocationByteCount / 1024} KB | " +
                                 "Compressed size: ${byteArray.size / 1024} KB"
                     )
                     bitmap.recycle() // Free memory
-                    resizedBitmap.recycle() // Free memory
+                    // resizedBitmap.recycle() // Free memory
                     byteArray
                 }
             }
@@ -118,12 +118,14 @@ class MainActivity : ComponentActivity() {
     }
 
     // ✅ Resize Bitmap to a Max Size (Maintains Aspect Ratio)
-    private fun Bitmap.resize(maxSize: Int): Bitmap {
-        val aspectRatio = width.toFloat() / height.toFloat()
-        val newWidth = if (width > height) maxSize else (maxSize * aspectRatio).toInt()
-        val newHeight = if (height > width) maxSize else (maxSize / aspectRatio).toInt()
-        return Bitmap.createScaledBitmap(this, newWidth, newHeight, true)
-    }
+    /*
+        private fun Bitmap.resize(maxSize: Int): Bitmap {
+            val aspectRatio = width.toFloat() / height.toFloat()
+            val newWidth = if (width > height) maxSize else (maxSize * aspectRatio).toInt()
+            val newHeight = if (height > width) maxSize else (maxSize / aspectRatio).toInt()
+            return Bitmap.createScaledBitmap(this, newWidth, newHeight, true)
+        }
+    */
 
     // ✅ Convert Bitmap to ByteArray
     private fun Bitmap.toByteArray(quality: Int): ByteArray {
