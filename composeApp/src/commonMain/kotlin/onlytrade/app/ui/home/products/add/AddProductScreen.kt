@@ -48,9 +48,9 @@ import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -59,11 +59,22 @@ import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.design.components.isValidPrice
 import onlytrade.app.ui.home.products.add.colorScheme.addProductColorScheme
+import onlytrade.app.viewmodel.category.repository.data.db.Category
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.CategoryNotSelected
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.DescriptionBlank
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.EstPriceBlank
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.EstPriceLow
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.ImagesNotSelected
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.LessImagesSelected
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.MoreImagesSelected
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.TitleBlank
+import onlytrade.app.viewmodel.product.add.ui.AddProductViewModel
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.outline_clear_24
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
 class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
@@ -71,9 +82,14 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
+        val viewModel = koinViewModel<AddProductViewModel>()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val nav = LocalNavigator.currentOrThrow
         val productGridState = rememberLazyGridState()
-        //   val scope = rememberCoroutineScope()
+        var title by remember { mutableStateOf("") }
+        var description by remember { mutableStateOf("") }
+        var selectedCategory by remember { mutableStateOf(Category(-1, "")) }
+        var estPrice by remember { mutableStateOf("") }
         val headerVisible = productGridState.canScrollBackward.not()
         var showImagePicker by remember { mutableStateOf(false) }
         var toastMsg by remember { mutableStateOf("") }
@@ -134,7 +150,15 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     }
 
                     Button(
-                        onClick = { },
+                        onClick = {
+                            viewModel.addProduct(
+                                title = title,
+                                categoryId = selectedCategory.id,
+                                description = description,
+                                estPrice = estPrice,
+                                images = galleryImages
+                            )
+                        },
                         colors = ButtonDefaults.buttonColors(addProductColorScheme.submitProductBtn),
                         shape = MaterialTheme.shapes.extraSmall,
                         modifier = Modifier
@@ -160,29 +184,31 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                var productTitle by remember { mutableStateOf(TextFieldValue()) }
-                var productDesc by remember { mutableStateOf(TextFieldValue()) }
-                var productPrice by remember { mutableStateOf("") }
-                val inputWrongError = false // TODO: condition from ViewModel
-
-                val categories = listOf("Consumer Electronic", "Electronic Gadget", "Furniture", "Home Appliance", "Household Furniture", "Media and Entertainment")
+                val categories = listOf(
+                    "Consumer Electronic",
+                    "Electronic Gadget",
+                    "Furniture",
+                    "Home Appliance",
+                    "Household Furniture",
+                    "Media and Entertainment"
+                )
                 var expanded by remember { mutableStateOf(false) }
-                var selectedCategory by remember { mutableStateOf("") }
+
 
                 OutlinedTextField(
-                    isError = inputWrongError,
+                    isError = uiState is TitleBlank,
                     shape = MaterialTheme.shapes.extraSmall,
                     textStyle = TextStyle(fontSize = 15.sp),
                     modifier = Modifier
                         .fillMaxWidth(),
-                    value = productTitle,
+                    value = title,
                     trailingIcon = {
-                        if (productTitle.text.isNotBlank()) {
+                        if (title.isNotBlank()) {
                             Icon(
                                 painter = painterResource(Res.drawable.outline_clear_24),
                                 tint = MaterialTheme.colorScheme.secondary,
                                 contentDescription = null,
-                                modifier = Modifier.clickable { productTitle = TextFieldValue("") })
+                                modifier = Modifier.clickable { title = "" })
                         }
                     },
                     label = {
@@ -197,15 +223,15 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
-                    onValueChange = { productTitle = it },
+                    onValueChange = { title = it },
                 )
 
                 ExposedDropdownMenuBox(
                     expanded = expanded,
-                    onExpandedChange = {expanded = !expanded}
-                ){
+                    onExpandedChange = { expanded = !expanded }
+                ) {
                     OutlinedTextField(
-                        value = selectedCategory,
+                        value = selectedCategory.name,
                         onValueChange = {},
                         shape = MaterialTheme.shapes.extraSmall,
                         textStyle = TextStyle(fontSize = 15.sp),
@@ -214,7 +240,11 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                             .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true)
                             .fillMaxWidth(),
                         label = {
-                            Text("Category", style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500)) },
+                            Text(
+                                "Category",
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500)
+                            )
+                        },
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                         }
@@ -225,15 +255,15 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                         containerColor = addProductColorScheme.screenBG,
                         onDismissRequest = { expanded = false }
                     ) {
-                        categories.forEachIndexed{ index, category ->
+                        categories.forEachIndexed { index, category ->
                             DropdownMenuItem(
                                 text = { Text(text = category) },
                                 onClick = {
-                                    selectedCategory = category
+                                    selectedCategory = Category(id = index, name = category)
                                     expanded = false
                                 }
                             )
-                            if(index < categories.lastIndex) {
+                            if (index < categories.lastIndex) {
                                 HorizontalDivider()
                             }
                         }
@@ -241,18 +271,18 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                 }
 
                 OutlinedTextField(
-                    isError = inputWrongError,
+                    isError = uiState is DescriptionBlank,
                     shape = MaterialTheme.shapes.extraSmall,
                     textStyle = TextStyle(fontSize = 15.sp),
                     modifier = Modifier
                         .fillMaxWidth(),
-                    value = productDesc,
+                    value = description,
                     trailingIcon = {
-                        if (productDesc.text.isNotBlank()) {
+                        if (description.isNotBlank()) {
                             Icon(painter = painterResource(Res.drawable.outline_clear_24),
                                 tint = MaterialTheme.colorScheme.secondary,
                                 contentDescription = null,
-                                modifier = Modifier.clickable { productDesc = TextFieldValue("") })
+                                modifier = Modifier.clickable { description = "" })
                         }
                     },
                     label = {
@@ -268,22 +298,22 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Default
                     ),
-                    onValueChange = { productDesc = it },
+                    onValueChange = { description = it },
                 )
 
                 OutlinedTextField(
-                    isError = inputWrongError,
+                    isError = uiState is EstPriceBlank || uiState is EstPriceLow,
                     shape = MaterialTheme.shapes.extraSmall,
                     textStyle = TextStyle(fontSize = 15.sp),
                     modifier = Modifier
                         .fillMaxWidth(),
-                    value = productPrice,
+                    value = estPrice,
                     trailingIcon = {
-                        if (productPrice.isNotBlank()) {
+                        if (estPrice.isNotBlank()) {
                             Icon(painter = painterResource(Res.drawable.outline_clear_24),
                                 tint = MaterialTheme.colorScheme.secondary,
                                 contentDescription = null,
-                                modifier = Modifier.clickable { productPrice = "" })
+                                modifier = Modifier.clickable { estPrice = "" })
                         }
                     },
                     label = {
@@ -300,7 +330,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     ),
                     onValueChange = { input ->
                         if (input.isValidPrice()) {
-                            productPrice = input
+                            estPrice = input
                         }
                     }
                 )
@@ -321,7 +351,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                         ).padding(16.dp)
                     ) {
                         if (galleryImages.isEmpty())
-                            items(12) {
+                            items(9) {
                                 ProductUI()
                             }
                         else items(galleryImages) {
@@ -337,7 +367,6 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
         if (showImagePicker) {
             sharedCMP.GetImagesFromGallery {
                 showImagePicker = false
-                toastMsg = "${it.size}"
                 galleryImages = it
             }
 
@@ -346,7 +375,47 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
         if (toastMsg.isNotBlank()) {
             ShowToast(toastMsg)
             toastMsg = ""
+            viewModel.idle()
+        }
 
+        when (uiState) {
+            TitleBlank -> {
+                toastMsg = "Product title is required."
+
+            }
+
+            DescriptionBlank -> {
+                toastMsg = "Product Description is required."
+
+            }
+
+            EstPriceBlank -> {
+                toastMsg = "Price estimate is required."
+            }
+
+            EstPriceLow -> {
+                toastMsg = "Price estimate is too low."
+            }
+
+            ImagesNotSelected -> {
+                toastMsg = "Product Images are required."
+            }
+
+            is LessImagesSelected -> {
+                toastMsg =
+                    "${(uiState as LessImagesSelected).difference} more images can be added"
+            }
+
+            is MoreImagesSelected -> {
+                toastMsg =
+                    "Max Images above 9 by ${(uiState as MoreImagesSelected).difference} ignored."
+            }
+
+            CategoryNotSelected -> {
+                toastMsg = "Category is required."
+            }
+
+            else -> {}
         }
 
     }

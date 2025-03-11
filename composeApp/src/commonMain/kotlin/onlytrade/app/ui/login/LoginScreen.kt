@@ -16,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +31,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -71,8 +71,8 @@ class LoginScreen(private val sharedCMP: SharedCMP) : Screen {
 
     @Composable
     override fun Content() {
-        val loginViewModel = koinViewModel<LoginViewModel>()
-        val uiState by loginViewModel.uiState.collectAsState()
+        val viewModel = koinViewModel<LoginViewModel>()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val nav = LocalNavigator.currentOrThrow
         var email by remember { mutableStateOf("") }
         var phone by remember { mutableStateOf(TextFieldValue()) }
@@ -236,10 +236,10 @@ class LoginScreen(private val sharedCMP: SharedCMP) : Screen {
             Button(
                 onClick = {
                     if (email.isBlank())
-                        loginViewModel.doMobileLogin(
+                        viewModel.doMobileLogin(
                             mobileNo = phone.text,
                             pwd = password.text
-                        ) else loginViewModel.doEmailLogin(email = email, pwd = password.text)
+                        ) else viewModel.doEmailLogin(email = email, pwd = password.text)
 
 
                 },
@@ -262,22 +262,22 @@ class LoginScreen(private val sharedCMP: SharedCMP) : Screen {
 
                 BlankFormError -> {
                     ShowToast("BlankForm")
-                    loginViewModel.idle()
+                    viewModel.idle()
                 }
 
                 BlankMobileInputError -> {
                     ShowToast("BlankMobileInputError")
-                    loginViewModel.idle()
+                    viewModel.idle()
                 }
 
                 BlankPwdInputError -> {
                     ShowToast("BlankPwdInputError")
-                    loginViewModel.idle()
+                    viewModel.idle()
                 }
 
                 EmailFormatInputError -> {
                     ShowToast("EmailFormatInputError")
-                    loginViewModel.idle()
+                    viewModel.idle()
                 }
 
                 Idle -> {
@@ -286,17 +286,17 @@ class LoginScreen(private val sharedCMP: SharedCMP) : Screen {
 
                 Loading -> {
                     ShowToast("Loading")
-                    loginViewModel.idle()
+                    viewModel.idle()
                 }
 
                 MobileNoFormatInputError -> {
                     ShowToast("MobileNoFormatInputError")
-                    loginViewModel.idle()
+                    viewModel.idle()
                 }
 
                 SmallPwdInputError -> {
                     ShowToast("SmallPwdInputError")
-                    loginViewModel.idle()
+                    viewModel.idle()
                 }
             }
         }
