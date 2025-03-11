@@ -22,8 +22,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -62,6 +70,7 @@ import kotlin.random.Random
 
 class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
@@ -158,6 +167,10 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                 var productPrice by remember { mutableStateOf("") }
                 val inputWrongError = false // TODO: condition from ViewModel
 
+                val categories = listOf("Consumer Electronic", "Electronic Gadget", "Furniture", "Home Appliance", "Household Furniture", "Media and Entertainment")
+                var expanded by remember { mutableStateOf(false) }
+                var selectedCategory by remember { mutableStateOf("") }
+
                 OutlinedTextField(
                     isError = inputWrongError,
                     shape = MaterialTheme.shapes.extraSmall,
@@ -188,6 +201,46 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     ),
                     onValueChange = { productTitle = it },
                 )
+
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = {expanded = !expanded}
+                ){
+                    OutlinedTextField(
+                        value = selectedCategory,
+                        onValueChange = {},
+                        shape = MaterialTheme.shapes.extraSmall,
+                        textStyle = TextStyle(fontSize = 15.sp),
+                        readOnly = true,
+                        modifier = Modifier
+                            .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true)
+                            .fillMaxWidth(),
+                        label = {
+                            Text("Category", style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500)) },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        }
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        containerColor = addProductColorScheme.screenBG,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        categories.forEachIndexed{ index, category ->
+                            DropdownMenuItem(
+                                text = { Text(text = category) },
+                                onClick = {
+                                    selectedCategory = category
+                                    expanded = false
+                                }
+                            )
+                            if(index < categories.lastIndex) {
+                                HorizontalDivider()
+                            }
+                        }
+                    }
+                }
 
                 OutlinedTextField(
                     isError = inputWrongError,
