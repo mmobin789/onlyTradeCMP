@@ -88,7 +88,11 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
         val productGridState = rememberLazyGridState()
         var title by remember { mutableStateOf("") }
         var description by remember { mutableStateOf("") }
-        var selectedCategory by remember { mutableStateOf(Category(-1, "")) }
+        var selectedSubCategory by remember { mutableStateOf("") }
+        var selectedCategory by remember { mutableStateOf(Category(
+            -1, -1,
+            name = ""
+        )) }
         var estPrice by remember { mutableStateOf("") }
         val headerVisible = productGridState.canScrollBackward.not()
         var showImagePicker by remember { mutableStateOf(false) }
@@ -184,15 +188,10 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                val categories = listOf(
-                    "Consumer Electronic",
-                    "Electronic Gadget",
-                    "Furniture",
-                    "Home Appliance",
-                    "Household Furniture",
-                    "Media and Entertainment"
-                )
-                var expanded by remember { mutableStateOf(false) }
+                val categories = listOf("Consumer Electronic", "Electronic Gadget", "Furniture", "Home Appliance", "Household Furniture", "Media and Entertainment")
+                val subcategories = listOf("Phone", "Laptop", "Computer", "Home Appliance", "Speakers", "GPU", "CPU", "Headphone", "Tablet", "Monitor", "TV")
+                var expandedCat by remember { mutableStateOf(false) }
+                var expandedSubCat by remember { mutableStateOf(false) }
 
 
                 OutlinedTextField(
@@ -227,9 +226,9 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                 )
 
                 ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = !expanded }
-                ) {
+                    expanded = expandedCat,
+                    onExpandedChange = {expandedCat = !expandedCat}
+                ){
                     OutlinedTextField(
                         value = selectedCategory.name,
                         onValueChange = {},
@@ -246,24 +245,66 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                             )
                         },
                         trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCat)
                         }
                     )
 
                     ExposedDropdownMenu(
-                        expanded = expanded,
+                        expanded = expandedCat,
                         containerColor = addProductColorScheme.screenBG,
-                        onDismissRequest = { expanded = false }
+                        onDismissRequest = { expandedCat = false }
                     ) {
                         categories.forEachIndexed { index, category ->
                             DropdownMenuItem(
                                 text = { Text(text = category) },
                                 onClick = {
-                                    selectedCategory = Category(id = index, name = category)
-                                    expanded = false
+                                    selectedCategory = selectedCategory.copy(
+                                        id = index, name = category,
+                                    )
+                                    expandedCat = false
                                 }
                             )
                             if (index < categories.lastIndex) {
+                                HorizontalDivider()
+                            }
+                        }
+                    }
+                }
+
+                ExposedDropdownMenuBox(
+                    expanded = expandedSubCat,
+                    onExpandedChange = {expandedSubCat = !expandedSubCat}
+                ){
+                    OutlinedTextField(
+                        value = selectedSubCategory,
+                        onValueChange = {},
+                        shape = MaterialTheme.shapes.extraSmall,
+                        textStyle = TextStyle(fontSize = 15.sp),
+                        readOnly = true,
+                        modifier = Modifier
+                            .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true)
+                            .fillMaxWidth(),
+                        label = {
+                            Text("Sub Category", style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500)) },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedSubCat)
+                        }
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = expandedSubCat,
+                        containerColor = addProductColorScheme.screenBG,
+                        onDismissRequest = { expandedSubCat = false }
+                    ) {
+                        subcategories.forEachIndexed{ index, subcategory ->
+                            DropdownMenuItem(
+                                text = { Text(text = subcategory) },
+                                onClick = {
+                                    selectedSubCategory = subcategory
+                                    expandedSubCat = false
+                                }
+                            )
+                            if(index < subcategories.lastIndex) {
                                 HorizontalDivider()
                             }
                         }
