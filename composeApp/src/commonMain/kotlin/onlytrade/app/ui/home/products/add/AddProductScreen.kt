@@ -60,6 +60,7 @@ import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.design.components.isValidPrice
 import onlytrade.app.ui.home.products.add.colorScheme.addProductColorScheme
 import onlytrade.app.viewmodel.category.repository.data.db.Category
+import onlytrade.app.viewmodel.category.sub.repository.data.db.Subcategory
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.CategoryNotSelected
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.DescriptionBlank
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.EstPriceBlank
@@ -88,11 +89,23 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
         val productGridState = rememberLazyGridState()
         var title by remember { mutableStateOf("") }
         var description by remember { mutableStateOf("") }
-        var selectedSubCategory by remember { mutableStateOf("") }
-        var selectedCategory by remember { mutableStateOf(Category(
-            -1, -1,
-            name = ""
-        )) }
+        var selectedSubCategory by remember {
+            mutableStateOf(
+                Subcategory(
+                    categoryId = -1,
+                    id = -1,
+                    name = ""
+                )
+            )
+        }
+        var selectedCategory by remember {
+            mutableStateOf(
+                Category(
+                    -1, -1,
+                    name = ""
+                )
+            )
+        }
         var estPrice by remember { mutableStateOf("") }
         val headerVisible = productGridState.canScrollBackward.not()
         var showImagePicker by remember { mutableStateOf(false) }
@@ -158,6 +171,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                             viewModel.addProduct(
                                 title = title,
                                 categoryId = selectedCategory.id,
+                                subcategoryId = selectedSubCategory.id,
                                 description = description,
                                 estPrice = estPrice,
                                 images = galleryImages
@@ -188,8 +202,27 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                val categories = listOf("Consumer Electronic", "Electronic Gadget", "Furniture", "Home Appliance", "Household Furniture", "Media and Entertainment")
-                val subcategories = listOf("Phone", "Laptop", "Computer", "Home Appliance", "Speakers", "GPU", "CPU", "Headphone", "Tablet", "Monitor", "TV")
+                val categories = listOf(
+                    "Consumer Electronic",
+                    "Electronic Gadget",
+                    "Furniture",
+                    "Home Appliance",
+                    "Household Furniture",
+                    "Media and Entertainment"
+                )
+                val subcategories = listOf(
+                    "Phone",
+                    "Laptop",
+                    "Computer",
+                    "Home Appliance",
+                    "Speakers",
+                    "GPU",
+                    "CPU",
+                    "Headphone",
+                    "Tablet",
+                    "Monitor",
+                    "TV"
+                )
                 var expandedCat by remember { mutableStateOf(false) }
                 var expandedSubCat by remember { mutableStateOf(false) }
 
@@ -227,8 +260,8 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
 
                 ExposedDropdownMenuBox(
                     expanded = expandedCat,
-                    onExpandedChange = {expandedCat = !expandedCat}
-                ){
+                    onExpandedChange = { expandedCat = !expandedCat }
+                ) {
                     OutlinedTextField(
                         value = selectedCategory.name,
                         onValueChange = {},
@@ -261,6 +294,9 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                                     selectedCategory = selectedCategory.copy(
                                         id = index, name = category,
                                     )
+
+                                    selectedSubCategory =
+                                        selectedSubCategory.copy(categoryId = selectedCategory.id)
                                     expandedCat = false
                                 }
                             )
@@ -273,10 +309,10 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
 
                 ExposedDropdownMenuBox(
                     expanded = expandedSubCat,
-                    onExpandedChange = {expandedSubCat = !expandedSubCat}
-                ){
+                    onExpandedChange = { expandedSubCat = !expandedSubCat }
+                ) {
                     OutlinedTextField(
-                        value = selectedSubCategory,
+                        value = selectedSubCategory.name,
                         onValueChange = {},
                         shape = MaterialTheme.shapes.extraSmall,
                         textStyle = TextStyle(fontSize = 15.sp),
@@ -285,7 +321,11 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                             .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true)
                             .fillMaxWidth(),
                         label = {
-                            Text("Sub Category", style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500)) },
+                            Text(
+                                "Sub Category",
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500)
+                            )
+                        },
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedSubCat)
                         }
@@ -296,15 +336,16 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                         containerColor = addProductColorScheme.screenBG,
                         onDismissRequest = { expandedSubCat = false }
                     ) {
-                        subcategories.forEachIndexed{ index, subcategory ->
+                        subcategories.forEachIndexed { index, subcategory ->
                             DropdownMenuItem(
                                 text = { Text(text = subcategory) },
                                 onClick = {
-                                    selectedSubCategory = subcategory
+                                    selectedSubCategory =
+                                        selectedSubCategory.copy(name = subcategory, id = index)
                                     expandedSubCat = false
                                 }
                             )
-                            if(index < subcategories.lastIndex) {
+                            if (index < subcategories.lastIndex) {
                                 HorizontalDivider()
                             }
                         }

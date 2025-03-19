@@ -26,7 +26,6 @@ import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.theme.AppTheme
 import onlytrade.app.ui.splash.SplashScreen
 import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
 import org.koin.compose.KoinContext
 import java.io.ByteArrayOutputStream
 
@@ -35,7 +34,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         OTBusinessModule.run {
             androidContext(this@MainActivity)
-            androidLogger()
         }
         setContent {
             val localConfig = LocalConfiguration.current
