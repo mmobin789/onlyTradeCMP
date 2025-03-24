@@ -68,6 +68,7 @@ import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.EstPriceLow
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.ImagesNotSelected
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.LessImagesSelected
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.MoreImagesSelected
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.SubcategoryNotSelected
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.TitleBlank
 import onlytrade.app.viewmodel.product.add.ui.AddProductViewModel
 import onlytrade.composeapp.generated.resources.Res
@@ -495,6 +496,9 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
 
             CategoryNotSelected -> {
                 toastMsg = "Category is required."
+            }
+            SubcategoryNotSelected -> {
+                toastMsg = "Subcategory is required."
             }
 
             else -> {}
