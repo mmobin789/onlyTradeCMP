@@ -34,6 +34,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,6 +69,7 @@ import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.EstPriceLow
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.ImagesNotSelected
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.LessImagesSelected
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.MoreImagesSelected
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.ProductInReview
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.SubcategoryNotSelected
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.TitleBlank
 import onlytrade.app.viewmodel.product.add.ui.AddProductViewModel
@@ -462,6 +464,13 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
         }
 
         when (uiState) {
+            is ProductInReview -> {
+                toastMsg = "Product Added for review."
+                LaunchedEffect(Unit) {
+                    nav.pop()
+                }
+            }
+
             TitleBlank -> {
                 toastMsg = "Product title is required."
 
@@ -497,6 +506,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
             CategoryNotSelected -> {
                 toastMsg = "Category is required."
             }
+
             SubcategoryNotSelected -> {
                 toastMsg = "Subcategory is required."
             }
