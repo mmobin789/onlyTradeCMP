@@ -459,6 +459,9 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
 
         if (toastMsg.isNotBlank()) {
             ShowToast(toastMsg)
+            if (uiState is ProductInReview) LaunchedEffect(Unit) {
+                nav.pop()
+            }
             toastMsg = ""
             viewModel.idle()
         }
@@ -466,9 +469,6 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
         when (uiState) {
             is ProductInReview -> {
                 toastMsg = "Product Added for review."
-                LaunchedEffect(Unit) {
-                    nav.pop()
-                }
             }
 
             TitleBlank -> {
