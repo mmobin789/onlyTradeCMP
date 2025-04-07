@@ -17,25 +17,25 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.launch
 import onlytrade.app.ui.design.components.DotsIndicator
-import onlytrade.app.ui.design.components.ScreenSize
+import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.login.LoginScreen
 import onlytrade.app.ui.onboarding.obPage1.OBPage1
 import onlytrade.app.ui.onboarding.obPage2.OBPage2
 import onlytrade.app.ui.onboarding.obPage3.OBPage3
 
-class OBScrollPage(private val screenSize: ScreenSize) : Screen {
+class OBScrollPage(private val sharedCMP: SharedCMP) : Screen {
 
     @Composable
     override fun Content() {
-        OnBoardingScreenContent(screenSize = screenSize)
+        OnBoardingScreenContent(sharedCMP = sharedCMP)
     }
 }
 
 @Composable
 private fun OnBoardingScreenContent(
     nav: Navigator = LocalNavigator.currentOrThrow,
-    screenSize: ScreenSize
+    sharedCMP: SharedCMP
 ) {
     val pagerState = rememberPagerState { 3 }
     val coroutineScope = rememberCoroutineScope()
@@ -61,8 +61,8 @@ private fun OnBoardingScreenContent(
                     }
                 }
 
-                2 -> OBPage3(onLoginClick = { nav.replaceAll(LoginScreen(screenSize)) },
-                    onGetStartedClick = { nav.replaceAll(HomeScreen(screenSize)) })
+                2 -> OBPage3(onLoginClick = { nav.replaceAll(LoginScreen(sharedCMP)) },
+                    onGetStartedClick = { nav.replaceAll(HomeScreen(sharedCMP)) })
 
 
             }

@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import onlytrade.app.ui.design.components.ScreenSize
+import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.wishlist.colorScheme.wishlistColorScheme
 import onlytrade.composeapp.generated.resources.Res
@@ -49,7 +49,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import kotlin.random.Random
 
-class WishListScreen(private val screenSize: ScreenSize) : Screen {
+class WishListScreen(private val sharedCMP: SharedCMP) : Screen {
 
     @Composable
     override fun Content() {
@@ -196,11 +196,11 @@ class WishListScreen(private val screenSize: ScreenSize) : Screen {
 
     @Composable
     private fun ProductUI(index: Int) {
-        val size = (screenSize.width / 3).dp
+        val size = (sharedCMP.screenWidth / 3).dp
         val nav = LocalNavigator.currentOrThrow
 
         Row(modifier = Modifier.clickable {
-            nav.push(ProductDetailScreen(index, screenSize))
+            nav.push(ProductDetailScreen(index, sharedCMP))
         }) {
             Spacer(
                 Modifier

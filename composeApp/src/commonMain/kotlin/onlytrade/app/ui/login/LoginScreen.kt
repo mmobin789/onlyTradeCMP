@@ -16,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,11 +31,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
-import onlytrade.app.ui.design.components.ScreenSize
+import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.login.colorScheme.loginColorScheme
@@ -67,24 +67,26 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 
-class LoginScreen(private val screenSize: ScreenSize) : Screen {
+class LoginScreen(private val sharedCMP: SharedCMP) : Screen {
 
     @Composable
     override fun Content() {
-        val loginViewModel = koinViewModel<LoginViewModel>()
-        val uiState by loginViewModel.uiState.collectAsState()
+        val viewModel = koinViewModel<LoginViewModel>()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val nav = LocalNavigator.currentOrThrow
         var email by remember { mutableStateOf("") }
-        var phone by remember { mutableStateOf(TextFieldValue()) }
+        var phone by remember { mutableStateOf(value = "") }
         var password by remember { mutableStateOf(TextFieldValue()) }
         var passwordVisible by remember { mutableStateOf(true) }
+        val orLabelVisible = email.isBlank() && phone.isBlank()
 
-        val orLabelVisible = email.isBlank() && phone.text.isBlank()
+        var errorPhone by remember { mutableStateOf<String?>(null) }
+        var errorPassword by remember { mutableStateOf<String?>(null) }
 
-        val inputMobileError =
-            uiState is BlankMobileInputError || uiState is MobileNoFormatInputError
         val inputEmailError = uiState is BlankEmailInputError || uiState is EmailFormatInputError
-        val inputPwdError = uiState is BlankPwdInputError || uiState is SmallPwdInputError
+
+
+
 
 
         Column(
@@ -115,8 +117,9 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
                 style = MaterialTheme.typography.labelLarge
             )
 
-            if (phone.text.isBlank()) {
+            if (phone.isBlank()) {
                 OutlinedTextField(
+                    onValueChange = { email = it },
                     isError = inputEmailError,
                     shape = MaterialTheme.shapes.extraSmall,
                     modifier = Modifier
@@ -131,6 +134,7 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
                                 modifier = Modifier.clickable { email = "" }
                             )
                         }
+
                     },
                     label = {
                         Text(
@@ -144,7 +148,6 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next
                     ),
-                    onValueChange = { email = it },
                 )
             }
 
@@ -159,18 +162,25 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
 
             if (email.isBlank()) {
                 OutlinedTextField(
-                    isError = inputMobileError,
+                    value = phone,
+                    isError = errorPhone != null,
+                    onValueChange = {
+                        phone = it
+                        errorPhone = validatePhoneNumber(phone)
+                    },
+                    supportingText = {
+                        errorPhone?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                    },
                     shape = MaterialTheme.shapes.extraSmall,
                     modifier = Modifier
                         .fillMaxWidth(),
-                    value = phone,
                     trailingIcon = {
-                        if (phone.text.isNotBlank()) {
+                        if (phone.isNotBlank()) {
                             Icon(
                                 painter = painterResource(Res.drawable.outline_clear_24),
                                 tint = MaterialTheme.colorScheme.secondary,
                                 contentDescription = null,
-                                modifier = Modifier.clickable { phone = TextFieldValue("") }
+                                modifier = Modifier.clickable { phone = "" }
                             )
                         }
                     },
@@ -186,16 +196,22 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
                         keyboardType = KeyboardType.Phone,
                         imeAction = ImeAction.Next
                     ),
-                    onValueChange = { phone = it },
                 )
             }
 
             OutlinedTextField(
-                isError = inputPwdError,
+                isError = errorPassword != null,
                 shape = MaterialTheme.shapes.extraSmall,
                 modifier = Modifier
                     .fillMaxWidth(),
                 value = password,
+                onValueChange = {
+                    password = it
+                    errorPassword = validatePassword(password.text)
+                },
+                supportingText = {
+                    errorPassword?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                },
                 trailingIcon = {
                     if (password.text.isNotEmpty()) {
                         val eyeIcon = if (passwordVisible) {
@@ -221,7 +237,6 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
-                onValueChange = { password = it },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
             )
 
@@ -236,10 +251,10 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
             Button(
                 onClick = {
                     if (email.isBlank())
-                        loginViewModel.doMobileLogin(
-                            mobileNo = phone.text,
+                        viewModel.doMobileLogin(
+                            mobileNo = phone,
                             pwd = password.text
-                        ) else loginViewModel.doEmailLogin(email = email, pwd = password.text)
+                        ) else viewModel.doEmailLogin(email = email, pwd = password.text)
 
 
                 },
@@ -247,11 +262,11 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
                 colors = ButtonDefaults.buttonColors(loginColorScheme.loginBtn),
 
             ){
-                Text(text = "Login", color = MaterialTheme.colorScheme.onBackground,)
+                Text(text = "Login", color = MaterialTheme.colorScheme.onBackground)
             }
 
             when (uiState) {
-                is LoggedIn -> nav.replaceAll(HomeScreen(screenSize))
+                is LoggedIn -> nav.replaceAll(HomeScreen(sharedCMP))
                 is ApiError -> {
                     ShowToast("ApiError")
                 }
@@ -262,22 +277,22 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
 
                 BlankFormError -> {
                     ShowToast("BlankForm")
-                    loginViewModel.idle()
+                    viewModel.idle()
                 }
 
                 BlankMobileInputError -> {
                     ShowToast("BlankMobileInputError")
-                    loginViewModel.idle()
+                    viewModel.idle()
                 }
 
                 BlankPwdInputError -> {
                     ShowToast("BlankPwdInputError")
-                    loginViewModel.idle()
+                    viewModel.idle()
                 }
 
                 EmailFormatInputError -> {
                     ShowToast("EmailFormatInputError")
-                    loginViewModel.idle()
+                    viewModel.idle()
                 }
 
                 Idle -> {
@@ -286,20 +301,35 @@ class LoginScreen(private val screenSize: ScreenSize) : Screen {
 
                 Loading -> {
                     ShowToast("Loading")
-                    loginViewModel.idle()
+                    viewModel.idle()
                 }
 
                 MobileNoFormatInputError -> {
                     ShowToast("MobileNoFormatInputError")
-                    loginViewModel.idle()
+                    viewModel.idle()
                 }
 
                 SmallPwdInputError -> {
                     ShowToast("SmallPwdInputError")
-                    loginViewModel.idle()
+                    viewModel.idle()
                 }
             }
         }
+    }
+
+    private fun validatePhoneNumber(input: String): String? = when {
+        input.isEmpty() -> "Phone number cannot be empty."
+        !input.startsWith("92") && !input.startsWith("+92") && !input.startsWith("03") -> "Phone number must start with either '92', '+92' or '03'"
+        input.startsWith("92") && input.length != 12 -> "Phone number must be 12 digits!"
+        input.startsWith("+92") && input.length != 13 -> "Phone number must be 12 digits!"
+        input.startsWith("03") && input.length != 11 -> "Phone number must be 11 digits!"
+        else -> null
+    }
+    private fun validatePassword(input: String): String? = when {
+        input.isEmpty() -> "Password cannot be empty."
+        input.length < 7 -> "Password must be at least 7 characters long."
+        else -> null
+
     }
 
 }

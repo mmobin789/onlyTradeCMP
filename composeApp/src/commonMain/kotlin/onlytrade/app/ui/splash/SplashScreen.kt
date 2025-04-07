@@ -19,7 +19,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.delay
-import onlytrade.app.ui.design.components.ScreenSize
+import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.onboarding.OBScrollPage
 import onlytrade.app.ui.splash.colorScheme.splashColorScheme
 import onlytrade.composeapp.generated.resources.Res
@@ -32,7 +32,7 @@ import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
-class SplashScreen(private val screenSize: ScreenSize) : Screen {
+class SplashScreen(private val sharedCMP: SharedCMP) : Screen {
     @Composable
     @Preview
     override fun Content() {
@@ -61,7 +61,7 @@ class SplashScreen(private val screenSize: ScreenSize) : Screen {
 
         LaunchedEffect(true) {
             delay(500)
-            nav.replace(OBScrollPage(screenSize))
+            nav.replace(OBScrollPage(sharedCMP))
 
         }
 

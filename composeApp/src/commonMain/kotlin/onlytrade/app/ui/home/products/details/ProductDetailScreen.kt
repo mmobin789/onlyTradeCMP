@@ -41,7 +41,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.DotsIndicator
-import onlytrade.app.ui.design.components.ScreenSize
+import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
@@ -49,7 +49,7 @@ import onlytrade.composeapp.generated.resources.ok
 import org.jetbrains.compose.resources.stringResource
 import kotlin.random.Random
 
-class ProductDetailScreen(private val id: Int, private val screenSize: ScreenSize) : Screen {
+class ProductDetailScreen(private val id: Int, private val sharedCMP: SharedCMP) : Screen {
 
     @Composable
     override fun Content() {
@@ -80,7 +80,7 @@ class ProductDetailScreen(private val id: Int, private val screenSize: ScreenSiz
                             )
                         )
                         .fillMaxWidth()
-                        .height((screenSize.height / 3).dp)
+                        .height((sharedCMP.screenHeight / 3).dp)
                 )
 
 
