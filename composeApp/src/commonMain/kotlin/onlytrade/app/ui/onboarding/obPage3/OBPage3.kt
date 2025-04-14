@@ -33,6 +33,10 @@ import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_logo
 import onlytrade.composeapp.generated.resources.ic_quickmart
 import onlytrade.composeapp.generated.resources.ic_quickmart_dark
+import onlytrade.composeapp.generated.resources.ob3_1
+import onlytrade.composeapp.generated.resources.ob3_2
+import onlytrade.composeapp.generated.resources.ob3_4
+import onlytrade.composeapp.generated.resources.ob3_5
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -54,7 +58,7 @@ fun OBPage3(onLoginClick: () -> Unit, onGetStartedClick: () -> Unit) {
                 border = BorderStroke(1.dp, ob3ColorScheme.loginBtnBorder),
             ) {
                 Text(
-                    "Login",
+                    stringResource(Res.string.ob3_4),
                     modifier = Modifier.padding(vertical = 8.dp),
                     color = ob3ColorScheme.loginBtnText
                 )
@@ -69,7 +73,7 @@ fun OBPage3(onLoginClick: () -> Unit, onGetStartedClick: () -> Unit) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "Get Started",
+                        stringResource(Res.string.ob3_5),
                         modifier = Modifier.padding(8.dp)
                     )
                     Icon(
@@ -102,7 +106,7 @@ fun OBPage3(onLoginClick: () -> Unit, onGetStartedClick: () -> Unit) {
 
             Text(
                 style = MaterialTheme.typography.bodyMedium,
-                text = "Skip for now",
+                text = stringResource(Res.string.ob3_1),
 
                 )
         }
@@ -124,7 +128,7 @@ fun OBPage3(onLoginClick: () -> Unit, onGetStartedClick: () -> Unit) {
             ) {
                 Text(
                     style = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center),
-                    text = "Safe and Secure\nDeals",
+                    text = stringResource(Res.string.ob3_2),
                 )
                 Text(
                     text = " OnlyTrade provides full scale arbitration\nand customer support for your\ntrusted trades and offers.",
