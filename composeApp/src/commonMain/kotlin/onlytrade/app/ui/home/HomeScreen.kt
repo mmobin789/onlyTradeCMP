@@ -59,6 +59,7 @@ import onlytrade.app.ui.home.products.ProductsScreen
 import onlytrade.app.ui.home.products.add.AddProductScreen
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.wishlist.WishListScreen
+import onlytrade.app.viewmodel.home.HomeViewModel
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_logo
 import onlytrade.composeapp.generated.resources.app_name
@@ -68,12 +69,14 @@ import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import onlytrade.composeapp.generated.resources.search
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
 class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
 
     @Composable
     override fun Content() {
+        val viewModel = koinViewModel<HomeViewModel>()
         val nav = LocalNavigator.currentOrThrow
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
