@@ -39,6 +39,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
+import onlytrade.app.ui.home.profile.ProfileScreen
 import onlytrade.app.ui.home.wishlist.colorScheme.wishlistColorScheme
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
@@ -77,7 +78,7 @@ class WishListScreen(private val sharedCMP: SharedCMP) : Screen {
 
                         Text(
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            text = "Wishlist",
+                            text = "My Products",
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
                         )
 
@@ -157,7 +158,11 @@ class WishListScreen(private val sharedCMP: SharedCMP) : Screen {
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                     )
                 }
-                Column(Modifier.weight(1f)) {
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .clickable { nav.push(ProfileScreen(sharedCMP)) }
+                ) {
 
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),

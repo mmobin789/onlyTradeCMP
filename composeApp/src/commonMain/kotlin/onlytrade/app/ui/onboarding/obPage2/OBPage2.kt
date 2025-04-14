@@ -29,6 +29,10 @@ import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_logo
 import onlytrade.composeapp.generated.resources.ic_quickmart
 import onlytrade.composeapp.generated.resources.ic_quickmart_dark
+import onlytrade.composeapp.generated.resources.ob2_1
+import onlytrade.composeapp.generated.resources.ob2_2
+import onlytrade.composeapp.generated.resources.ob2_3
+import onlytrade.composeapp.generated.resources.ob2_4
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -55,7 +59,7 @@ fun OBPage2(onNextClick: () -> Unit) {
 
             Text(
                 style = MaterialTheme.typography.bodyMedium,
-                text = "Skip for now",
+                text = stringResource(Res.string.ob2_1),
 
                 )
         }
@@ -77,10 +81,10 @@ fun OBPage2(onNextClick: () -> Unit) {
             ) {
                 Text(
                     style = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center),
-                    text = "Unlock exclusive offers and discounts",
+                    text = stringResource(Res.string.ob2_2),
                 )
                 Text(
-                    text = "Get access to limited-time deals and special\n promotions available only to our valued\n customers.",
+                    text = stringResource(Res.string.ob2_3),
                     style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center),
                 )
                 Button(
@@ -90,7 +94,7 @@ fun OBPage2(onNextClick: () -> Unit) {
                     colors = ButtonDefaults.buttonColors(ob2ColorScheme.nextBtn),
 
                     ) {
-                    Text(text = "Next", color = Color.White, modifier = Modifier)
+                    Text(text = stringResource(Res.string.ob2_4), color = Color.White, modifier = Modifier)
                 }
             }
         }

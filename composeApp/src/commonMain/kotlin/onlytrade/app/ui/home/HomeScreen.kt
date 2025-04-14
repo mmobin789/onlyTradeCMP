@@ -58,10 +58,19 @@ import onlytrade.app.ui.home.colorScheme.homeColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
 import onlytrade.app.ui.home.products.add.AddProductScreen
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
+import onlytrade.app.ui.home.profile.ProfileScreen
 import onlytrade.app.ui.home.wishlist.WishListScreen
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_logo
 import onlytrade.composeapp.generated.resources.app_name
+import onlytrade.composeapp.generated.resources.botBar_1
+import onlytrade.composeapp.generated.resources.botBar_2
+import onlytrade.composeapp.generated.resources.botBar_3
+import onlytrade.composeapp.generated.resources.botBar_4
+import onlytrade.composeapp.generated.resources.home_1
+import onlytrade.composeapp.generated.resources.home_2
+import onlytrade.composeapp.generated.resources.home_3
+import onlytrade.composeapp.generated.resources.home_4
 import onlytrade.composeapp.generated.resources.ic_quickmart_intro
 import onlytrade.composeapp.generated.resources.ic_quickmart_intro_dark
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
@@ -117,8 +126,8 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
 
 
                 /*   SearchBar(
-                       inputField = {
-                           OTTextField(
+                       inputField  = {
+                            OTTextField(
                                label = "",
                                value = TextFieldValue(""),
                                onValueChange = { },
@@ -153,7 +162,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
 
                         HorizontalPager(
                             state = pagerState
-                        ) { page ->
+                        ) {
 
                             Spacer(
                                 modifier = Modifier
@@ -199,7 +208,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
 
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Home",
+                        text = stringResource(Res.string.botBar_1),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                     )
                 }/*   Column(Modifier.weight(1f)) {
@@ -224,7 +233,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
 
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "My Trades",
+                        text = stringResource(Res.string.botBar_2),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                     )
                 }
@@ -243,11 +252,15 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
 
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Wishlist",
+                        text = stringResource(Res.string.botBar_3),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                     )
                 }
-                Column(Modifier.weight(1f)) {
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .clickable { nav.push(ProfileScreen(sharedCMP)) }
+                ){
 
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -256,7 +269,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     )
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Profile",
+                        text = stringResource(Res.string.botBar_4),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                     )
                 }
@@ -274,13 +287,13 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.secondary
                 ) {
-                    Icon(Icons.Filled.Add, "Add Product")
+                    Icon(Icons.Filled.Add, stringResource(Res.string.home_4))
                 }
             else
                 ExtendedFloatingActionButton(
                     onClick = addProductClicked,
-                    icon = { Icon(Icons.Outlined.Add, "Add Product") },
-                    text = { Text(text = "Add Product") },
+                    icon = { Icon(Icons.Outlined.Add, stringResource(Res.string.home_4)) },
+                    text = { Text(text = stringResource(Res.string.home_4)) },
                 )
 
         }) { paddingValues ->
@@ -296,7 +309,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Box {
                             Text(
-                                text = "Categories",
+                                text = stringResource(Res.string.home_1),
                                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
                             )
 
@@ -355,7 +368,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                 ) {
                     Text(
                         modifier = Modifier.align(Alignment.TopStart),
-                        text = "Latest Products",
+                        text = stringResource(Res.string.home_2),
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
                     )
 
@@ -366,7 +379,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                             .clickable {
                                 nav.push(ProductsScreen(sharedCMP = sharedCMP))
                             },
-                        text = "SEE All",
+                        text = stringResource(Res.string.home_3),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = W700)
                     )
                 }

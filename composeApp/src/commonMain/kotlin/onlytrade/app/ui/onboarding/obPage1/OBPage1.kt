@@ -30,6 +30,10 @@ import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_logo
 import onlytrade.composeapp.generated.resources.ic_quickmart
 import onlytrade.composeapp.generated.resources.ic_quickmart_dark
+import onlytrade.composeapp.generated.resources.ob1_1
+import onlytrade.composeapp.generated.resources.ob1_2
+import onlytrade.composeapp.generated.resources.ob1_3
+import onlytrade.composeapp.generated.resources.ob1_4
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -57,7 +61,7 @@ fun OBPage1(onNextClick: () -> Unit) {
 
                 Text(
                     style = MaterialTheme.typography.bodyMedium,
-                    text = "Skip for now",
+                    text = stringResource(Res.string.ob1_1),
                     modifier = Modifier.clickable {
                         onNextClick()
                     })
@@ -82,10 +86,10 @@ fun OBPage1(onNextClick: () -> Unit) {
             ) {
                 Text(
                     style = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center),
-                    text = "Explore a wide range of products",
+                    text = stringResource(Res.string.ob1_2),
                 )
                 Text(
-                    text = "Explore a wide range of products at your\nfingertips.QuickMart offers an extensive\ncollection to suit your needs.",
+                    text = stringResource(Res.string.ob1_3),
                     style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center),
                 )
                 Button(
@@ -95,7 +99,7 @@ fun OBPage1(onNextClick: () -> Unit) {
                     colors = ButtonDefaults.buttonColors(ob1ColorScheme.nextBtn),
 
                 ) {
-                    Text(text = "Next", color = Color.White, modifier = Modifier)
+                    Text(text = stringResource(Res.string.ob1_4), color = Color.White, modifier = Modifier)
                 }
             }
         }

@@ -74,6 +74,14 @@ import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.SubcategoryNotSe
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.TitleBlank
 import onlytrade.app.viewmodel.product.add.ui.AddProductViewModel
 import onlytrade.composeapp.generated.resources.Res
+import onlytrade.composeapp.generated.resources.addProduct_1
+import onlytrade.composeapp.generated.resources.addProduct_2
+import onlytrade.composeapp.generated.resources.addProduct_3
+import onlytrade.composeapp.generated.resources.addProduct_4
+import onlytrade.composeapp.generated.resources.addProduct_5
+import onlytrade.composeapp.generated.resources.addProduct_6
+import onlytrade.composeapp.generated.resources.addProduct_7
+import onlytrade.composeapp.generated.resources.addProduct_8
 import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.outline_clear_24
 import org.jetbrains.compose.resources.painterResource
@@ -136,7 +144,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
 
                             Text(
                                 modifier = Modifier.padding(horizontal = 16.dp),
-                                text = "Add a New Trade Product",
+                                text = stringResource(Res.string.addProduct_1),
                                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
                             )
                         }
@@ -165,7 +173,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                             .fillMaxWidth()
                     ) {
                         Text(
-                            text = "Add Product Image",
+                            text = stringResource(Res.string.addProduct_2),
                         )
                     }
 
@@ -188,7 +196,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                             .fillMaxWidth()
                     ) {
                         Text(
-                            text = "Add Product",
+                            text = stringResource(Res.string.addProduct_3),
                         )
                     }
 
@@ -249,7 +257,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     label = {
                         Text(
                             modifier = Modifier,
-                            text = "Product Name",
+                            text = stringResource(Res.string.addProduct_4),
                             style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500),
                         )
                     },
@@ -276,7 +284,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                             .fillMaxWidth(),
                         label = {
                             Text(
-                                "Category",
+                                stringResource(Res.string.addProduct_5),
                                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500)
                             )
                         },
@@ -325,7 +333,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                             .fillMaxWidth(),
                         label = {
                             Text(
-                                "Sub Category",
+                                stringResource(Res.string.addProduct_6),
                                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500)
                             )
                         },
@@ -373,7 +381,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     label = {
                         Text(
                             modifier = Modifier,
-                            text = "Describe your product!",
+                            text = stringResource(Res.string.addProduct_7),
                             style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500),
                         )
                     },
@@ -404,7 +412,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     label = {
                         Text(
                             modifier = Modifier,
-                            text = "Enter valid amount",
+                            text = stringResource(Res.string.addProduct_8),
                             style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500),
                         )
                     },
