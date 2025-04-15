@@ -62,12 +62,15 @@ import onlytrade.app.ui.design.components.isValidPrice
 import onlytrade.app.ui.home.products.add.colorScheme.addProductColorScheme
 import onlytrade.app.viewmodel.category.repository.data.db.Category
 import onlytrade.app.viewmodel.category.sub.repository.data.db.Subcategory
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.AddProductFailed
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.CategoryNotSelected
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.DescriptionBlank
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.EstPriceBlank
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.EstPriceLow
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.Idle
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.ImagesNotSelected
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.LessImagesSelected
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.Loading
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.MoreImagesSelected
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.ProductInReview
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.SubcategoryNotSelected
@@ -459,7 +462,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
 
         if (toastMsg.isNotBlank()) {
             ShowToast(toastMsg)
-            if (uiState is ProductInReview) LaunchedEffect(Unit) {
+            if (uiState == ProductInReview) LaunchedEffect(Unit) {
                 nav.pop()
             }
             toastMsg = ""
@@ -467,8 +470,19 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
         }
 
         when (uiState) {
-            is ProductInReview -> {
+            Loading -> {
+                toastMsg = "Adding Product"
+            }
+
+            ProductInReview -> {
                 toastMsg = "Product Added for review."
+            }
+
+            is AddProductFailed -> {
+                toastMsg = (uiState as AddProductFailed).error
+            }
+
+            Idle -> { //do nothing.
             }
 
             TitleBlank -> {
@@ -493,14 +507,13 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                 toastMsg = "Product Images are required."
             }
 
-            is LessImagesSelected -> {
+            LessImagesSelected -> {
                 toastMsg =
-                    "${(uiState as LessImagesSelected).difference} more images can be added"
+                    "Please add at least 3 images."
             }
 
-            is MoreImagesSelected -> {
-                toastMsg =
-                    "Max Images above 9 by ${(uiState as MoreImagesSelected).difference} ignored."
+            MoreImagesSelected -> {
+                toastMsg = "Maximum images allowed are 9."
             }
 
             CategoryNotSelected -> {
@@ -511,7 +524,6 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                 toastMsg = "Subcategory is required."
             }
 
-            else -> {}
         }
 
     }

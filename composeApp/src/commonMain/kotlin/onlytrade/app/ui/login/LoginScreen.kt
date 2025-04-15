@@ -251,7 +251,7 @@ class LoginScreen(private val sharedCMP: SharedCMP) : Screen {
             Button(
                 onClick = {
                     if (email.isBlank())
-                        viewModel.doMobileLogin(
+                        viewModel.doPhoneLogin(
                             mobileNo = phone,
                             pwd = password.text
                         ) else viewModel.doEmailLogin(email = email, pwd = password.text)
@@ -266,9 +266,9 @@ class LoginScreen(private val sharedCMP: SharedCMP) : Screen {
             }
 
             when (uiState) {
-                is LoggedIn -> nav.replaceAll(HomeScreen(sharedCMP))
+                LoggedIn -> nav.replaceAll(HomeScreen(sharedCMP))
                 is ApiError -> {
-                    ShowToast("ApiError")
+                    ShowToast((uiState as ApiError).error)
                 }
 
                 BlankEmailInputError -> {
