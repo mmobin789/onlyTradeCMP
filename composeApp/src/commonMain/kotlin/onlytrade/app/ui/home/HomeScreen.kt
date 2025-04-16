@@ -450,7 +450,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     //todo working here.
                     AsyncImage(
                         modifier = Modifier.matchParentSize().clip(MaterialTheme.shapes.extraLarge),
-                        model = "https://ik.imagekit.io/ywetwhs4e9/products/4/786/3/1/productImage1_DEVhWcdnA.jpg",
+                        model = imageUrls[0],
                         contentDescription = name,
                         contentScale = ContentScale.Crop
                     )

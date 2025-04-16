@@ -14,7 +14,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.Navigator
-import coil3.ImageLoader
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.toBitmap
@@ -23,6 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import onlytrade.app.di.OTBusinessModule
 import onlytrade.app.ui.design.components.SharedCMP
+import onlytrade.app.ui.design.components.getAsyncImageLoader
 import onlytrade.app.ui.design.theme.AppTheme
 import onlytrade.app.ui.splash.SplashScreen
 import org.koin.android.ext.koin.androidContext
@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
 
 
     private suspend fun loadImageAsByteArray(uri: Uri): ByteArray? {
-        val imageLoader = ImageLoader(this)
+        val imageLoader = getAsyncImageLoader(this)
         val request = ImageRequest.Builder(this)
             .size(1600)
             .data(uri)
