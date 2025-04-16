@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -36,6 +37,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,10 +49,12 @@ import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
+import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
@@ -59,7 +63,12 @@ import onlytrade.app.ui.home.products.ProductsScreen
 import onlytrade.app.ui.home.products.add.AddProductScreen
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.wishlist.WishListScreen
-import onlytrade.app.viewmodel.home.HomeViewModel
+import onlytrade.app.viewmodel.home.ui.HomeUiState.GetProductsApiError
+import onlytrade.app.viewmodel.home.ui.HomeUiState.Idle
+import onlytrade.app.viewmodel.home.ui.HomeUiState.LoadingProducts
+import onlytrade.app.viewmodel.home.ui.HomeUiState.ProductList
+import onlytrade.app.viewmodel.home.ui.HomeViewModel
+import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_logo
 import onlytrade.composeapp.generated.resources.app_name
@@ -77,6 +86,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
     @Composable
     override fun Content() {
         val viewModel = koinViewModel<HomeViewModel>()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val nav = LocalNavigator.currentOrThrow
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
@@ -266,25 +276,27 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
             }
 
         }, floatingActionButton = {
+            if (viewModel.isUserLoggedIn) {
 
-            val addProductClicked = {
-                nav.push(AddProductScreen(sharedCMP))
-            }
-
-            if (productGridState.isScrollInProgress)
-                FloatingActionButton(
-                    onClick = addProductClicked,
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.secondary
-                ) {
-                    Icon(Icons.Filled.Add, "Add Product")
+                val addProductClicked = {
+                    nav.push(AddProductScreen(sharedCMP))
                 }
-            else
-                ExtendedFloatingActionButton(
-                    onClick = addProductClicked,
-                    icon = { Icon(Icons.Outlined.Add, "Add Product") },
-                    text = { Text(text = "Add Product") },
-                )
+
+                if (productGridState.isScrollInProgress)
+                    FloatingActionButton(
+                        onClick = addProductClicked,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.secondary
+                    ) {
+                        Icon(Icons.Filled.Add, "Add Product")
+                    }
+                else
+                    ExtendedFloatingActionButton(
+                        onClick = addProductClicked,
+                        icon = { Icon(Icons.Outlined.Add, "Add Product") },
+                        text = { Text(text = "Add Product") },
+                    )
+            }
 
         }) { paddingValues ->
 
@@ -383,9 +395,19 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     columns = GridCells.Fixed(2)
                 ) {
+                    when (uiState) {
+                        LoadingProducts -> items(20) { i ->
+                            ProductUI(i)
+                        }
 
-                    items(6) { i ->
-                        ProductUI(i)
+                        is GetProductsApiError -> {}
+                        Idle -> {}
+                        is ProductList -> {
+                            val products = (uiState as ProductList).products
+                            items(products) { product ->
+                                ProductUI(product.id, product)
+                            }
+                        }
                     }
                 }
 
@@ -395,10 +417,10 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
     }
 
     @Composable
-    private fun ProductUI(index: Int) {
+    private fun ProductUI(index: Int, product: Product? = null) {
         val size = (sharedCMP.screenWidth / 2).dp
         val nav = LocalNavigator.currentOrThrow
-        Column(modifier = Modifier.clickable {
+        Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
             nav.push(ProductDetailScreen(index, sharedCMP))
         }) {
             Box(
@@ -410,7 +432,6 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                         ), shape = MaterialTheme.shapes.extraLarge
                     )
             ) {
-
                 Icon(
                     modifier = Modifier
                         .padding(8.dp)
@@ -422,6 +443,15 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     imageVector = Icons.Outlined.FavoriteBorder,
                     contentDescription = stringResource(Res.string.search)
                 )
+
+                product?.run {
+                    AsyncImage(
+                        modifier = Modifier.matchParentSize(),
+                        model = imageUrls[0],
+                        contentDescription = name
+                    )
+                }
+
             }
 
             ConstraintLayout(
@@ -502,7 +532,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                         start.linkTo(parent.start)
                     }
                     .padding(top = 16.dp),
-                    text = "Product $index",
+                    text = product?.name ?: "Product $index",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500))
 
                 Text(
