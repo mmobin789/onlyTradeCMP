@@ -82,7 +82,6 @@ class LoginScreen(private val sharedCMP: SharedCMP) : Screen {
 
         var errorPhone by remember { mutableStateOf<String?>(null) }
         var errorPassword by remember { mutableStateOf<String?>(null) }
-
         val inputEmailError = uiState is BlankEmailInputError || uiState is EmailFormatInputError
 
 

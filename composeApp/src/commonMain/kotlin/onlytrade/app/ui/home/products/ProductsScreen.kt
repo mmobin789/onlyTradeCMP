@@ -49,6 +49,10 @@ import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.wishlist.WishListScreen
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
+import onlytrade.composeapp.generated.resources.botBar_1
+import onlytrade.composeapp.generated.resources.botBar_2
+import onlytrade.composeapp.generated.resources.botBar_3
+import onlytrade.composeapp.generated.resources.botBar_4
 import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import onlytrade.composeapp.generated.resources.search
@@ -121,7 +125,7 @@ class ProductsScreen(private val categoryName: String? = null, private val share
 
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Home",
+                        text = stringResource(Res.string.botBar_1),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                     )
                 }/*   Column(Modifier.weight(1f)) {
@@ -146,7 +150,7 @@ class ProductsScreen(private val categoryName: String? = null, private val share
 
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "My Trades",
+                        text = stringResource(Res.string.botBar_2),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                     )
                 }
@@ -165,7 +169,7 @@ class ProductsScreen(private val categoryName: String? = null, private val share
 
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Wishlist",
+                        text = stringResource(Res.string.botBar_3),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                     )
                 }
@@ -178,7 +182,7 @@ class ProductsScreen(private val categoryName: String? = null, private val share
                     )
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Profile",
+                        text = stringResource(Res.string.botBar_4),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                     )
                 }
