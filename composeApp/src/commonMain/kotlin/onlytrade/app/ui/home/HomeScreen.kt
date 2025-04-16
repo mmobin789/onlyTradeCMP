@@ -40,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight.Companion.W200
@@ -273,7 +274,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     Modifier
                         .weight(1f)
                         .clickable { nav.push(ProfileScreen(sharedCMP)) }
-                ){
+                ) {
 
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -291,24 +292,24 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
         }, floatingActionButton = {
             if (viewModel.isUserLoggedIn) {
 
-            val addProductClicked = {
-                nav.push(AddProductScreen(sharedCMP))
-            }
-
-            if (productGridState.isScrollInProgress)
-                FloatingActionButton(
-                    onClick = addProductClicked,
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.secondary
-                ) {
-                    Icon(Icons.Filled.Add, stringResource(Res.string.home_4))
+                val addProductClicked = {
+                    nav.push(AddProductScreen(sharedCMP))
                 }
-            else
-                ExtendedFloatingActionButton(
-                    onClick = addProductClicked,
-                    icon = { Icon(Icons.Outlined.Add, stringResource(Res.string.home_4)) },
-                    text = { Text(text = stringResource(Res.string.home_4)) },
-                )
+
+                if (productGridState.isScrollInProgress)
+                    FloatingActionButton(
+                        onClick = addProductClicked,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.secondary
+                    ) {
+                        Icon(Icons.Filled.Add, stringResource(Res.string.home_4))
+                    }
+                else
+                    ExtendedFloatingActionButton(
+                        onClick = addProductClicked,
+                        icon = { Icon(Icons.Outlined.Add, stringResource(Res.string.home_4)) },
+                        text = { Text(text = stringResource(Res.string.home_4)) },
+                    )
             }
 
         }) { paddingValues ->
@@ -445,6 +446,15 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                         ), shape = MaterialTheme.shapes.extraLarge
                     )
             ) {
+                product?.run {
+                    //todo working here.
+                    AsyncImage(
+                        modifier = Modifier.matchParentSize().clip(MaterialTheme.shapes.extraLarge),
+                        model = "https://ik.imagekit.io/ywetwhs4e9/products/4/786/3/1/productImage1_DEVhWcdnA.jpg",
+                        contentDescription = name,
+                        contentScale = ContentScale.Crop
+                    )
+                }
                 Icon(
                     modifier = Modifier
                         .padding(8.dp)
@@ -457,13 +467,6 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     contentDescription = stringResource(Res.string.search)
                 )
 
-                product?.run {
-                    AsyncImage(
-                        modifier = Modifier.matchParentSize(),
-                        model = imageUrls[0],
-                        contentDescription = name
-                    )
-                }
 
             }
 
