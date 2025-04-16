@@ -517,7 +517,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
 
             LessImagesSelected -> {
                 toastMsg =
-                    "Please add at least 3 images."
+                    "Please add at least 4 images."
             }
 
             MoreImagesSelected -> {

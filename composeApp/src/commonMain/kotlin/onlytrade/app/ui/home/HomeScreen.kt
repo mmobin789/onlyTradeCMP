@@ -82,6 +82,7 @@ import onlytrade.composeapp.generated.resources.home_1
 import onlytrade.composeapp.generated.resources.home_2
 import onlytrade.composeapp.generated.resources.home_3
 import onlytrade.composeapp.generated.resources.home_4
+import onlytrade.composeapp.generated.resources.home_5
 import onlytrade.composeapp.generated.resources.ic_quickmart_intro
 import onlytrade.composeapp.generated.resources.ic_quickmart_intro_dark
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
@@ -446,15 +447,14 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                         ), shape = MaterialTheme.shapes.extraLarge
                     )
             ) {
-                product?.run {
-                    //todo working here.
-                    AsyncImage(
-                        modifier = Modifier.matchParentSize().clip(MaterialTheme.shapes.extraLarge),
-                        model = imageUrls[0],
-                        contentDescription = name,
-                        contentScale = ContentScale.Crop
-                    )
-                }
+
+                AsyncImage(
+                    modifier = Modifier.matchParentSize().clip(MaterialTheme.shapes.extraLarge),
+                    model = product?.imageUrls?.get(0),
+                    contentDescription = product?.name,
+                    contentScale = ContentScale.Crop
+                )
+
                 Icon(
                     modifier = Modifier
                         .padding(8.dp)
@@ -476,17 +476,20 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
 
                 val (c1, c2, c3, s1, s2, colorsTxt, productName, price, discountPrice) = createRefs()
 
-                Spacer(modifier = Modifier
-                    .constrainAs(c1) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                    }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    ))
+                AsyncImage(model = product?.imageUrls?.get(1),
+                    contentDescription = product?.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.clip(CircleShape)
+                        .constrainAs(c1) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                        }
+                        .size(24.dp)
+                        .background(
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        ))
 
                 Spacer(modifier = Modifier
                     .width(12.dp)
@@ -498,17 +501,19 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
 
                     })
 
-                Spacer(modifier = Modifier
-                    .constrainAs(c2) {
-                        start.linkTo(s1.end)
-                        top.linkTo(parent.top)
-                    }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    ))
+                AsyncImage(model = product?.imageUrls?.get(2),
+                    contentDescription = product?.name,
+                    contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
+                        .constrainAs(c2) {
+                            start.linkTo(s1.end)
+                            top.linkTo(parent.top)
+                        }
+                        .size(24.dp)
+                        .background(
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        ))
 
                 Spacer(modifier = Modifier
                     .width(12.dp)
@@ -519,17 +524,19 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                         end.linkTo(c2.end)
 
                     })
-                Spacer(modifier = Modifier
-                    .constrainAs(c3) {
-                        start.linkTo(s2.end)
-                        top.linkTo(parent.top)
-                    }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    ))
+                AsyncImage(model = product?.imageUrls?.get(3),
+                    contentDescription = product?.name,
+                    contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
+                        .constrainAs(c3) {
+                            start.linkTo(s2.end)
+                            top.linkTo(parent.top)
+                        }
+                        .size(24.dp)
+                        .background(
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        ))
 
                 Text(modifier = Modifier
                     .constrainAs(colorsTxt) {
@@ -539,7 +546,8 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     }
                     .padding(horizontal = 16.dp),
                     textDecoration = TextDecoration.Underline,
-                    text = "All ${Random.nextInt(2, 10)} colors",
+                    text = if (product == null) stringResource(Res.string.home_5) else
+                        "All ${product.imageUrls.size} images",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300))
 
                 Text(modifier = Modifier
@@ -548,7 +556,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                         start.linkTo(parent.start)
                     }
                     .padding(top = 16.dp),
-                    text = product?.name ?: "Product $index",
+                    text = product?.name ?: stringResource(Res.string.home_5),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500))
 
                 Text(
@@ -556,7 +564,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                         top.linkTo(productName.bottom)
                         start.linkTo(productName.start)
                     },
-                    text = "$${Random.nextInt(index, 500)}",
+                    text = product?.estPrice?.toString() ?: stringResource(Res.string.home_5),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
                 )
 
