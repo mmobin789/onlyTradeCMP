@@ -37,6 +37,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,6 +70,7 @@ import onlytrade.app.viewmodel.home.ui.HomeUiState.GetProductsApiError
 import onlytrade.app.viewmodel.home.ui.HomeUiState.Idle
 import onlytrade.app.viewmodel.home.ui.HomeUiState.LoadingProducts
 import onlytrade.app.viewmodel.home.ui.HomeUiState.ProductList
+import onlytrade.app.viewmodel.home.ui.HomeUiState.ProductsNotFound
 import onlytrade.app.viewmodel.home.ui.HomeViewModel
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.composeapp.generated.resources.Res
@@ -101,6 +103,8 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
         val nav = LocalNavigator.currentOrThrow
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
+        val endOfGrid =
+            productGridState.canScrollForward.not() && uiState != ProductsNotFound && viewModel.expectedPageLoaded
         //       var isSearchBarExtended by remember { mutableStateOf(false) }
         Scaffold(topBar = {
             Column {
@@ -409,24 +413,35 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     columns = GridCells.Fixed(2)
-                ) { //todo implement load more from offline/online db on scroll end.
+                ) { //todo implement getProducts server sync to update local products.
                     when (uiState) {
-                        LoadingProducts -> items(20) { i ->
+                        Idle -> {}
+                        LoadingProducts -> items(if (viewModel.productsPageNo == 1) viewModel.productPageSizeExpected else 2) { i ->
                             ProductUI(i)
                         }
 
-                        is GetProductsApiError -> {}
-                        Idle -> {}
+                        ProductsNotFound -> { //todo display error.
+
+                        }
+
                         is ProductList -> {
                             val products = (uiState as ProductList).products
                             items(products) { product ->
                                 ProductUI(product.id.toInt(), product)
                             }
                         }
+
+                        is GetProductsApiError -> {}
+
                     }
+
+
                 }
 
-
+                LaunchedEffect(productGridState) {
+                    if (endOfGrid)
+                        viewModel.getProducts()
+                }
             }
         }
     }
