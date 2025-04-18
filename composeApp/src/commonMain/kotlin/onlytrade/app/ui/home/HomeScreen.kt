@@ -409,7 +409,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     columns = GridCells.Fixed(2)
-                ) {
+                ) { //todo implement load more from offline/online db on scroll end.
                     when (uiState) {
                         LoadingProducts -> items(20) { i ->
                             ProductUI(i)
@@ -420,7 +420,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                         is ProductList -> {
                             val products = (uiState as ProductList).products
                             items(products) { product ->
-                                ProductUI(product.id, product)
+                                ProductUI(product.id.toInt(), product)
                             }
                         }
                     }

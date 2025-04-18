@@ -1,5 +1,6 @@
 package onlytrade.app
 
+import DatabaseDriverFactory
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -32,9 +33,13 @@ import java.io.ByteArrayOutputStream
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        OTBusinessModule.run {
-            androidContext(this@MainActivity)
-        }
+        OTBusinessModule.run(
+            platformInit = { androidContext(this@MainActivity) },
+            databaseDriverFactory = DatabaseDriverFactory(this)
+        )
+
+
+
         setContent {
             val localConfig = LocalConfiguration.current
             val screenWidth = localConfig.screenWidthDp

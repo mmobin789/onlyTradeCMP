@@ -306,7 +306,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                                 text = { Text(text = category) },
                                 onClick = {
                                     selectedCategory = selectedCategory.copy(
-                                        id = index, name = category,
+                                        id = index.toLong(), name = category,
                                     )
 
                                     selectedSubCategory =
@@ -355,7 +355,10 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                                 text = { Text(text = subcategory) },
                                 onClick = {
                                     selectedSubCategory =
-                                        selectedSubCategory.copy(name = subcategory, id = index)
+                                        selectedSubCategory.copy(
+                                            name = subcategory,
+                                            id = index.toLong()
+                                        )
                                     expandedSubCat = false
                                 }
                             )
