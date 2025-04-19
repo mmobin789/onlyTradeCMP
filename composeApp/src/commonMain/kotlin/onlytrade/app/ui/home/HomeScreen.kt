@@ -60,6 +60,7 @@ import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.SharedCMP
+import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
 import onlytrade.app.ui.home.colorScheme.homeColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
@@ -433,8 +434,8 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                             ProductUI(i)
                         }
 
-                        ProductsNotFound -> { //todo display error.
-
+                        ProductsNotFound -> { //todo display error with call to action to reload products then call viewModel.getProducts( tryAgain = true) as action.
+                            getToast().showToast("Products not found.")
                         }
 
                         is GetProductsApiError -> { //todo show error.
