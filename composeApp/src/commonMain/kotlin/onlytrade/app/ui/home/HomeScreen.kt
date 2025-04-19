@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,6 +60,7 @@ import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.SharedCMP
+import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
 import onlytrade.app.ui.home.colorScheme.homeColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
@@ -69,7 +71,6 @@ import onlytrade.app.ui.home.wishlist.WishListScreen
 import onlytrade.app.viewmodel.home.ui.HomeUiState.GetProductsApiError
 import onlytrade.app.viewmodel.home.ui.HomeUiState.Idle
 import onlytrade.app.viewmodel.home.ui.HomeUiState.LoadingProducts
-import onlytrade.app.viewmodel.home.ui.HomeUiState.ProductList
 import onlytrade.app.viewmodel.home.ui.HomeUiState.ProductsNotFound
 import onlytrade.app.viewmodel.home.ui.HomeViewModel
 import onlytrade.app.viewmodel.product.repository.data.db.Product
@@ -99,13 +100,11 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
     @Composable
     override fun Content() {
         val viewModel = koinViewModel<HomeViewModel>()
+        val products by viewModel.productList.collectAsStateWithLifecycle()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val nav = LocalNavigator.currentOrThrow
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
-        val endOfGrid =
-            productGridState.canScrollForward.not() && uiState != ProductsNotFound && viewModel.expectedPageLoaded
-        //       var isSearchBarExtended by remember { mutableStateOf(false) }
         Scaffold(topBar = {
             Column {
                 //   AnimatedVisibility(visible = headerVisible.not()) {
@@ -405,6 +404,17 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     )
                 }
 
+                LaunchedEffect(productGridState) {
+                    snapshotFlow { productGridState.layoutInfo }.collect { layoutInfo ->
+                        val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                        val total = layoutInfo.totalItemsCount
+                        if (lastVisible >= total - viewModel.productPageSizeExpected / 2) {
+                            viewModel.getProducts()
+
+                        }
+                    }
+                }
+
                 LazyVerticalGrid(
                     state = productGridState,
                     modifier = Modifier
@@ -413,9 +423,15 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     columns = GridCells.Fixed(2)
-                ) { //todo implement getProducts server sync to update local products.
+                ) {
+
+                    items(products.also {
+                        getToast().showToast("${it.size}")
+                    }) { product ->
+                        ProductUI(product.id.toInt(), product)
+                    }
+
                     when (uiState) {
-                        Idle -> {}
                         LoadingProducts -> items(if (viewModel.productsPageNo == 1) viewModel.productPageSizeExpected else 2) { i ->
                             ProductUI(i)
                         }
@@ -424,23 +440,15 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
 
                         }
 
-                        is ProductList -> {
-                            val products = (uiState as ProductList).products
-                            items(products) { product ->
-                                ProductUI(product.id.toInt(), product)
-                            }
+                        is GetProductsApiError -> { //todo show error.
+
                         }
 
-                        is GetProductsApiError -> {}
+                        Idle -> {} // do nothing.
+
 
                     }
 
-
-                }
-
-                LaunchedEffect(productGridState) {
-                    if (endOfGrid)
-                        viewModel.getProducts()
                 }
             }
         }
