@@ -60,7 +60,6 @@ import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.SharedCMP
-import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
 import onlytrade.app.ui.home.colorScheme.homeColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
@@ -425,9 +424,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     columns = GridCells.Fixed(2)
                 ) {
 
-                    items(products.also {
-                        getToast().showToast("${it.size}")
-                    }) { product ->
+                    items(products, key = { it.id }) { product ->
                         ProductUI(product.id.toInt(), product)
                     }
 
@@ -499,7 +496,8 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
 
                 val (c1, c2, c3, s1, s2, colorsTxt, productName, price, discountPrice) = createRefs()
 
-                AsyncImage(model = product?.imageUrls?.get(1),
+                AsyncImage(
+                    model = product?.imageUrls?.get(1),
                     contentDescription = product?.name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.clip(CircleShape)
@@ -514,17 +512,19 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                             )
                         ))
 
-                Spacer(modifier = Modifier
-                    .width(12.dp)
-                    .constrainAs(s1) {
-                        top.linkTo(c1.top)
-                        bottom.linkTo(c1.bottom)
-                        start.linkTo(c1.start)
-                        end.linkTo(c1.end)
+                Spacer(
+                    modifier = Modifier
+                        .width(12.dp)
+                        .constrainAs(s1) {
+                            top.linkTo(c1.top)
+                            bottom.linkTo(c1.bottom)
+                            start.linkTo(c1.start)
+                            end.linkTo(c1.end)
 
-                    })
+                        })
 
-                AsyncImage(model = product?.imageUrls?.get(2),
+                AsyncImage(
+                    model = product?.imageUrls?.get(2),
                     contentDescription = product?.name,
                     contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
                         .constrainAs(c2) {
@@ -538,16 +538,18 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                             )
                         ))
 
-                Spacer(modifier = Modifier
-                    .width(12.dp)
-                    .constrainAs(s2) {
-                        top.linkTo(c2.top)
-                        bottom.linkTo(c2.bottom)
-                        start.linkTo(c2.start)
-                        end.linkTo(c2.end)
+                Spacer(
+                    modifier = Modifier
+                        .width(12.dp)
+                        .constrainAs(s2) {
+                            top.linkTo(c2.top)
+                            bottom.linkTo(c2.bottom)
+                            start.linkTo(c2.start)
+                            end.linkTo(c2.end)
 
-                    })
-                AsyncImage(model = product?.imageUrls?.get(3),
+                        })
+                AsyncImage(
+                    model = product?.imageUrls?.get(3),
                     contentDescription = product?.name,
                     contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
                         .constrainAs(c3) {
@@ -561,24 +563,26 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                             )
                         ))
 
-                Text(modifier = Modifier
-                    .constrainAs(colorsTxt) {
-                        top.linkTo(parent.top)
-                        start.linkTo(c3.end)
+                Text(
+                    modifier = Modifier
+                        .constrainAs(colorsTxt) {
+                            top.linkTo(parent.top)
+                            start.linkTo(c3.end)
 
-                    }
-                    .padding(horizontal = 16.dp),
+                        }
+                        .padding(horizontal = 16.dp),
                     textDecoration = TextDecoration.Underline,
                     text = if (product == null) stringResource(Res.string.home_5) else
                         "All ${product.imageUrls.size} images",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300))
 
-                Text(modifier = Modifier
-                    .constrainAs(productName) {
-                        top.linkTo(c1.bottom)
-                        start.linkTo(parent.start)
-                    }
-                    .padding(top = 16.dp),
+                Text(
+                    modifier = Modifier
+                        .constrainAs(productName) {
+                            top.linkTo(c1.bottom)
+                            start.linkTo(parent.start)
+                        }
+                        .padding(top = 16.dp),
                     text = product?.name ?: stringResource(Res.string.home_5),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500))
 
