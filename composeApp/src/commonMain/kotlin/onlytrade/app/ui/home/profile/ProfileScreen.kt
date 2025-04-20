@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -24,6 +23,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import onlytrade.app.ui.design.components.SharedCMP
+import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
 import onlytrade.app.ui.home.profile.colorScheme.profileColorScheme
@@ -63,13 +63,13 @@ import onlytrade.composeapp.generated.resources.profile_4
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
-class ProfileScreen(private val sharedCMP: SharedCMP) : Screen {
+class ProfileScreen : Screen {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
-
+        val sharedCMP = LocalSharedCMP.current //todo will be needed to create tiles.
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -105,7 +105,7 @@ class ProfileScreen(private val sharedCMP: SharedCMP) : Screen {
                     Column(
                         Modifier
                             .weight(1f)
-                            .clickable { nav.push(HomeScreen(sharedCMP)) })
+                            .clickable { nav.push(HomeScreen()) })
                     {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -136,7 +136,7 @@ class ProfileScreen(private val sharedCMP: SharedCMP) : Screen {
                     Column(
                         Modifier
                             .weight(1f)
-                            .clickable { nav.push(WishListScreen(sharedCMP)) }) {
+                            .clickable { nav.push(WishListScreen()) }) {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                             imageVector = Icons.Outlined.Favorite,
@@ -202,7 +202,8 @@ class ProfileScreen(private val sharedCMP: SharedCMP) : Screen {
                         border = BorderStroke(1.dp, profileColorScheme.activeTradesBtn),
                     ) {
                         Text(
-                            text = stringResource(Res.string.profile_2), color = productDetailColorScheme.offerTradeBtnText
+                            text = stringResource(Res.string.profile_2),
+                            color = productDetailColorScheme.offerTradeBtnText
                         )
                     }
 

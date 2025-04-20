@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -36,8 +37,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight.Companion.W200
@@ -47,12 +52,16 @@ import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
+import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.DotsIndicator
+import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
+import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
 import onlytrade.app.ui.home.colorScheme.homeColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
@@ -60,6 +69,12 @@ import onlytrade.app.ui.home.products.add.AddProductScreen
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.profile.ProfileScreen
 import onlytrade.app.ui.home.wishlist.WishListScreen
+import onlytrade.app.viewmodel.home.ui.HomeUiState.GetProductsApiError
+import onlytrade.app.viewmodel.home.ui.HomeUiState.Idle
+import onlytrade.app.viewmodel.home.ui.HomeUiState.LoadingProducts
+import onlytrade.app.viewmodel.home.ui.HomeUiState.ProductsNotFound
+import onlytrade.app.viewmodel.home.ui.HomeViewModel
+import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_logo
 import onlytrade.composeapp.generated.resources.app_name
@@ -71,22 +86,27 @@ import onlytrade.composeapp.generated.resources.home_1
 import onlytrade.composeapp.generated.resources.home_2
 import onlytrade.composeapp.generated.resources.home_3
 import onlytrade.composeapp.generated.resources.home_4
+import onlytrade.composeapp.generated.resources.home_5
 import onlytrade.composeapp.generated.resources.ic_quickmart_intro
 import onlytrade.composeapp.generated.resources.ic_quickmart_intro_dark
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import onlytrade.composeapp.generated.resources.search
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
+class HomeScreen : Screen {
 
     @Composable
     override fun Content() {
+        val viewModel = koinViewModel<HomeViewModel>()
+        val products by viewModel.productList.collectAsStateWithLifecycle()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+        val sharedCMP = LocalSharedCMP.current
         val nav = LocalNavigator.currentOrThrow
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
-        //       var isSearchBarExtended by remember { mutableStateOf(false) }
         Scaffold(topBar = {
             Column {
                 //   AnimatedVisibility(visible = headerVisible.not()) {
@@ -126,8 +146,8 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
 
 
                 /*   SearchBar(
-                       inputField  = {
-                            OTTextField(
+                       inputField = {
+                           OTTextField(
                                label = "",
                                value = TextFieldValue(""),
                                onValueChange = { },
@@ -241,7 +261,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     Modifier
                         .weight(1f)
                         .clickable {
-                            nav.push(WishListScreen(sharedCMP))
+                            nav.push(WishListScreen())
                         }) {
 
                     Icon(
@@ -259,8 +279,8 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                 Column(
                     Modifier
                         .weight(1f)
-                        .clickable { nav.push(ProfileScreen(sharedCMP)) }
-                ){
+                        .clickable { nav.push(ProfileScreen()) }
+                ) {
 
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -276,25 +296,27 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
             }
 
         }, floatingActionButton = {
+            if (viewModel.isUserLoggedIn) {
 
-            val addProductClicked = {
-                nav.push(AddProductScreen(sharedCMP))
-            }
-
-            if (productGridState.isScrollInProgress)
-                FloatingActionButton(
-                    onClick = addProductClicked,
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.secondary
-                ) {
-                    Icon(Icons.Filled.Add, stringResource(Res.string.home_4))
+                val addProductClicked = {
+                    nav.push(AddProductScreen())
                 }
-            else
-                ExtendedFloatingActionButton(
-                    onClick = addProductClicked,
-                    icon = { Icon(Icons.Outlined.Add, stringResource(Res.string.home_4)) },
-                    text = { Text(text = stringResource(Res.string.home_4)) },
-                )
+
+                if (productGridState.isScrollInProgress)
+                    FloatingActionButton(
+                        onClick = addProductClicked,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.secondary
+                    ) {
+                        Icon(Icons.Filled.Add, stringResource(Res.string.home_4))
+                    }
+                else
+                    ExtendedFloatingActionButton(
+                        onClick = addProductClicked,
+                        icon = { Icon(Icons.Outlined.Add, stringResource(Res.string.home_4)) },
+                        text = { Text(text = stringResource(Res.string.home_4)) },
+                    )
+            }
 
         }) { paddingValues ->
 
@@ -334,8 +356,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                                     modifier = Modifier.clickable {
                                         nav.push(
                                             SubCategoriesScreen(
-                                                "Category ${i + 1}",
-                                                sharedCMP
+                                                "Category ${i + 1}"
                                             )
                                         )
                                     },
@@ -377,11 +398,22 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .clickable {
-                                nav.push(ProductsScreen(sharedCMP = sharedCMP))
+                                nav.push(ProductsScreen())
                             },
                         text = stringResource(Res.string.home_3),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = W700)
                     )
+                }
+
+                LaunchedEffect(productGridState) {
+                    snapshotFlow { productGridState.layoutInfo }.collect { layoutInfo ->
+                        val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                        val total = layoutInfo.totalItemsCount
+                        if (lastVisible >= total - viewModel.productPageSizeExpected / 2) {
+                            viewModel.getProducts()
+
+                        }
+                    }
                 }
 
                 LazyVerticalGrid(
@@ -394,22 +426,39 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     columns = GridCells.Fixed(2)
                 ) {
 
-                    items(6) { i ->
-                        ProductUI(i)
+                    items(products) { product ->
+                        ProductUI(sharedCMP, product.id.toInt(), product)
                     }
+
+                    when (uiState) {
+                        LoadingProducts -> items(2) { i ->
+                            ProductUI(sharedCMP, i)
+                        }
+
+                        ProductsNotFound -> { //todo display error with call to action to reload products then call viewModel.getProducts( tryAgain = true) as action.
+                            getToast().showToast("Products not found.")
+                        }
+
+                        is GetProductsApiError -> { //todo show error.
+
+                        }
+
+                        Idle -> {} // do nothing.
+
+
+                    }
+
                 }
-
-
             }
         }
     }
 
     @Composable
-    private fun ProductUI(index: Int) {
+    private fun ProductUI(sharedCMP: SharedCMP, index: Int, product: Product? = null) {
         val size = (sharedCMP.screenWidth / 2).dp
         val nav = LocalNavigator.currentOrThrow
-        Column(modifier = Modifier.clickable {
-            nav.push(ProductDetailScreen(index, sharedCMP))
+        Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
+            nav.push(ProductDetailScreen(index))
         }) {
             Box(
                 Modifier
@@ -420,6 +469,13 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                         ), shape = MaterialTheme.shapes.extraLarge
                     )
             ) {
+
+                AsyncImage(
+                    modifier = Modifier.matchParentSize().clip(MaterialTheme.shapes.extraLarge),
+                    model = product?.imageUrls?.get(0),
+                    contentDescription = product?.name,
+                    contentScale = ContentScale.Crop
+                )
 
                 Icon(
                     modifier = Modifier
@@ -432,6 +488,8 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     imageVector = Icons.Outlined.FavoriteBorder,
                     contentDescription = stringResource(Res.string.search)
                 )
+
+
             }
 
             ConstraintLayout(
@@ -440,79 +498,94 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
 
                 val (c1, c2, c3, s1, s2, colorsTxt, productName, price, discountPrice) = createRefs()
 
-                Spacer(modifier = Modifier
-                    .constrainAs(c1) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                    }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    ))
+                AsyncImage(
+                    model = product?.imageUrls?.get(1),
+                    contentDescription = product?.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.clip(CircleShape)
+                        .constrainAs(c1) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                        }
+                        .size(24.dp)
+                        .background(
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        ))
 
-                Spacer(modifier = Modifier
-                    .width(12.dp)
-                    .constrainAs(s1) {
-                        top.linkTo(c1.top)
-                        bottom.linkTo(c1.bottom)
-                        start.linkTo(c1.start)
-                        end.linkTo(c1.end)
+                Spacer(
+                    modifier = Modifier
+                        .width(12.dp)
+                        .constrainAs(s1) {
+                            top.linkTo(c1.top)
+                            bottom.linkTo(c1.bottom)
+                            start.linkTo(c1.start)
+                            end.linkTo(c1.end)
 
-                    })
+                        })
 
-                Spacer(modifier = Modifier
-                    .constrainAs(c2) {
-                        start.linkTo(s1.end)
-                        top.linkTo(parent.top)
-                    }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    ))
+                AsyncImage(
+                    model = product?.imageUrls?.get(2),
+                    contentDescription = product?.name,
+                    contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
+                        .constrainAs(c2) {
+                            start.linkTo(s1.end)
+                            top.linkTo(parent.top)
+                        }
+                        .size(24.dp)
+                        .background(
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        ))
 
-                Spacer(modifier = Modifier
-                    .width(12.dp)
-                    .constrainAs(s2) {
-                        top.linkTo(c2.top)
-                        bottom.linkTo(c2.bottom)
-                        start.linkTo(c2.start)
-                        end.linkTo(c2.end)
+                Spacer(
+                    modifier = Modifier
+                        .width(12.dp)
+                        .constrainAs(s2) {
+                            top.linkTo(c2.top)
+                            bottom.linkTo(c2.bottom)
+                            start.linkTo(c2.start)
+                            end.linkTo(c2.end)
 
-                    })
-                Spacer(modifier = Modifier
-                    .constrainAs(c3) {
-                        start.linkTo(s2.end)
-                        top.linkTo(parent.top)
-                    }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    ))
+                        })
+                AsyncImage(
+                    model = product?.imageUrls?.get(3),
+                    contentDescription = product?.name,
+                    contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
+                        .constrainAs(c3) {
+                            start.linkTo(s2.end)
+                            top.linkTo(parent.top)
+                        }
+                        .size(24.dp)
+                        .background(
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        ))
 
-                Text(modifier = Modifier
-                    .constrainAs(colorsTxt) {
-                        top.linkTo(parent.top)
-                        start.linkTo(c3.end)
+                Text(
+                    modifier = Modifier
+                        .constrainAs(colorsTxt) {
+                            top.linkTo(parent.top)
+                            start.linkTo(c3.end)
 
-                    }
-                    .padding(horizontal = 16.dp),
+                        }
+                        .padding(horizontal = 16.dp),
                     textDecoration = TextDecoration.Underline,
-                    text = "All ${Random.nextInt(2, 10)} colors",
+                    text = if (product == null) stringResource(Res.string.home_5) else
+                        "All ${product.imageUrls.size} images",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300))
 
-                Text(modifier = Modifier
-                    .constrainAs(productName) {
-                        top.linkTo(c1.bottom)
-                        start.linkTo(parent.start)
-                    }
-                    .padding(top = 16.dp),
-                    text = "Product $index",
+                Text(
+                    modifier = Modifier
+                        .constrainAs(productName) {
+                            top.linkTo(c1.bottom)
+                            start.linkTo(parent.start)
+                        }
+                        .padding(top = 16.dp),
+                    text = product?.name ?: stringResource(Res.string.home_5),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500))
 
                 Text(
@@ -520,7 +593,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                         top.linkTo(productName.bottom)
                         start.linkTo(productName.start)
                     },
-                    text = "$${Random.nextInt(index, 500)}",
+                    text = product?.estPrice?.toString() ?: stringResource(Res.string.home_5),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
                 )
 

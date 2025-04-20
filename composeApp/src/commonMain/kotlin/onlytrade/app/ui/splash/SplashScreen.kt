@@ -18,12 +18,13 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import coil3.compose.setSingletonImageLoaderFactory
 import kotlinx.coroutines.delay
-import onlytrade.app.ui.design.components.SharedCMP
+import onlytrade.app.ui.design.components.getAsyncImageLoader
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.onboarding.OBScrollPage
 import onlytrade.app.ui.splash.colorScheme.splashColorScheme
-import onlytrade.app.viewmodel.login.repository.LoginRepository
+import onlytrade.app.viewmodel.splash.SplashViewModel
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_desc
 import onlytrade.composeapp.generated.resources.app_logo
@@ -32,15 +33,21 @@ import onlytrade.composeapp.generated.resources.ic_quickmart_dark
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 
-class SplashScreen(private val sharedCMP: SharedCMP) : Screen {
+class SplashScreen : Screen {
     @Composable
     @Preview
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
-        val isUserLoggedIn = koinInject<LoginRepository>().isUserLoggedIn()
+        val viewModel = koinViewModel<SplashViewModel>()
+        val isUserLoggedIn = viewModel.isUserLoggedIn()
+
+        setSingletonImageLoaderFactory { context ->
+            getAsyncImageLoader(context)
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -61,14 +68,14 @@ class SplashScreen(private val sharedCMP: SharedCMP) : Screen {
             )
 
         }
-
         LaunchedEffect(true) {
             delay(250)
+
             nav.replace(
                 if (isUserLoggedIn)
-                    HomeScreen(sharedCMP)
+                    HomeScreen()
                 else
-                    OBScrollPage(sharedCMP)
+                    OBScrollPage()
             )
 
         }

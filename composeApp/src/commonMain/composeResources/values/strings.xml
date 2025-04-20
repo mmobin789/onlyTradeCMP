@@ -46,6 +46,7 @@
     <string name="home_2">Latest Products</string>"
     <string name="home_3">SEE ALL</string>"
     <string name="home_4">Add Product</string>"
+    <string name="home_5">Loading…</string>"
     <!-- Add Product -->
     <string name="addProduct_1">Add a New Trade Product</string>"
     <string name="addProduct_2">Add Product Image</string>"

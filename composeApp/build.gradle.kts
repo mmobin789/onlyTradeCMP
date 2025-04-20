@@ -18,7 +18,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -29,9 +29,9 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     jvm("desktop")
-    
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         moduleName = "composeApp"
@@ -51,18 +51,26 @@ kotlin {
         }
         binaries.executable()
     }
-    
+
     sourceSets {
         val desktopMain by getting
-        
+
+        appleMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+        jvmMain.dependencies {
+            implementation(libs.ktor.client.java)
+        }
+
         androidMain.dependencies {
             implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling.preview)
-            //implementation(libs.constraintLayout)
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
+            implementation(libs.ktor.client.android)
         }
         commonMain.dependencies {
+            implementation(projects.onlyTradeBusiness)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
@@ -72,19 +80,22 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(projects.onlyTradeBusiness)
             implementation(libs.koin.compose)
             implementation(libs.koin.viewmodel)
             implementation(libs.voyager.navigator)
-            implementation(libs.coil)
+            //coil setup.
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor3)
 
-          //  implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.4.0")
+
+            //  implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.4.0")
             /// Compose 1.7.0-alpha03
             implementation(libs.constraintlayout.compose.multiplatform)
+            implementation(libs.compose.shimmer)
             /// Compose 1.7.0-alpha03 with different tech.annexflow.constraintlayout.core package
-        //    implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded-core")
+            //    implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded-core")
             /// Compose 1.7.0-alpha03 with different tech.annexflow.constraintlayout package
-          //  implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded")
+            //  implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.5.0-alpha03-shaded")
 
         }
         desktopMain.dependencies {

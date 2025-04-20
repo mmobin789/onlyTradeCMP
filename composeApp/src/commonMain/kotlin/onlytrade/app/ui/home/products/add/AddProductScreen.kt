@@ -56,18 +56,22 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
+import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.design.components.isValidPrice
 import onlytrade.app.ui.home.products.add.colorScheme.addProductColorScheme
 import onlytrade.app.viewmodel.category.repository.data.db.Category
 import onlytrade.app.viewmodel.category.sub.repository.data.db.Subcategory
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.AddProductFailed
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.CategoryNotSelected
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.DescriptionBlank
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.EstPriceBlank
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.EstPriceLow
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.Idle
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.ImagesNotSelected
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.LessImagesSelected
+import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.Loading
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.MoreImagesSelected
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.ProductInReview
 import onlytrade.app.viewmodel.product.add.ui.AddProductUIState.SubcategoryNotSelected
@@ -89,7 +93,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
+class AddProductScreen : Screen {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -97,6 +101,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
         val viewModel = koinViewModel<AddProductViewModel>()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val nav = LocalNavigator.currentOrThrow
+        val sharedCMP = LocalSharedCMP.current
         val productGridState = rememberLazyGridState()
         var title by remember { mutableStateOf("") }
         var description by remember { mutableStateOf("") }
@@ -303,7 +308,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                                 text = { Text(text = category) },
                                 onClick = {
                                     selectedCategory = selectedCategory.copy(
-                                        id = index, name = category,
+                                        id = index.toLong(), name = category,
                                     )
 
                                     selectedSubCategory =
@@ -352,7 +357,10 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                                 text = { Text(text = subcategory) },
                                 onClick = {
                                     selectedSubCategory =
-                                        selectedSubCategory.copy(name = subcategory, id = index)
+                                        selectedSubCategory.copy(
+                                            name = subcategory,
+                                            id = index.toLong()
+                                        )
                                     expandedSubCat = false
                                 }
                             )
@@ -372,7 +380,8 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     value = description,
                     trailingIcon = {
                         if (description.isNotBlank()) {
-                            Icon(painter = painterResource(Res.drawable.outline_clear_24),
+                            Icon(
+                                painter = painterResource(Res.drawable.outline_clear_24),
                                 tint = MaterialTheme.colorScheme.secondary,
                                 contentDescription = null,
                                 modifier = Modifier.clickable { description = "" })
@@ -403,7 +412,8 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     value = estPrice,
                     trailingIcon = {
                         if (estPrice.isNotBlank()) {
-                            Icon(painter = painterResource(Res.drawable.outline_clear_24),
+                            Icon(
+                                painter = painterResource(Res.drawable.outline_clear_24),
                                 tint = MaterialTheme.colorScheme.secondary,
                                 contentDescription = null,
                                 modifier = Modifier.clickable { estPrice = "" })
@@ -445,10 +455,10 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     ) {
                         if (galleryImages.isEmpty())
                             items(9) {
-                                ProductUI()
+                                ProductUI(sharedCMP)
                             }
                         else items(galleryImages) {
-                            ProductUI(it)
+                            ProductUI(sharedCMP, it)
                         }
                     }
 
@@ -467,7 +477,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
 
         if (toastMsg.isNotBlank()) {
             ShowToast(toastMsg)
-            if (uiState is ProductInReview) LaunchedEffect(Unit) {
+            if (uiState == ProductInReview) LaunchedEffect(Unit) {
                 nav.pop()
             }
             toastMsg = ""
@@ -475,8 +485,19 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
         }
 
         when (uiState) {
-            is ProductInReview -> {
+            Loading -> {
+                toastMsg = "Adding Product"
+            }
+
+            ProductInReview -> {
                 toastMsg = "Product Added for review."
+            }
+
+            is AddProductFailed -> {
+                toastMsg = (uiState as AddProductFailed).error
+            }
+
+            Idle -> { //do nothing.
             }
 
             TitleBlank -> {
@@ -501,14 +522,13 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                 toastMsg = "Product Images are required."
             }
 
-            is LessImagesSelected -> {
+            LessImagesSelected -> {
                 toastMsg =
-                    "${(uiState as LessImagesSelected).difference} more images can be added"
+                    "Please add at least 4 images."
             }
 
-            is MoreImagesSelected -> {
-                toastMsg =
-                    "Max Images above 9 by ${(uiState as MoreImagesSelected).difference} ignored."
+            MoreImagesSelected -> {
+                toastMsg = "Maximum images allowed are 9."
             }
 
             CategoryNotSelected -> {
@@ -519,13 +539,12 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                 toastMsg = "Subcategory is required."
             }
 
-            else -> {}
         }
 
     }
 
     @Composable
-    private fun ProductUI(byteArray: ByteArray? = null) {
+    private fun ProductUI(sharedCMP: SharedCMP, byteArray: ByteArray? = null) {
         val size = (sharedCMP.screenWidth / 4).dp
         //  val nav = LocalNavigator.currentOrThrow
         Column {
