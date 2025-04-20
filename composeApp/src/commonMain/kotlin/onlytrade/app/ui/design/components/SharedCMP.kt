@@ -2,10 +2,9 @@ package onlytrade.app.ui.design.components
 
 import androidx.compose.runtime.Composable
 
-interface SharedCMP {
-    val screenWidth: Int
-    val screenHeight: Int
+data class SharedCMP(
+    val screenWidth: Int,
+    val screenHeight: Int,
+    val getImagesComposable: @Composable (onImagesPicked: (List<ByteArray>) -> Unit) -> Unit
+)
 
-    @Composable
-    fun GetImagesFromGallery(onImagesPicked: (List<ByteArray>) -> Unit)
-}

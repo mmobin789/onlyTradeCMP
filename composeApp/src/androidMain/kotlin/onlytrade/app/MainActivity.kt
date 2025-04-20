@@ -11,6 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,10 +34,6 @@ import java.io.ByteArrayOutputStream
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        OTBusinessModule.run(
-            platformInit = { androidContext(this@MainActivity) },
-            databaseDriverFactory = DatabaseDriverFactory(this)
-        )
 
 
 
@@ -44,19 +41,18 @@ class MainActivity : ComponentActivity() {
             val localConfig = LocalConfiguration.current
             val screenWidth = localConfig.screenWidthDp
             val screenHeight = localConfig.screenHeightDp
+            val sharedCMP = remember(screenWidth, screenHeight) {
+                SharedCMP(screenWidth, screenHeight, getImagesComposable = { onImagesPicked ->
+                    LoadImageFromGallery(onImagesPicked)
+                })
+            }
+            OTBusinessModule.run(
+                platformInit = { androidContext(this@MainActivity) },
+                databaseDriverFactory = DatabaseDriverFactory(this)
+            )
             KoinContext {
                 AppTheme {
-                    Navigator(SplashScreen(object : SharedCMP {
-                        override val screenWidth: Int
-                            get() = screenWidth
-                        override val screenHeight: Int
-                            get() = screenHeight
-
-                        @Composable
-                        override fun GetImagesFromGallery(onImagesPicked: (List<ByteArray>) -> Unit) {
-                            LoadImageFromGallery(onImagesPicked)
-                        }
-                    }))
+                    Navigator(SplashScreen(sharedCMP))
                 }
             }
         }

@@ -425,7 +425,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     columns = GridCells.Fixed(2)
                 ) {
 
-                    items(products, key = { it.id }) { product ->
+                    items(products) { product ->
                         ProductUI(product.id.toInt(), product)
                     }
 

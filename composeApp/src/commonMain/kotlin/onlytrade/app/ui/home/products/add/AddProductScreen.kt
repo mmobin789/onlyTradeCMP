@@ -464,7 +464,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
 
         }
         if (showImagePicker) {
-            sharedCMP.GetImagesFromGallery {
+            sharedCMP.getImagesComposable {
                 showImagePicker = false
                 galleryImages = it
             }
