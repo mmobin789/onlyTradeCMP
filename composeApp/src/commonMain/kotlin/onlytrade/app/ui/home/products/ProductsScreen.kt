@@ -42,6 +42,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.home.products.colorScheme.productsColorScheme
@@ -60,12 +61,13 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import kotlin.random.Random
 
-class ProductsScreen(private val categoryName: String? = null, private val sharedCMP: SharedCMP) :
+class ProductsScreen(private val categoryName: String? = null) :
     Screen {
 
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
+        val sharedCMP = LocalSharedCMP.current
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
 
@@ -115,7 +117,7 @@ class ProductsScreen(private val categoryName: String? = null, private val share
                     Modifier
                         .weight(1f)
                         .clickable {
-                            nav.replaceAll(HomeScreen(sharedCMP))
+                            nav.replaceAll(HomeScreen())
                         }) {
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -158,7 +160,7 @@ class ProductsScreen(private val categoryName: String? = null, private val share
                     Modifier
                         .weight(1f)
                         .clickable {
-                            nav.push(WishListScreen(sharedCMP))
+                            nav.push(WishListScreen())
                         }) {
 
                     Icon(
@@ -203,7 +205,7 @@ class ProductsScreen(private val categoryName: String? = null, private val share
             ) {
 
                 items(16) { i ->
-                    ProductUI(i)
+                    ProductUI(sharedCMP, i)
                 }
             }
         }
@@ -212,11 +214,11 @@ class ProductsScreen(private val categoryName: String? = null, private val share
     }
 
     @Composable
-    private fun ProductUI(index: Int) {
+    private fun ProductUI(sharedCMP: SharedCMP, index: Int) {
         val size = (sharedCMP.screenWidth / 2).dp
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = Modifier.clickable {
-            nav.push(ProductDetailScreen(index, sharedCMP))
+            nav.push(ProductDetailScreen(index))
         }) {
             Box(
                 Modifier

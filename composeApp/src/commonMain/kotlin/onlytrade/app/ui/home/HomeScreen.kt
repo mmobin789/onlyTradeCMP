@@ -59,6 +59,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.DotsIndicator
+import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
@@ -95,13 +96,14 @@ import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
+class HomeScreen : Screen {
 
     @Composable
     override fun Content() {
         val viewModel = koinViewModel<HomeViewModel>()
         val products by viewModel.productList.collectAsStateWithLifecycle()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+        val sharedCMP = LocalSharedCMP.current
         val nav = LocalNavigator.currentOrThrow
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
@@ -259,7 +261,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                     Modifier
                         .weight(1f)
                         .clickable {
-                            nav.push(WishListScreen(sharedCMP))
+                            nav.push(WishListScreen())
                         }) {
 
                     Icon(
@@ -277,7 +279,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                 Column(
                     Modifier
                         .weight(1f)
-                        .clickable { nav.push(ProfileScreen(sharedCMP)) }
+                        .clickable { nav.push(ProfileScreen()) }
                 ) {
 
                     Icon(
@@ -297,7 +299,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
             if (viewModel.isUserLoggedIn) {
 
                 val addProductClicked = {
-                    nav.push(AddProductScreen(sharedCMP))
+                    nav.push(AddProductScreen())
                 }
 
                 if (productGridState.isScrollInProgress)
@@ -354,8 +356,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                                     modifier = Modifier.clickable {
                                         nav.push(
                                             SubCategoriesScreen(
-                                                "Category ${i + 1}",
-                                                sharedCMP
+                                                "Category ${i + 1}"
                                             )
                                         )
                                     },
@@ -397,7 +398,7 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .clickable {
-                                nav.push(ProductsScreen(sharedCMP = sharedCMP))
+                                nav.push(ProductsScreen())
                             },
                         text = stringResource(Res.string.home_3),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = W700)
@@ -426,12 +427,12 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
                 ) {
 
                     items(products) { product ->
-                        ProductUI(product.id.toInt(), product)
+                        ProductUI(sharedCMP, product.id.toInt(), product)
                     }
 
                     when (uiState) {
-                        LoadingProducts -> items(if (viewModel.productsPageNo == 1) viewModel.productPageSizeExpected else 2) { i ->
-                            ProductUI(i)
+                        LoadingProducts -> items(2) { i ->
+                            ProductUI(sharedCMP, i)
                         }
 
                         ProductsNotFound -> { //todo display error with call to action to reload products then call viewModel.getProducts( tryAgain = true) as action.
@@ -453,11 +454,11 @@ class HomeScreen(private val sharedCMP: SharedCMP) : Screen {
     }
 
     @Composable
-    private fun ProductUI(index: Int, product: Product? = null) {
+    private fun ProductUI(sharedCMP: SharedCMP, index: Int, product: Product? = null) {
         val size = (sharedCMP.screenWidth / 2).dp
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
-            nav.push(ProductDetailScreen(index, sharedCMP))
+            nav.push(ProductDetailScreen(index))
         }) {
             Box(
                 Modifier
