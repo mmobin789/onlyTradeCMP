@@ -58,7 +58,6 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.LocalSharedCMP
-import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
@@ -136,12 +135,12 @@ class ProfileScreen : Screen {
                         }
                     },
                     actions = {
-                        IconButton(onClick = { isEditing = !isEditing }) {
+                        /*IconButton(onClick = { isEditing = !isEditing }) {
                             Icon(
                                 imageVector = if (isEditing) Icons.Default.Check else Icons.Default.Edit,
                                 contentDescription = if (isEditing) "Save" else "Edit"
                             )
-                        }
+                        }*/
                     }
                 )
             },
