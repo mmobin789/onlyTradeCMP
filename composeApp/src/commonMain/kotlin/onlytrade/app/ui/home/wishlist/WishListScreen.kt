@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.profile.ProfileScreen
@@ -50,14 +51,14 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import kotlin.random.Random
 
-class WishListScreen(private val sharedCMP: SharedCMP) : Screen {
+class WishListScreen() : Screen {
 
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
         val wishListState = rememberLazyListState()
         val headerVisible = wishListState.canScrollBackward.not()
-
+        val sharedCMP = LocalSharedCMP.current
         Scaffold(topBar = {
             AnimatedVisibility(visible = headerVisible) {
                 Column {
@@ -161,7 +162,7 @@ class WishListScreen(private val sharedCMP: SharedCMP) : Screen {
                 Column(
                     Modifier
                         .weight(1f)
-                        .clickable { nav.push(ProfileScreen(sharedCMP)) }
+                        .clickable { nav.push(ProfileScreen()) }
                 ) {
 
                     Icon(
@@ -190,7 +191,7 @@ class WishListScreen(private val sharedCMP: SharedCMP) : Screen {
             ) {
 
                 items(10) { i ->
-                    ProductUI(i)
+                    ProductUI(sharedCMP, i)
                 }
             }
         }
@@ -200,12 +201,12 @@ class WishListScreen(private val sharedCMP: SharedCMP) : Screen {
 
 
     @Composable
-    private fun ProductUI(index: Int) {
+    private fun ProductUI(sharedCMP: SharedCMP, index: Int) {
         val size = (sharedCMP.screenWidth / 3).dp
         val nav = LocalNavigator.currentOrThrow
 
         Row(modifier = Modifier.clickable {
-            nav.push(ProductDetailScreen(index, sharedCMP))
+            nav.push(ProductDetailScreen(index))
         }) {
             Spacer(
                 Modifier

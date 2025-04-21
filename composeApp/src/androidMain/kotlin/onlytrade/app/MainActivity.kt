@@ -10,7 +10,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import onlytrade.app.di.OTBusinessModule
+import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.getAsyncImageLoader
 import onlytrade.app.ui.design.theme.AppTheme
@@ -37,26 +40,27 @@ class MainActivity : ComponentActivity() {
             platformInit = { androidContext(this@MainActivity) },
             databaseDriverFactory = DatabaseDriverFactory(this)
         )
-
-
-
         setContent {
             val localConfig = LocalConfiguration.current
             val screenWidth = localConfig.screenWidthDp
             val screenHeight = localConfig.screenHeightDp
-            KoinContext {
-                AppTheme {
-                    Navigator(SplashScreen(object : SharedCMP {
-                        override val screenWidth: Int
-                            get() = screenWidth
-                        override val screenHeight: Int
-                            get() = screenHeight
+            val sharedCMP = remember(screenWidth, screenHeight) {
+                object : SharedCMP {
+                    override val screenWidth: Int = screenWidth
+                    override val screenHeight: Int = screenHeight
 
-                        @Composable
-                        override fun GetImagesFromGallery(onImagesPicked: (List<ByteArray>) -> Unit) {
-                            LoadImageFromGallery(onImagesPicked)
-                        }
-                    }))
+                    @Composable
+                    override fun GetImagesFromGallery(onImagesPicked: (List<ByteArray>) -> Unit) {
+                        LoadImageFromGallery(onImagesPicked)
+                    }
+                }
+            }
+
+            CompositionLocalProvider(LocalSharedCMP provides sharedCMP) {
+                KoinContext {
+                    AppTheme {
+                        Navigator(SplashScreen())
+                    }
                 }
             }
         }

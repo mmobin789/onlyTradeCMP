@@ -1,6 +1,7 @@
 package onlytrade.app.ui.design.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.staticCompositionLocalOf
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.request.crossfade
@@ -15,3 +16,6 @@ fun getAsyncImageLoader(context: PlatformContext) =
     ImageLoader.Builder(context).crossfade(true).logger(DebugLogger()).build()
 
 
+val LocalSharedCMP = staticCompositionLocalOf<SharedCMP> {
+    error("SharedCMP not provided")
+}

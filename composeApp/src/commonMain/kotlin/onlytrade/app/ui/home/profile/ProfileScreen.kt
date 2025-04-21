@@ -57,6 +57,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.home.HomeScreen
@@ -88,7 +89,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 
-class ProfileScreen(private val sharedCMP: SharedCMP) : Screen {
+class ProfileScreen : Screen {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -97,6 +98,7 @@ class ProfileScreen(private val sharedCMP: SharedCMP) : Screen {
         val viewModel = koinViewModel<ProfileViewModel>()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val nav = LocalNavigator.currentOrThrow
+        val sharedCMP = LocalSharedCMP.current //todo will be needed to create tiles.
 
         var isEditing by remember { mutableStateOf(false) }
         var name by rememberSaveable { mutableStateOf("") }
@@ -153,7 +155,7 @@ class ProfileScreen(private val sharedCMP: SharedCMP) : Screen {
                     Column(
                         Modifier
                             .weight(1f)
-                            .clickable { nav.push(HomeScreen(sharedCMP)) })
+                            .clickable { nav.push(HomeScreen()) })
                     {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -184,7 +186,7 @@ class ProfileScreen(private val sharedCMP: SharedCMP) : Screen {
                     Column(
                         Modifier
                             .weight(1f)
-                            .clickable { nav.push(WishListScreen(sharedCMP)) }) {
+                            .clickable { nav.push(WishListScreen()) }) {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                             imageVector = Icons.Outlined.Favorite,

@@ -20,7 +20,6 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.setSingletonImageLoaderFactory
 import kotlinx.coroutines.delay
-import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.getAsyncImageLoader
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.onboarding.OBScrollPage
@@ -37,7 +36,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 
-class SplashScreen(private val sharedCMP: SharedCMP) : Screen {
+class SplashScreen : Screen {
     @Composable
     @Preview
     override fun Content() {
@@ -69,14 +68,14 @@ class SplashScreen(private val sharedCMP: SharedCMP) : Screen {
             )
 
         }
-
         LaunchedEffect(true) {
             delay(250)
+
             nav.replace(
                 if (isUserLoggedIn)
-                    HomeScreen(sharedCMP)
+                    HomeScreen()
                 else
-                    OBScrollPage(sharedCMP)
+                    OBScrollPage()
             )
 
         }

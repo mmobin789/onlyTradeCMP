@@ -56,6 +56,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
+import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.design.components.isValidPrice
@@ -92,7 +93,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
+class AddProductScreen : Screen {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -100,6 +101,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
         val viewModel = koinViewModel<AddProductViewModel>()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val nav = LocalNavigator.currentOrThrow
+        val sharedCMP = LocalSharedCMP.current
         val productGridState = rememberLazyGridState()
         var title by remember { mutableStateOf("") }
         var description by remember { mutableStateOf("") }
@@ -378,7 +380,8 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     value = description,
                     trailingIcon = {
                         if (description.isNotBlank()) {
-                            Icon(painter = painterResource(Res.drawable.outline_clear_24),
+                            Icon(
+                                painter = painterResource(Res.drawable.outline_clear_24),
                                 tint = MaterialTheme.colorScheme.secondary,
                                 contentDescription = null,
                                 modifier = Modifier.clickable { description = "" })
@@ -409,7 +412,8 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     value = estPrice,
                     trailingIcon = {
                         if (estPrice.isNotBlank()) {
-                            Icon(painter = painterResource(Res.drawable.outline_clear_24),
+                            Icon(
+                                painter = painterResource(Res.drawable.outline_clear_24),
                                 tint = MaterialTheme.colorScheme.secondary,
                                 contentDescription = null,
                                 modifier = Modifier.clickable { estPrice = "" })
@@ -451,10 +455,10 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
                     ) {
                         if (galleryImages.isEmpty())
                             items(9) {
-                                ProductUI()
+                                ProductUI(sharedCMP)
                             }
                         else items(galleryImages) {
-                            ProductUI(it)
+                            ProductUI(sharedCMP, it)
                         }
                     }
 
@@ -540,7 +544,7 @@ class AddProductScreen(private val sharedCMP: SharedCMP) : Screen {
     }
 
     @Composable
-    private fun ProductUI(byteArray: ByteArray? = null) {
+    private fun ProductUI(sharedCMP: SharedCMP, byteArray: ByteArray? = null) {
         val size = (sharedCMP.screenWidth / 4).dp
         //  val nav = LocalNavigator.currentOrThrow
         Column {

@@ -41,7 +41,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.DotsIndicator
-import onlytrade.app.ui.design.components.SharedCMP
+import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
@@ -49,11 +49,12 @@ import onlytrade.composeapp.generated.resources.ok
 import org.jetbrains.compose.resources.stringResource
 import kotlin.random.Random
 
-class ProductDetailScreen(private val id: Int, private val sharedCMP: SharedCMP) : Screen {
+class ProductDetailScreen(private val id: Int) : Screen {
 
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
+        val sharedCMP = LocalSharedCMP.current
         // var headerVisible by remember { mutableStateOf(true) }
         // var headerVisible = true
 
@@ -86,7 +87,8 @@ class ProductDetailScreen(private val id: Int, private val sharedCMP: SharedCMP)
 
             }
 
-            Icon(modifier = Modifier
+            Icon(
+                modifier = Modifier
                 .constrainAs(back) {
                     top.linkTo(header.top)
                     start.linkTo(header.start)
@@ -96,7 +98,8 @@ class ProductDetailScreen(private val id: Int, private val sharedCMP: SharedCMP)
                 imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                 contentDescription = stringResource(Res.string.ok))
 
-            Icon(modifier = Modifier
+            Icon(
+                modifier = Modifier
                 .constrainAs(like) {
                     top.linkTo(header.top)
                     end.linkTo(header.end)
@@ -142,17 +145,18 @@ class ProductDetailScreen(private val id: Int, private val sharedCMP: SharedCMP)
 
 
 
-            ConstraintLayout(modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    color = productDetailColorScheme.screenBG,
-                    shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
-                )
-                .constrainAs(content) {
-                    top.linkTo(dots.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
+            ConstraintLayout(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        color = productDetailColorScheme.screenBG,
+                        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                    )
+                    .constrainAs(content) {
+                        top.linkTo(dots.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
 
             ) {
                 val (tags, productTitle, productDescription, buttons) = createRefs()
@@ -232,7 +236,9 @@ class ProductDetailScreen(private val id: Int, private val sharedCMP: SharedCMP)
                         border = BorderStroke(1.dp, productDetailColorScheme.offerTradeBtnBorder),
                     ) {
                         Text(
-                            text = "Offer Trade", color = productDetailColorScheme.offerTradeBtnText, modifier = Modifier.padding(vertical = 8.dp)
+                            text = "Offer Trade",
+                            color = productDetailColorScheme.offerTradeBtnText,
+                            modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
 
