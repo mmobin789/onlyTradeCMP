@@ -40,7 +40,7 @@ import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.home.categories.sub.colorScheme.subCategoriesColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
-import onlytrade.app.ui.home.wishlist.WishListScreen
+import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.cancel
@@ -152,7 +152,7 @@ class SubCategoriesScreen(private val categoryName: String) :
                         Modifier
                             .weight(1f)
                             .clickable {
-                                nav.push(WishListScreen())
+                                nav.push(MyProductsScreen())
                             }) {
 
                         Icon(

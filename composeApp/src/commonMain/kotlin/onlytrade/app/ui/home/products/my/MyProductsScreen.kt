@@ -1,4 +1,4 @@
-package onlytrade.app.ui.home.wishlist
+package onlytrade.app.ui.home.products.my
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -40,8 +40,8 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
+import onlytrade.app.ui.home.products.my.colorScheme.myProductsColorScheme
 import onlytrade.app.ui.home.profile.ProfileScreen
-import onlytrade.app.ui.home.wishlist.colorScheme.wishlistColorScheme
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.cancel
@@ -51,7 +51,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import kotlin.random.Random
 
-class WishListScreen() : Screen {
+class MyProductsScreen() : Screen {
 
     @Composable
     override fun Content() {
@@ -64,7 +64,7 @@ class WishListScreen() : Screen {
                 Column {
                     Row(
                         modifier = Modifier
-                            .background(wishlistColorScheme.wishlistBarBG)
+                            .background(myProductsColorScheme.myProductsBarBG)
                             .fillMaxWidth()
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -88,7 +88,7 @@ class WishListScreen() : Screen {
 
                     Spacer(
                         modifier = Modifier
-                            .background(wishlistColorScheme.wishlistBarBG)
+                            .background(myProductsColorScheme.myProductsBarBG)
                             .height(1.dp)
                             .fillMaxWidth()
                     )
@@ -98,7 +98,7 @@ class WishListScreen() : Screen {
         }, bottomBar = {
             Row(
                 modifier = Modifier
-                    .background(wishlistColorScheme.botBarBG)
+                    .background(myProductsColorScheme.botBarBG)
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -183,7 +183,7 @@ class WishListScreen() : Screen {
             LazyColumn(
                 state = wishListState,
                 modifier = Modifier
-                    .background(wishlistColorScheme.screenBG)
+                    .background(myProductsColorScheme.screenBG)
                     .padding(paddingValues)
                     .padding(16.dp)
                     .fillMaxSize(),

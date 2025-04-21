@@ -47,7 +47,7 @@ import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.home.products.colorScheme.productsColorScheme
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
-import onlytrade.app.ui.home.wishlist.WishListScreen
+import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.botBar_1
@@ -160,7 +160,7 @@ class ProductsScreen(private val categoryName: String? = null) :
                     Modifier
                         .weight(1f)
                         .clickable {
-                            nav.push(WishListScreen())
+                            nav.push(MyProductsScreen())
                         }) {
 
                     Icon(

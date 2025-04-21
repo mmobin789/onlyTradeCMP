@@ -1,14 +1,13 @@
-package onlytrade.app.ui.home.wishlist.colorScheme
+package onlytrade.app.ui.home.products.my.colorScheme
 
 import androidx.compose.ui.graphics.Color
 
 
-
-object DarkWishlistColorScheme: WishlistColorScheme {
+object DarkMyProductsColorScheme : MyProductsColorScheme {
     override val screenBG: Color
         get() = Color(0xFF101D25)
     override val botBarBG: Color
         get() = Color(0xFF232D36)
-    override val wishlistBarBG: Color
+    override val myProductsBarBG: Color
         get() = Color(0xFF232D36)
 }

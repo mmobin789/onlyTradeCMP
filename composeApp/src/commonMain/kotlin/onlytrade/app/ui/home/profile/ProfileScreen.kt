@@ -46,8 +46,8 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
+import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.ui.home.profile.colorScheme.profileColorScheme
-import onlytrade.app.ui.home.wishlist.WishListScreen
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.botBar_1
@@ -136,7 +136,7 @@ class ProfileScreen : Screen {
                     Column(
                         Modifier
                             .weight(1f)
-                            .clickable { nav.push(WishListScreen()) }) {
+                            .clickable { nav.push(MyProductsScreen()) }) {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                             imageVector = Icons.Outlined.Favorite,

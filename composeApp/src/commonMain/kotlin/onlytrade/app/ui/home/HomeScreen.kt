@@ -67,8 +67,8 @@ import onlytrade.app.ui.home.colorScheme.homeColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
 import onlytrade.app.ui.home.products.add.AddProductScreen
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
+import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.ui.home.profile.ProfileScreen
-import onlytrade.app.ui.home.wishlist.WishListScreen
 import onlytrade.app.viewmodel.home.ui.HomeUiState.GetProductsApiError
 import onlytrade.app.viewmodel.home.ui.HomeUiState.Idle
 import onlytrade.app.viewmodel.home.ui.HomeUiState.LoadingProducts
@@ -261,7 +261,7 @@ class HomeScreen : Screen {
                     Modifier
                         .weight(1f)
                         .clickable {
-                            nav.push(WishListScreen())
+                            nav.push(MyProductsScreen())
                         }) {
 
                     Icon(
