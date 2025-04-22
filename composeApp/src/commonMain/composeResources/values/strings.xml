@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OnlyTrade</string>
-    <string name="app_desc">Asia\'s no 1 e-trading app</string>
+    <string name="app_desc">World\'s no 1 e-trading app</string>
     <string name="app_logo">App logo</string>
     <string name="password">Password</string>
     <string name="confirm_password">Confirm Password</string>
@@ -21,50 +21,54 @@
     <string name="ob1_4">Next</string>
     <!-- Onboarding Page 2 -->
     <string name="ob2_1">Skip for now</string>
-    <string name="ob2_2">Unlock exclusive offers and discounts</string>"
+    <string name="ob2_2">Unlock exclusive offers and discounts</string>
     <string name="ob2_3">Get access to limited-time deals and special promotions available only to our valued\n customers.</string>
     <string name="ob2_4">Next</string>
     <!-- Onboarding Page 3 -->
     <string name="ob3_1">Skip for now</string>
-    <string name="ob3_2">Safe and Secure\nDeals</string>"
+    <string name="ob3_2">Safe and Secure\nDeals</string>
     <string name="ob3_3">OnlyTrade provides full scale arbitration and customer support for your trusted trades and offers.</string>
-    <string name="ob3_4">Login</string>"
+    <string name="ob3_4">Login</string>
     <string name="ob3_5">Get Started</string>
 
     <!-- Login Screen -->
-    <string name="login_1">Login</string>""
-    <string name="login_2">Enter your email or mobile number</string>"
-    <string name="login_3">Email</string>"
-    <string name="login_4">OR</string>"
-    <string name="login_5">Mobile Number</string>"
-    <string name="login_6">Password</string>"
-    <string name="login_7">Forgot password?</string>"w
-    <string name="login_8">Login</string>""
+    <string name="login_1">Login</string>
+    <string name="login_2">Enter your email or mobile number</string>
+    <string name="login_3">Email</string>
+    <string name="login_4">OR</string>
+    <string name="login_5">Mobile Number</string>
+    <string name="login_6">Password</string>
+    <string name="login_7">Forgot password?</string>
+    <string name="login_8">Login</string>
 
     <!-- Home -->
-    <string name="home_1">Categories</string>"
-    <string name="home_2">Latest Products</string>"
-    <string name="home_3">SEE ALL</string>"
-    <string name="home_4">Add Product</string>"
-    <string name="home_5">Loading…</string>"
+    <string name="home_1">Categories</string>
+    <string name="home_2">Latest Products</string>
+    <string name="home_3">SEE ALL</string>
+    <string name="home_4">Add Product</string>
+    <string name="home_5">Loading…</string>
     <!-- Add Product -->
-    <string name="addProduct_1">Add a New Trade Product</string>"
-    <string name="addProduct_2">Add Product Image</string>"
-    <string name="addProduct_3">Add Product</string>"
-    <string name="addProduct_4">Product Name</string>"
-    <string name="addProduct_5">Category</string>"
-    <string name="addProduct_6">Sub Category</string>"
-    <string name="addProduct_7">Describe your product!</string>"
-    <string name="addProduct_8">Enter valid amount</string>""
+    <string name="addProduct_1">Add a New Trade Product</string>
+    <string name="addProduct_2">Add Product Image</string>
+    <string name="addProduct_3">Add Product</string>
+    <string name="addProduct_4">Product Name</string>
+    <string name="addProduct_5">Category</string>
+    <string name="addProduct_6">Sub Category</string>
+    <string name="addProduct_7">Describe your product!</string>
+    <string name="addProduct_8">Enter valid amount</string>
+
+    <!-- My Products -->
+    <string name="myProducts_1">Buy</string>
+    <string name="myProducts_2">Sell</string>
     <!-- Bottom Bar -->
-    <string name="botBar_1">Home</string>"
-    <string name="botBar_2">My Trades</string>"
-    <string name="botBar_3">My Products</string>"
-    <string name="botBar_4">Profile</string>"
+    <string name="botBar_1">Home</string>
+    <string name="botBar_2">My Trades</string>
+    <string name="botBar_3">My Products</string>
+    <string name="botBar_4">Profile</string>
     <!-- Profile Screen -->
-    <string name="profile_1">My Profile</string>"
-    <string name="profile_2">Active Trades</string>"
-    <string name="profile_3">My Offers</string>"
-    <string name="profile_4">Logout</string>"
+    <string name="profile_1">My Profile</string>
+    <string name="profile_2">Active Trades</string>
+    <string name="profile_3">My Offers</string>
+    <string name="profile_4">Logout</string>
 
 </resources>

@@ -43,6 +43,7 @@ import onlytrade.app.ui.home.products.ProductsScreen
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
+import onlytrade.composeapp.generated.resources.botBar_3
 import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import org.jetbrains.compose.resources.stringResource
@@ -163,7 +164,7 @@ class SubCategoriesScreen(private val categoryName: String) :
 
                         Text(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "Wishlist",
+                            text = stringResource(Res.string.botBar_3),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                         )
                     }

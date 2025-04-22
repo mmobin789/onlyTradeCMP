@@ -2,6 +2,7 @@ package onlytrade.app.ui.home.products.my
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,8 +13,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
@@ -25,40 +29,65 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.text.font.FontWeight.Companion.W300
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import coil3.compose.AsyncImage
+import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
+import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.products.my.colorScheme.myProductsColorScheme
 import onlytrade.app.ui.home.profile.ProfileScreen
+import onlytrade.app.viewmodel.product.repository.data.db.Product
+import onlytrade.app.viewmodel.product.ui.MyProductsUiState.GetProductsApiError
+import onlytrade.app.viewmodel.product.ui.MyProductsUiState.Idle
+import onlytrade.app.viewmodel.product.ui.MyProductsUiState.LoadingProducts
+import onlytrade.app.viewmodel.product.ui.MyProductsUiState.ProductsNotFound
+import onlytrade.app.viewmodel.product.ui.MyProductsViewModel
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
+import onlytrade.composeapp.generated.resources.botBar_3
 import onlytrade.composeapp.generated.resources.cancel
+import onlytrade.composeapp.generated.resources.home_5
+import onlytrade.composeapp.generated.resources.myProducts_1
+import onlytrade.composeapp.generated.resources.myProducts_2
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import onlytrade.composeapp.generated.resources.search
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class MyProductsScreen() : Screen {
+class MyProductsScreen : Screen {
 
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
-        val wishListState = rememberLazyListState()
-        val headerVisible = wishListState.canScrollBackward.not()
+        val productListState = rememberLazyListState()
+        val headerVisible = productListState.canScrollBackward.not()
         val sharedCMP = LocalSharedCMP.current
+        val viewModel = koinViewModel<MyProductsViewModel>()
+        val products by viewModel.productList.collectAsStateWithLifecycle()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         Scaffold(topBar = {
             AnimatedVisibility(visible = headerVisible) {
                 Column {
@@ -79,7 +108,7 @@ class MyProductsScreen() : Screen {
 
                         Text(
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            text = "My Products",
+                            text = stringResource(Res.string.botBar_3),
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
                         )
 
@@ -155,7 +184,7 @@ class MyProductsScreen() : Screen {
 
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Wishlist",
+                        text = stringResource(Res.string.botBar_3),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                     )
                 }
@@ -179,19 +208,71 @@ class MyProductsScreen() : Screen {
             }
 
         }) { paddingValues ->
-
-            LazyColumn(
-                state = wishListState,
-                modifier = Modifier
+            Column(
+                modifier = Modifier.padding(paddingValues)
                     .background(myProductsColorScheme.screenBG)
-                    .padding(paddingValues)
-                    .padding(16.dp)
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                Row(
+                    modifier = Modifier.padding(16.dp)
+                        .border(
+                            width = 1.dp,
+                            color = myProductsColorScheme.buySellTabBGOutline,
+                            shape = MaterialTheme.shapes.large
+                        ).padding(8.dp)
+                ) {
+                    Text(
+                        fontSize = 15.sp,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        text = stringResource(Res.string.myProducts_1),
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = W300)
+                    )
+                    Text(
+                        fontSize = 15.sp,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        text = stringResource(Res.string.myProducts_2),
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = W300)
+                    )
+                }
+                LaunchedEffect(productListState) {
+                    snapshotFlow { productListState.layoutInfo }.collect { layoutInfo ->
+                        val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                        val total = layoutInfo.totalItemsCount
+                        if (lastVisible >= total - viewModel.productPageSizeExpected / 2) {
+                            viewModel.getProducts()
 
-                items(10) { i ->
-                    ProductUI(sharedCMP, i)
+                        }
+                    }
+                }
+
+
+                LazyColumn(
+                    state = productListState,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+
+                    items(products) { product ->
+                        ProductUI(sharedCMP, product.id.toInt(), product)
+                    }
+
+                    when (uiState) {
+                        LoadingProducts -> items(2) { i ->
+                            ProductUI(sharedCMP, i)
+                        }
+
+                        ProductsNotFound -> { //todo display error with call to action to reload products then call viewModel.getProducts( tryAgain = true) as action.
+                            getToast().showToast("Products not found.")
+                        }
+
+                        is GetProductsApiError -> { //todo show error.
+
+                        }
+
+                        Idle -> {} // do nothing.
+
+                    }
                 }
             }
         }
@@ -201,15 +282,18 @@ class MyProductsScreen() : Screen {
 
 
     @Composable
-    private fun ProductUI(sharedCMP: SharedCMP, index: Int) {
+    private fun ProductUI(sharedCMP: SharedCMP, index: Int, product: Product? = null) {
         val size = (sharedCMP.screenWidth / 3).dp
         val nav = LocalNavigator.currentOrThrow
 
-        Row(modifier = Modifier.clickable {
+        Row(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
             nav.push(ProductDetailScreen(index))
         }) {
-            Spacer(
-                Modifier
+            AsyncImage(
+                model = product?.imageUrls?.get(0),
+                contentDescription = product?.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.clip(MaterialTheme.shapes.extraLarge)
                     .size(size)
                     .background(
                         color = Color(
@@ -220,37 +304,122 @@ class MyProductsScreen() : Screen {
 
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(horizontal = 8.dp)
             ) {
 
 
                 Text(
+                    modifier = Modifier,
+                    text = product?.name ?: stringResource(Res.string.home_5),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
+                )
+
+                Text(
+                    modifier = Modifier,
+                    text = product?.estPrice?.toString() ?: stringResource(Res.string.home_5),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
+                )
+
+                /*  Text(
+                      modifier = Modifier,
+                      textDecoration = TextDecoration.LineThrough,
+                      text = "$${Random.nextInt(index, 500)}",
+                      style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
+                  )*/
+
+                ConstraintLayout(
                     modifier = Modifier
-                        .padding(top = 16.dp),
-                    text = "Product $index",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
-                )
+                ) {
 
-                Text(
-                    modifier = Modifier,
-                    text = "$${Random.nextInt(index, 500)}",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
-                )
+                    val (c1, c2, c3, s1, s2, colorsTxt) = createRefs()
 
-                Text(
-                    modifier = Modifier,
-                    textDecoration = TextDecoration.LineThrough,
-                    text = "$${Random.nextInt(index, 500)}",
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
-                )
+                    AsyncImage(
+                        model = product?.imageUrls?.get(1),
+                        contentDescription = product?.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.clip(CircleShape)
+                            .constrainAs(c1) {
+                                top.linkTo(parent.top)
+                                start.linkTo(parent.start)
+                            }
+                            .size(24.dp)
+                            .background(
+                                shape = CircleShape, color = Color(
+                                    Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                                )
+                            ))
 
-                Icon(
-                    modifier = Modifier.align(Alignment.End),
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = stringResource(Res.string.search)
-                )
+                    Spacer(
+                        modifier = Modifier
+                            .width(12.dp)
+                            .constrainAs(s1) {
+                                top.linkTo(c1.top)
+                                bottom.linkTo(c1.bottom)
+                                start.linkTo(c1.start)
+                                end.linkTo(c1.end)
+
+                            })
+
+                    AsyncImage(
+                        model = product?.imageUrls?.get(2),
+                        contentDescription = product?.name,
+                        contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
+                            .constrainAs(c2) {
+                                start.linkTo(s1.end)
+                                top.linkTo(parent.top)
+                            }
+                            .size(24.dp)
+                            .background(
+                                shape = CircleShape, color = Color(
+                                    Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                                )
+                            ))
+
+                    Spacer(
+                        modifier = Modifier
+                            .width(12.dp)
+                            .constrainAs(s2) {
+                                top.linkTo(c2.top)
+                                bottom.linkTo(c2.bottom)
+                                start.linkTo(c2.start)
+                                end.linkTo(c2.end)
+
+                            })
+                    AsyncImage(
+                        model = product?.imageUrls?.get(3),
+                        contentDescription = product?.name,
+                        contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
+                            .constrainAs(c3) {
+                                start.linkTo(s2.end)
+                                top.linkTo(parent.top)
+                            }
+                            .size(24.dp)
+                            .background(
+                                shape = CircleShape, color = Color(
+                                    Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                                )
+                            ))
+
+                    Text(
+                        modifier = Modifier
+                            .constrainAs(colorsTxt) {
+                                top.linkTo(parent.top)
+                                start.linkTo(c3.end)
+
+                            }
+                            .padding(horizontal = 16.dp),
+                        textDecoration = TextDecoration.Underline,
+                        text = if (product == null) stringResource(Res.string.home_5) else
+                            "All ${product.imageUrls.size} images",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300))
+                }
             }
+
+            Icon(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                imageVector = Icons.Outlined.Delete,
+                contentDescription = stringResource(Res.string.search)
+            )
         }
     }
 }

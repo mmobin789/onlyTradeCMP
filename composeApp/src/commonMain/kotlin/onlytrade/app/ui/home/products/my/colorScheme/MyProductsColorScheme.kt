@@ -9,6 +9,16 @@ interface MyProductsColorScheme {
     val screenBG: Color
     val botBarBG: Color
     val myProductsBarBG: Color
+    val buySellTabBGOutline: Color
+    val buySellTabBG: Color
+    val buyTxt: Color
+    val buyTxtClicked: Color
+    val sellTxt: Color
+    val sellTxtClicked: Color
+    val buyBG: Color
+    val buyBGClicked: Color
+    val sellBG: Color
+    val sellBGClicked: Color
 }
 
 
