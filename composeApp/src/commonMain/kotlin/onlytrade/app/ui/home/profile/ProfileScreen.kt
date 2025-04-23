@@ -15,13 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
@@ -30,6 +27,7 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -61,17 +59,17 @@ import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
+import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.ui.home.profile.colorScheme.profileColorScheme
-import onlytrade.app.ui.home.wishlist.WishListScreen
-import onlytrade.app.viewmodel.profile.ui.ProfileViewModel
-import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Idle
-import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Loading
-import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Updated
-import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Success
-import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Error
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.BlankNameError
-import onlytrade.app.viewmodel.profile.ui.ProfileUiState.InvalidPhoneFormatError
+import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Error
+import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Idle
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.InvalidEmailFormatError
+import onlytrade.app.viewmodel.profile.ui.ProfileUiState.InvalidPhoneFormatError
+import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Loading
+import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Success
+import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Updated
+import onlytrade.app.viewmodel.profile.ui.ProfileViewModel
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.botBar_1
@@ -185,7 +183,7 @@ class ProfileScreen : Screen {
                     Column(
                         Modifier
                             .weight(1f)
-                            .clickable { nav.push(WishListScreen()) }) {
+                            .clickable { nav.push(MyProductsScreen()) }) {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                             imageVector = Icons.Outlined.Favorite,
