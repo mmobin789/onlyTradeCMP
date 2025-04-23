@@ -67,8 +67,8 @@ import onlytrade.app.ui.home.colorScheme.homeColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
 import onlytrade.app.ui.home.products.add.AddProductScreen
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
+import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.ui.home.profile.ProfileScreen
-import onlytrade.app.ui.home.wishlist.WishListScreen
 import onlytrade.app.viewmodel.home.ui.HomeUiState.GetProductsApiError
 import onlytrade.app.viewmodel.home.ui.HomeUiState.Idle
 import onlytrade.app.viewmodel.home.ui.HomeUiState.LoadingProducts
@@ -261,7 +261,7 @@ class HomeScreen : Screen {
                     Modifier
                         .weight(1f)
                         .clickable {
-                            nav.push(WishListScreen())
+                            nav.push(MyProductsScreen())
                         }) {
 
                     Icon(
@@ -445,7 +445,6 @@ class HomeScreen : Screen {
 
                         Idle -> {} // do nothing.
 
-
                     }
 
                 }
@@ -496,7 +495,7 @@ class HomeScreen : Screen {
                 modifier = Modifier.padding(vertical = 16.dp)
             ) {
 
-                val (c1, c2, c3, s1, s2, colorsTxt, productName, price, discountPrice) = createRefs()
+                val (c1, c2, c3, s1, s2, colorsTxt, productName, price) = createRefs()
 
                 AsyncImage(
                     model = product?.imageUrls?.get(1),
@@ -597,16 +596,16 @@ class HomeScreen : Screen {
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
                 )
 
-                Text(
-                    modifier = Modifier.constrainAs(discountPrice) {
-                        top.linkTo(price.bottom)
-                        start.linkTo(price.start)
+                /*  Text(
+                      modifier = Modifier.constrainAs(discountPrice) {
+                          top.linkTo(price.bottom)
+                          start.linkTo(price.start)
 
-                    },
-                    textDecoration = TextDecoration.LineThrough,
-                    text = "$${Random.nextInt(index, 500)}",
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
-                )
+                      },
+                      textDecoration = TextDecoration.LineThrough,
+                      text = "$${Random.nextInt(index, 500)}",
+                      style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
+                  )*/
             }
         }
     }
