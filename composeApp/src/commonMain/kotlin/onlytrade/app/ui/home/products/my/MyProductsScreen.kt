@@ -58,11 +58,11 @@ import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.products.my.colorScheme.myProductsColorScheme
 import onlytrade.app.ui.home.profile.ProfileScreen
 import onlytrade.app.viewmodel.product.repository.data.db.Product
-import onlytrade.app.viewmodel.product.ui.MyProductsUiState.GetProductsApiError
-import onlytrade.app.viewmodel.product.ui.MyProductsUiState.Idle
-import onlytrade.app.viewmodel.product.ui.MyProductsUiState.LoadingProducts
-import onlytrade.app.viewmodel.product.ui.MyProductsUiState.ProductsNotFound
 import onlytrade.app.viewmodel.product.ui.MyProductsViewModel
+import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.GetProductsApiError
+import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.Idle
+import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.LoadingProducts
+import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.ProductsNotFound
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.botBar_3
@@ -254,12 +254,12 @@ class MyProductsScreen : Screen {
                 ) {
 
                     items(products) { product ->
-                        ProductUI(sharedCMP, product.id.toInt(), product)
+                        ProductUI(sharedCMP, product)
                     }
 
                     when (uiState) {
                         LoadingProducts -> items(2) { i ->
-                            ProductUI(sharedCMP, i)
+                            ProductUI(sharedCMP)
                         }
 
                         ProductsNotFound -> { //todo display error with call to action to reload products then call viewModel.getProducts( tryAgain = true) as action.
@@ -282,12 +282,12 @@ class MyProductsScreen : Screen {
 
 
     @Composable
-    private fun ProductUI(sharedCMP: SharedCMP, index: Int, product: Product? = null) {
+    private fun ProductUI(sharedCMP: SharedCMP, product: Product? = null) {
         val size = (sharedCMP.screenWidth / 3).dp
         val nav = LocalNavigator.currentOrThrow
 
         Row(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
-            nav.push(ProductDetailScreen(index))
+            nav.push(ProductDetailScreen(productId = product.id))
         }) {
             AsyncImage(
                 model = product?.imageUrls?.get(0),

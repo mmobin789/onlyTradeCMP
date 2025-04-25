@@ -43,20 +43,21 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
+import onlytrade.app.viewmodel.product.ui.ProductDetailViewModel
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.ok
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class ProductDetailScreen(private val id: Int) : Screen {
+class ProductDetailScreen(private val productId: Long) : Screen {
 
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
         val sharedCMP = LocalSharedCMP.current
-        // var headerVisible by remember { mutableStateOf(true) }
-        // var headerVisible = true
+        val viewModel = koinViewModel<ProductDetailViewModel>() //todo
 
         ConstraintLayout(modifier = Modifier.fillMaxSize().background(color = Color.Green)) {
             val (header, back, like, dots, space, content) = createRefs()
@@ -89,26 +90,26 @@ class ProductDetailScreen(private val id: Int) : Screen {
 
             Icon(
                 modifier = Modifier
-                .constrainAs(back) {
-                    top.linkTo(header.top)
-                    start.linkTo(header.start)
-                }
-                .clickable { nav.pop() }
-                .padding(16.dp),
+                    .constrainAs(back) {
+                        top.linkTo(header.top)
+                        start.linkTo(header.start)
+                    }
+                    .clickable { nav.pop() }
+                    .padding(16.dp),
                 imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                 contentDescription = stringResource(Res.string.ok))
 
             Icon(
                 modifier = Modifier
-                .constrainAs(like) {
-                    top.linkTo(header.top)
-                    end.linkTo(header.end)
-                }
-                .padding(8.dp)
-                .background(
-                    shape = CircleShape, color = MaterialTheme.colorScheme.tertiary
-                )
-                .padding(8.dp),
+                    .constrainAs(like) {
+                        top.linkTo(header.top)
+                        end.linkTo(header.end)
+                    }
+                    .padding(8.dp)
+                    .background(
+                        shape = CircleShape, color = MaterialTheme.colorScheme.tertiary
+                    )
+                    .padding(8.dp),
                 imageVector = Icons.Outlined.Favorite,
                 contentDescription = stringResource(Res.string.app_name))
 
@@ -190,7 +191,7 @@ class ProductDetailScreen(private val id: Int) : Screen {
                 }
 
                 Text(
-                    text = "Product ${id + 1}",
+                    text = "Product ${productId + 1}",
                     modifier = Modifier
                         .constrainAs(productTitle) {
                             top.linkTo(tags.bottom)

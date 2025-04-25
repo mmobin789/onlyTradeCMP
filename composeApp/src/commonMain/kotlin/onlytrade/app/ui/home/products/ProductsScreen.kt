@@ -42,12 +42,14 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.home.products.colorScheme.productsColorScheme
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.products.my.MyProductsScreen
+import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.botBar_1
@@ -61,7 +63,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import kotlin.random.Random
 
-class ProductsScreen(private val categoryName: String? = null) :
+class ProductsScreen(private val subcategoryName: String? = null) :
     Screen {
 
     @Composable
@@ -91,7 +93,7 @@ class ProductsScreen(private val categoryName: String? = null) :
 
                         Text(
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            text = categoryName ?: "Latest Products",
+                            text = subcategoryName ?: "Latest Products",
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
                         )
 
@@ -214,11 +216,11 @@ class ProductsScreen(private val categoryName: String? = null) :
     }
 
     @Composable
-    private fun ProductUI(sharedCMP: SharedCMP, index: Int) {
+    private fun ProductUI(sharedCMP: SharedCMP, index: Int, product: Product? = null) {
         val size = (sharedCMP.screenWidth / 2).dp
         val nav = LocalNavigator.currentOrThrow
-        Column(modifier = Modifier.clickable {
-            nav.push(ProductDetailScreen(index))
+        Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
+            nav.push(ProductDetailScreen(productId = product.id))
         }) {
             Box(
                 Modifier
@@ -249,78 +251,85 @@ class ProductsScreen(private val categoryName: String? = null) :
 
                 val (c1, c2, c3, s1, s2, colorsTxt, productName, price, discountPrice) = createRefs()
 
-                Spacer(modifier = Modifier
-                    .constrainAs(c1) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                    }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    ))
+                Spacer(
+                    modifier = Modifier
+                        .constrainAs(c1) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                        }
+                        .size(24.dp)
+                        .background(
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        ))
 
-                Spacer(modifier = Modifier
-                    .width(12.dp)
-                    .constrainAs(s1) {
-                        top.linkTo(c1.top)
-                        bottom.linkTo(c1.bottom)
-                        start.linkTo(c1.start)
-                        end.linkTo(c1.end)
+                Spacer(
+                    modifier = Modifier
+                        .width(12.dp)
+                        .constrainAs(s1) {
+                            top.linkTo(c1.top)
+                            bottom.linkTo(c1.bottom)
+                            start.linkTo(c1.start)
+                            end.linkTo(c1.end)
 
-                    })
+                        })
 
-                Spacer(modifier = Modifier
-                    .constrainAs(c2) {
-                        start.linkTo(s1.end)
-                        top.linkTo(parent.top)
-                    }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    ))
+                Spacer(
+                    modifier = Modifier
+                        .constrainAs(c2) {
+                            start.linkTo(s1.end)
+                            top.linkTo(parent.top)
+                        }
+                        .size(24.dp)
+                        .background(
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        ))
 
-                Spacer(modifier = Modifier
-                    .width(12.dp)
-                    .constrainAs(s2) {
-                        top.linkTo(c2.top)
-                        bottom.linkTo(c2.bottom)
-                        start.linkTo(c2.start)
-                        end.linkTo(c2.end)
+                Spacer(
+                    modifier = Modifier
+                        .width(12.dp)
+                        .constrainAs(s2) {
+                            top.linkTo(c2.top)
+                            bottom.linkTo(c2.bottom)
+                            start.linkTo(c2.start)
+                            end.linkTo(c2.end)
 
-                    })
-                Spacer(modifier = Modifier
-                    .constrainAs(c3) {
-                        start.linkTo(s2.end)
-                        top.linkTo(parent.top)
-                    }
-                    .size(24.dp)
-                    .background(
-                        shape = CircleShape, color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    ))
+                        })
+                Spacer(
+                    modifier = Modifier
+                        .constrainAs(c3) {
+                            start.linkTo(s2.end)
+                            top.linkTo(parent.top)
+                        }
+                        .size(24.dp)
+                        .background(
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        ))
 
-                Text(modifier = Modifier
-                    .constrainAs(colorsTxt) {
-                        top.linkTo(parent.top)
-                        start.linkTo(c3.end)
+                Text(
+                    modifier = Modifier
+                        .constrainAs(colorsTxt) {
+                            top.linkTo(parent.top)
+                            start.linkTo(c3.end)
 
-                    }
-                    .padding(horizontal = 16.dp),
+                        }
+                        .padding(horizontal = 16.dp),
                     textDecoration = TextDecoration.Underline,
                     text = "All ${Random.nextInt(2, 10)} colors",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300))
 
-                Text(modifier = Modifier
-                    .constrainAs(productName) {
-                        top.linkTo(c1.bottom)
-                        start.linkTo(parent.start)
-                    }
-                    .padding(top = 16.dp),
+                Text(
+                    modifier = Modifier
+                        .constrainAs(productName) {
+                            top.linkTo(c1.bottom)
+                            start.linkTo(parent.start)
+                        }
+                        .padding(top = 16.dp),
                     text = "Product $index",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500))
 
