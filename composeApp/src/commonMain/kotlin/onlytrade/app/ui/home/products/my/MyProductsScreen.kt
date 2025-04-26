@@ -2,7 +2,6 @@ package onlytrade.app.ui.home.products.my
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,7 +42,6 @@ import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
@@ -68,8 +66,6 @@ import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.botBar_3
 import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.home_5
-import onlytrade.composeapp.generated.resources.myProducts_1
-import onlytrade.composeapp.generated.resources.myProducts_2
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import onlytrade.composeapp.generated.resources.search
 import org.jetbrains.compose.resources.stringResource
@@ -92,10 +88,8 @@ class MyProductsScreen : Screen {
             AnimatedVisibility(visible = headerVisible) {
                 Column {
                     Row(
-                        modifier = Modifier
-                            .background(myProductsColorScheme.myProductsBarBG)
-                            .fillMaxWidth()
-                            .padding(16.dp),
+                        modifier = Modifier.background(myProductsColorScheme.myProductsBarBG)
+                            .fillMaxWidth().padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
 
@@ -116,25 +110,19 @@ class MyProductsScreen : Screen {
                     }
 
                     Spacer(
-                        modifier = Modifier
-                            .background(myProductsColorScheme.myProductsBarBG)
-                            .height(1.dp)
-                            .fillMaxWidth()
+                        modifier = Modifier.background(myProductsColorScheme.myProductsBarBG)
+                            .height(1.dp).fillMaxWidth()
                     )
 
                 }
             }
         }, bottomBar = {
             Row(
-                modifier = Modifier
-                    .background(myProductsColorScheme.botBarBG)
-                    .padding(8.dp),
+                modifier = Modifier.background(myProductsColorScheme.botBarBG).padding(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Column(
-                    Modifier
-                        .weight(1f)
-                        .clickable {
+                    Modifier.weight(1f).clickable {
                             nav.pop()
                         }) {
                     Icon(
@@ -189,10 +177,7 @@ class MyProductsScreen : Screen {
                     )
                 }
                 Column(
-                    Modifier
-                        .weight(1f)
-                        .clickable { nav.push(ProfileScreen()) }
-                ) {
+                    Modifier.weight(1f).clickable { nav.push(ProfileScreen()) }) {
 
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -212,27 +197,27 @@ class MyProductsScreen : Screen {
                 modifier = Modifier.padding(paddingValues)
                     .background(myProductsColorScheme.screenBG)
             ) {
-                Row(
-                    modifier = Modifier.padding(16.dp)
-                        .border(
-                            width = 1.dp,
-                            color = myProductsColorScheme.buySellTabBGOutline,
-                            shape = MaterialTheme.shapes.large
-                        ).padding(8.dp)
-                ) {
-                    Text(
-                        fontSize = 15.sp,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        text = stringResource(Res.string.myProducts_1),
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = W300)
-                    )
-                    Text(
-                        fontSize = 15.sp,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        text = stringResource(Res.string.myProducts_2),
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = W300)
-                    )
-                }
+                /* Row(
+                     modifier = Modifier.padding(16.dp)
+                         .border(
+                             width = 1.dp,
+                             color = myProductsColorScheme.buySellTabBGOutline,
+                             shape = MaterialTheme.shapes.large
+                         ).padding(8.dp)
+                 ) {
+                     Text(
+                         fontSize = 15.sp,
+                         modifier = Modifier.padding(horizontal = 16.dp),
+                         text = stringResource(Res.string.myProducts_1),
+                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = W300)
+                     )
+                     Text(
+                         fontSize = 15.sp,
+                         modifier = Modifier.padding(horizontal = 16.dp),
+                         text = stringResource(Res.string.myProducts_2),
+                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = W300)
+                     )
+                 }*/
                 LaunchedEffect(productListState) {
                     snapshotFlow { productListState.layoutInfo }.collect { layoutInfo ->
                         val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
@@ -247,8 +232,7 @@ class MyProductsScreen : Screen {
 
                 LazyColumn(
                     state = productListState,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
                         .fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
@@ -293,9 +277,7 @@ class MyProductsScreen : Screen {
                 model = product?.imageUrls?.get(0),
                 contentDescription = product?.name,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.clip(MaterialTheme.shapes.extraLarge)
-                    .size(size)
-                    .background(
+                modifier = Modifier.clip(MaterialTheme.shapes.extraLarge).size(size).background(
                         color = Color(
                             Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
                         ), shape = MaterialTheme.shapes.extraLarge
@@ -303,8 +285,7 @@ class MyProductsScreen : Screen {
             )
 
             Column(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
+                modifier = Modifier.padding(horizontal = 8.dp)
             ) {
 
 
@@ -337,22 +318,17 @@ class MyProductsScreen : Screen {
                         model = product?.imageUrls?.get(1),
                         contentDescription = product?.name,
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.clip(CircleShape)
-                            .constrainAs(c1) {
+                        modifier = Modifier.clip(CircleShape).constrainAs(c1) {
                                 top.linkTo(parent.top)
                                 start.linkTo(parent.start)
-                            }
-                            .size(24.dp)
-                            .background(
+                        }.size(24.dp).background(
                                 shape = CircleShape, color = Color(
                                     Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
                                 )
                             ))
 
                     Spacer(
-                        modifier = Modifier
-                            .width(12.dp)
-                            .constrainAs(s1) {
+                        modifier = Modifier.width(12.dp).constrainAs(s1) {
                                 top.linkTo(c1.top)
                                 bottom.linkTo(c1.bottom)
                                 start.linkTo(c1.start)
@@ -363,22 +339,18 @@ class MyProductsScreen : Screen {
                     AsyncImage(
                         model = product?.imageUrls?.get(2),
                         contentDescription = product?.name,
-                        contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
-                            .constrainAs(c2) {
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.clip(CircleShape).constrainAs(c2) {
                                 start.linkTo(s1.end)
                                 top.linkTo(parent.top)
-                            }
-                            .size(24.dp)
-                            .background(
+                        }.size(24.dp).background(
                                 shape = CircleShape, color = Color(
                                     Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
                                 )
                             ))
 
                     Spacer(
-                        modifier = Modifier
-                            .width(12.dp)
-                            .constrainAs(s2) {
+                        modifier = Modifier.width(12.dp).constrainAs(s2) {
                                 top.linkTo(c2.top)
                                 bottom.linkTo(c2.bottom)
                                 start.linkTo(c2.start)
@@ -388,29 +360,24 @@ class MyProductsScreen : Screen {
                     AsyncImage(
                         model = product?.imageUrls?.get(3),
                         contentDescription = product?.name,
-                        contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
-                            .constrainAs(c3) {
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.clip(CircleShape).constrainAs(c3) {
                                 start.linkTo(s2.end)
                                 top.linkTo(parent.top)
-                            }
-                            .size(24.dp)
-                            .background(
+                        }.size(24.dp).background(
                                 shape = CircleShape, color = Color(
                                     Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
                                 )
                             ))
 
                     Text(
-                        modifier = Modifier
-                            .constrainAs(colorsTxt) {
-                                top.linkTo(parent.top)
-                                start.linkTo(c3.end)
+                        modifier = Modifier.constrainAs(colorsTxt) {
+                            top.linkTo(parent.top)
+                            start.linkTo(c3.end)
 
-                            }
-                            .padding(horizontal = 16.dp),
+                        }.padding(horizontal = 16.dp),
                         textDecoration = TextDecoration.Underline,
-                        text = if (product == null) stringResource(Res.string.home_5) else
-                            "All ${product.imageUrls.size} images",
+                        text = if (product == null) stringResource(Res.string.home_5) else "All ${product.imageUrls.size} images",
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300))
                 }
             }
