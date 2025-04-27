@@ -1,6 +1,5 @@
 package onlytrade.app.ui.home.products.details
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +25,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,11 +40,14 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.LocalSharedCMP
+import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
+import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.viewmodel.product.ui.ProductDetailViewModel
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.ok
+import onlytrade.composeapp.generated.resources.productDetail_1
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
@@ -230,28 +231,33 @@ class ProductDetailScreen(private val productId: Long) : Screen {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    OutlinedButton(
-                        modifier = Modifier.weight(1f),
-                        onClick = { },
-                        shape = MaterialTheme.shapes.medium,
-                        border = BorderStroke(1.dp, productDetailColorScheme.offerTradeBtnBorder),
-                    ) {
-                        Text(
-                            text = "Offer Trade",
-                            color = productDetailColorScheme.offerTradeBtnText,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-                    }
+                    /* OutlinedButton(
+                         modifier = Modifier.weight(1f),
+                         onClick = { },
+                         shape = MaterialTheme.shapes.medium,
+                         border = BorderStroke(1.dp, productDetailColorScheme.offerTradeBtnBorder),
+                     ) {
+                         Text(
+                             text = "Offer Trade",
+                             color = productDetailColorScheme.offerTradeBtnText,
+                             modifier = Modifier.padding(vertical = 8.dp)
+                         )
+                     }*/
 
                     Button(
                         modifier = Modifier.weight(1f),
-                        onClick = {},
+                        onClick = {
+                            nav.push(MyProductsScreen { pickedProductIds ->
+                                //todo
+                                getToast().showToast("Selected products: $pickedProductIds")
+                            })
+                        },
                         shape = MaterialTheme.shapes.medium,
                         colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = "Buy Product",
+                                text = stringResource(Res.string.productDetail_1),
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
 

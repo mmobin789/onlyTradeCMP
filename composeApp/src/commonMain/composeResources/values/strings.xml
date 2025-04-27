@@ -57,9 +57,14 @@
     <string name="addProduct_7">Describe your product!</string>
     <string name="addProduct_8">Enter valid amount</string>
 
+    <!-- Product Detail -->
+    <string name="productDetail_1">Offer Trade</string>
+
+
     <!-- My Products -->
-    <string name="myProducts_1">Buy</string>
-    <string name="myProducts_2">Sell</string>
+    <string name="myProducts_1">Select Products</string>
+    <string name="myProducts_2">Done</string>
+
     <!-- Bottom Bar -->
     <string name="botBar_1">Home</string>
     <string name="botBar_2">My Trades</string>

@@ -4,9 +4,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +21,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
@@ -30,6 +33,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,6 +72,8 @@ import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.botBar_3
 import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.home_5
+import onlytrade.composeapp.generated.resources.myProducts_1
+import onlytrade.composeapp.generated.resources.myProducts_2
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import onlytrade.composeapp.generated.resources.search
 import org.jetbrains.compose.resources.stringResource
@@ -73,7 +81,7 @@ import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class MyProductsScreen : Screen {
+class MyProductsScreen(private val productIdsCallback: ((HashSet<Long>) -> Unit)? = null) : Screen {
 
     @Composable
     override fun Content() {
@@ -84,28 +92,38 @@ class MyProductsScreen : Screen {
         val viewModel = koinViewModel<MyProductsViewModel>()
         val products by viewModel.productList.collectAsStateWithLifecycle()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+        val selectionMode = productIdsCallback != null
         Scaffold(topBar = {
             AnimatedVisibility(visible = headerVisible) {
                 Column {
-                    Row(
+                    Box(
                         modifier = Modifier.background(myProductsColorScheme.myProductsBarBG)
-                            .fillMaxWidth().padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                            .fillMaxWidth().padding(16.dp)
                     ) {
 
+                        Row(modifier = Modifier.align(Alignment.CenterStart)) {
+                            Icon(
+                                modifier = Modifier.clickable { nav.pop() },
+                                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                                contentDescription = stringResource(Res.string.cancel)
+                            )
 
-                        Icon(
-                            modifier = Modifier.clickable { nav.pop() },
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = stringResource(Res.string.cancel)
-                        )
+                            Text(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                text = stringResource(if (selectionMode) Res.string.myProducts_1 else Res.string.botBar_3),
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
+                            )
+                        }
 
-                        Text(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            text = stringResource(Res.string.botBar_3),
+                        if (selectionMode) Text(
+                            modifier = Modifier.align(Alignment.CenterEnd)
+                                .padding(horizontal = 16.dp).clickable {
+                                    productIdsCallback?.invoke(viewModel.pickedProductIds)
+                                    nav.pop()
+                                },
+                            text = stringResource(Res.string.myProducts_2),
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
                         )
-
 
                     }
 
@@ -123,8 +141,8 @@ class MyProductsScreen : Screen {
             ) {
                 Column(
                     Modifier.weight(1f).clickable {
-                            nav.pop()
-                        }) {
+                        nav.pop()
+                    }) {
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         imageVector = Icons.Outlined.Home,
@@ -238,12 +256,12 @@ class MyProductsScreen : Screen {
                 ) {
 
                     items(products) { product ->
-                        ProductUI(sharedCMP, product)
+                        ProductUI(viewModel, sharedCMP, product, selectionMode)
                     }
 
                     when (uiState) {
                         LoadingProducts -> items(2) { i ->
-                            ProductUI(sharedCMP)
+                            ProductUI(viewModel, sharedCMP)
                         }
 
                         ProductsNotFound -> { //todo display error with call to action to reload products then call viewModel.getProducts( tryAgain = true) as action.
@@ -266,22 +284,32 @@ class MyProductsScreen : Screen {
 
 
     @Composable
-    private fun ProductUI(sharedCMP: SharedCMP, product: Product? = null) {
+    private fun ProductUI(
+        viewModel: MyProductsViewModel,
+        sharedCMP: SharedCMP,
+        product: Product? = null,
+        selectionMode: Boolean = false
+    ) {
         val size = (sharedCMP.screenWidth / 3).dp
         val nav = LocalNavigator.currentOrThrow
-
-        Row(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
-            nav.push(ProductDetailScreen(productId = product.id))
-        }) {
+        var selected by remember { mutableStateOf(false) }
+        Row(
+            modifier = if (product == null) Modifier.shimmer() else Modifier.fillMaxWidth()
+                .clickable {
+                    val id = product.id
+                    if (selectionMode) {
+                        selected = viewModel.selectProduct(id)
+                    } else nav.push(ProductDetailScreen(productId = id))
+                }) {
             AsyncImage(
                 model = product?.imageUrls?.get(0),
                 contentDescription = product?.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.clip(MaterialTheme.shapes.extraLarge).size(size).background(
-                        color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        ), shape = MaterialTheme.shapes.extraLarge
-                    )
+                    color = Color(
+                        Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                    ), shape = MaterialTheme.shapes.extraLarge
+                )
             )
 
             Column(
@@ -319,56 +347,59 @@ class MyProductsScreen : Screen {
                         contentDescription = product?.name,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.clip(CircleShape).constrainAs(c1) {
-                                top.linkTo(parent.top)
-                                start.linkTo(parent.start)
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
                         }.size(24.dp).background(
-                                shape = CircleShape, color = Color(
-                                    Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                                )
-                            ))
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        )
+                    )
 
                     Spacer(
                         modifier = Modifier.width(12.dp).constrainAs(s1) {
-                                top.linkTo(c1.top)
-                                bottom.linkTo(c1.bottom)
-                                start.linkTo(c1.start)
-                                end.linkTo(c1.end)
+                            top.linkTo(c1.top)
+                            bottom.linkTo(c1.bottom)
+                            start.linkTo(c1.start)
+                            end.linkTo(c1.end)
 
-                            })
+                        })
 
                     AsyncImage(
                         model = product?.imageUrls?.get(2),
                         contentDescription = product?.name,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.clip(CircleShape).constrainAs(c2) {
-                                start.linkTo(s1.end)
-                                top.linkTo(parent.top)
+                            start.linkTo(s1.end)
+                            top.linkTo(parent.top)
                         }.size(24.dp).background(
-                                shape = CircleShape, color = Color(
-                                    Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                                )
-                            ))
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        )
+                    )
 
                     Spacer(
                         modifier = Modifier.width(12.dp).constrainAs(s2) {
-                                top.linkTo(c2.top)
-                                bottom.linkTo(c2.bottom)
-                                start.linkTo(c2.start)
-                                end.linkTo(c2.end)
+                            top.linkTo(c2.top)
+                            bottom.linkTo(c2.bottom)
+                            start.linkTo(c2.start)
+                            end.linkTo(c2.end)
 
-                            })
+                        })
                     AsyncImage(
                         model = product?.imageUrls?.get(3),
                         contentDescription = product?.name,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.clip(CircleShape).constrainAs(c3) {
-                                start.linkTo(s2.end)
-                                top.linkTo(parent.top)
+                            start.linkTo(s2.end)
+                            top.linkTo(parent.top)
                         }.size(24.dp).background(
-                                shape = CircleShape, color = Color(
-                                    Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                                )
-                            ))
+                            shape = CircleShape, color = Color(
+                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                            )
+                        )
+                    )
 
                     Text(
                         modifier = Modifier.constrainAs(colorsTxt) {
@@ -378,15 +409,27 @@ class MyProductsScreen : Screen {
                         }.padding(horizontal = 16.dp),
                         textDecoration = TextDecoration.Underline,
                         text = if (product == null) stringResource(Res.string.home_5) else "All ${product.imageUrls.size} images",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300))
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
+                    )
                 }
             }
 
-            Icon(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                imageVector = Icons.Outlined.Delete,
-                contentDescription = stringResource(Res.string.search)
-            )
+
+
+            Column(modifier = Modifier.fillMaxHeight()) {
+                if (selected)
+                    Icon(
+                        modifier = Modifier.align(Alignment.Start),
+                        imageVector = Icons.Outlined.Check,
+                        contentDescription = stringResource(Res.string.search)
+                    )
+                if (selectionMode.not())
+                    Icon(
+                        modifier = Modifier.align(Alignment.End),
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = stringResource(Res.string.search)
+                    )
+            }
         }
     }
 }
