@@ -117,12 +117,12 @@ class MyProductsScreen(private val productIdsCallback: ((HashSet<Long>) -> Unit)
 
                         if (selectionMode) Text(
                             modifier = Modifier.align(Alignment.CenterEnd)
-                                .padding(horizontal = 16.dp).clickable {
+                                .clickable {
                                     productIdsCallback?.invoke(viewModel.pickedProductIds)
                                     nav.pop()
                                 },
                             text = stringResource(Res.string.myProducts_2),
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
                         )
 
                     }
@@ -135,26 +135,27 @@ class MyProductsScreen(private val productIdsCallback: ((HashSet<Long>) -> Unit)
                 }
             }
         }, bottomBar = {
-            Row(
-                modifier = Modifier.background(myProductsColorScheme.botBarBG).padding(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Column(
-                    Modifier.weight(1f).clickable {
-                        nav.pop()
-                    }) {
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.Home,
-                        contentDescription = stringResource(Res.string.app_name)
-                    )
+            if (selectionMode.not())
+                Row(
+                    modifier = Modifier.background(myProductsColorScheme.botBarBG).padding(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Column(
+                        Modifier.weight(1f).clickable {
+                            nav.pop()
+                        }) {
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = Icons.Outlined.Home,
+                            contentDescription = stringResource(Res.string.app_name)
+                        )
 
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Home",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                }/*   Column(Modifier.weight(1f)) {
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = "Home",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }/*   Column(Modifier.weight(1f)) {
                            Icon(
                                modifier = Modifier.align(Alignment.CenterHorizontally),
                                imageVector = Icons.Outlined.Menu,
@@ -167,48 +168,48 @@ class MyProductsScreen(private val productIdsCallback: ((HashSet<Long>) -> Unit)
                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                            )
                        }*/
-                Column(Modifier.weight(1f)) {
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = vectorResource(Res.drawable.outline_compare_arrows_24),
-                        contentDescription = stringResource(Res.string.app_name)
-                    )
+                    Column(Modifier.weight(1f)) {
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = vectorResource(Res.drawable.outline_compare_arrows_24),
+                            contentDescription = stringResource(Res.string.app_name)
+                        )
 
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "My Trades",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = "My Trades",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }
+                    Column(Modifier.weight(1f)) {
+
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = Icons.Outlined.Favorite,
+                            contentDescription = stringResource(Res.string.app_name)
+                        )
+
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = stringResource(Res.string.botBar_3),
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }
+                    Column(
+                        Modifier.weight(1f).clickable { nav.push(ProfileScreen()) }) {
+
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = Icons.Outlined.Person,
+                            contentDescription = stringResource(Res.string.app_name)
+                        )
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = "Profile",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }
                 }
-                Column(Modifier.weight(1f)) {
-
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.Favorite,
-                        contentDescription = stringResource(Res.string.app_name)
-                    )
-
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = stringResource(Res.string.botBar_3),
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                }
-                Column(
-                    Modifier.weight(1f).clickable { nav.push(ProfileScreen()) }) {
-
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.Person,
-                        contentDescription = stringResource(Res.string.app_name)
-                    )
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Profile",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                }
-            }
 
         }) { paddingValues ->
             Column(

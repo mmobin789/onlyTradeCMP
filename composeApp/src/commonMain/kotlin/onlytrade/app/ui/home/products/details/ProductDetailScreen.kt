@@ -27,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight.Companion.W300
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -58,8 +60,8 @@ class ProductDetailScreen(private val productId: Long) : Screen {
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
         val sharedCMP = LocalSharedCMP.current
-        val viewModel = koinViewModel<ProductDetailViewModel>() //todo
-
+        val viewModel = koinViewModel<ProductDetailViewModel>()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle() //todo impl state.
         ConstraintLayout(modifier = Modifier.fillMaxSize().background(color = Color.Green)) {
             val (header, back, like, dots, space, content) = createRefs()
 
@@ -243,7 +245,7 @@ class ProductDetailScreen(private val productId: Long) : Screen {
                              modifier = Modifier.padding(vertical = 8.dp)
                          )
                      }*/
-
+                    //todo if(viewModel.isMyProduct(product.userId).not())
                     Button(
                         modifier = Modifier.weight(1f),
                         onClick = {
