@@ -27,10 +27,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.text.font.FontWeight.Companion.W300
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
@@ -40,14 +46,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import coil3.compose.AsyncImage
+import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.LocalSharedCMP
-import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
 import onlytrade.app.ui.home.products.my.MyProductsScreen
+import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.app.viewmodel.product.ui.ProductDetailViewModel
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.LoadingDetail
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.ProductFound
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
+import onlytrade.composeapp.generated.resources.home_5
 import onlytrade.composeapp.generated.resources.ok
 import onlytrade.composeapp.generated.resources.productDetail_1
 import org.jetbrains.compose.resources.stringResource
@@ -61,13 +72,30 @@ class ProductDetailScreen(private val productId: Long) : Screen {
         val nav = LocalNavigator.currentOrThrow
         val sharedCMP = LocalSharedCMP.current
         val viewModel = koinViewModel<ProductDetailViewModel>()
-        val uiState by viewModel.uiState.collectAsStateWithLifecycle() //todo impl state.
-        ConstraintLayout(modifier = Modifier.fillMaxSize().background(color = Color.Green)) {
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+        var product by remember { mutableStateOf<Product?>(null) }
+        val loadingTxt = stringResource(Res.string.home_5)
+        val imageUrls = product?.imageUrls
+
+        LaunchedEffect(Unit) {
+            viewModel.getProductDetail(productId)
+        }
+
+        when (uiState) {
+            is ProductFound -> {
+                product = (uiState as ProductFound).product
+            }
+
+            else -> {}
+        }
+
+        ConstraintLayout(
+            modifier = if (uiState is LoadingDetail) Modifier.fillMaxSize()
+                .shimmer() else Modifier.fillMaxSize()
+        ) {
             val (header, back, like, dots, space, content) = createRefs()
 
-            //    AnimatedVisibility(visible = headerVisible) {
-
-            val pagerState = rememberPagerState { 5 }
+            val pagerState = rememberPagerState { imageUrls?.size ?: 5 }
 
             HorizontalPager(
                 modifier = Modifier.constrainAs(header) {
@@ -77,8 +105,11 @@ class ProductDetailScreen(private val productId: Long) : Screen {
                 }, state = pagerState
             ) { page ->
 
-                Spacer(
-                    modifier = Modifier
+                AsyncImage(
+                    model = imageUrls?.get(page),
+                    contentDescription = product?.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.clipToBounds()
                         .background(
                             color = Color(
                                 Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
@@ -126,7 +157,7 @@ class ProductDetailScreen(private val productId: Long) : Screen {
                     .padding(bottom = 8.dp)
                     .padding(horizontal = 8.dp),
 
-                totalDots = 5,
+                totalDots = imageUrls?.size ?: 5,
                 selectedIndex = pagerState.currentPage,
                 selectedColor = Color(0xFF474567),
                 unSelectedColor = Color(0xFFF4EAE9)
@@ -194,7 +225,7 @@ class ProductDetailScreen(private val productId: Long) : Screen {
                 }
 
                 Text(
-                    text = "Product ${productId + 1}",
+                    text = product?.name ?: loadingTxt,
                     modifier = Modifier
                         .constrainAs(productTitle) {
                             top.linkTo(tags.bottom)
@@ -207,7 +238,7 @@ class ProductDetailScreen(private val productId: Long) : Screen {
 
 
                 Text(
-                    text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                    text = product?.description ?: loadingTxt,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .padding(bottom = 32.dp)
@@ -245,33 +276,32 @@ class ProductDetailScreen(private val productId: Long) : Screen {
                              modifier = Modifier.padding(vertical = 8.dp)
                          )
                      }*/
-                    //todo if(viewModel.isMyProduct(product.userId).not())
-                    Button(
-                        modifier = Modifier.weight(1f),
-                        onClick = {
-                            nav.push(MyProductsScreen { pickedProductIds ->
-                                //todo
-                                getToast().showToast("Selected products: $pickedProductIds")
-                            })
-                        },
-                        shape = MaterialTheme.shapes.medium,
-                        colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = stringResource(Res.string.productDetail_1),
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
+                    if (viewModel.isUserLoggedIn() && viewModel.isMyProduct().not())
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                nav.push(MyProductsScreen { pickedProductIds ->
 
-                            Spacer(modifier = Modifier.width(8.dp))
+                                })
+                            },
+                            shape = MaterialTheme.shapes.medium,
+                            colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = stringResource(Res.string.productDetail_1),
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
 
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowForward,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
                         }
-                    }
 
                 }
 
