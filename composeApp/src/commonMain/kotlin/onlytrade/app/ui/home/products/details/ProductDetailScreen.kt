@@ -50,11 +50,14 @@ import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.LocalSharedCMP
+import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.app.viewmodel.product.ui.ProductDetailViewModel
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.LoadingDetail
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MakingOffer
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferMade
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.ProductFound
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
@@ -84,6 +87,11 @@ class ProductDetailScreen(private val productId: Long) : Screen {
         when (uiState) {
             is ProductFound -> {
                 product = (uiState as ProductFound).product
+            }
+
+            is OfferMade -> {
+                getToast().showToast("Offer successfully placed.")
+                viewModel.idle()
             }
 
             else -> {}
@@ -278,10 +286,11 @@ class ProductDetailScreen(private val productId: Long) : Screen {
                      }*/
                     if (viewModel.isUserLoggedIn() && viewModel.isMyProduct().not())
                         Button(
-                            modifier = Modifier.weight(1f),
+                            modifier = if (uiState is MakingOffer) Modifier
+                                .weight(1f).shimmer() else Modifier.weight(1f),
                             onClick = {
                                 nav.push(MyProductsScreen { pickedProductIds ->
-
+                                    viewModel.makeOffer(pickedProductIds)
                                 })
                             },
                             shape = MaterialTheme.shapes.medium,
