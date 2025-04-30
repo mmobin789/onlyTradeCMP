@@ -74,10 +74,6 @@ class ProductDetailScreen(private val product: Product) : Screen {
         val imageUrls = product.imageUrls
 
         when (uiState) {
-            /*  is ProductFound -> {
-                  product = (uiState as ProductFound).product
-              }*/
-
             is OfferMade -> {
                 getToast().showToast("Offer successfully placed.")
                 viewModel.idle()
