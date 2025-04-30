@@ -427,12 +427,12 @@ class HomeScreen : Screen {
                 ) {
 
                     items(products) { product ->
-                        ProductUI(sharedCMP, product.id.toInt(), product)
+                        ProductUI(sharedCMP, product)
                     }
 
                     when (uiState) {
-                        LoadingProducts -> items(2) { i ->
-                            ProductUI(sharedCMP, i)
+                        LoadingProducts -> items(2) {
+                            ProductUI(sharedCMP)
                         }
 
                         ProductsNotFound -> { //todo display error with call to action to reload products then call viewModel.getProducts( tryAgain = true) as action.
@@ -453,7 +453,7 @@ class HomeScreen : Screen {
     }
 
     @Composable
-    private fun ProductUI(sharedCMP: SharedCMP, index: Int, product: Product? = null) {
+    private fun ProductUI(sharedCMP: SharedCMP, product: Product? = null) {
         val size = (sharedCMP.screenWidth / 2).dp
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
