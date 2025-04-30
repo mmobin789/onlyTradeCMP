@@ -437,10 +437,11 @@ class HomeScreen : Screen {
 
                         ProductsNotFound -> { //todo display error with call to action to reload products then call viewModel.getProducts( tryAgain = true) as action.
                             getToast().showToast("Products not found.")
+                            viewModel.idle()
                         }
 
                         is GetProductsApiError -> { //todo show error.
-
+                            viewModel.idle()
                         }
 
                         Idle -> {} // do nothing.
