@@ -51,10 +51,8 @@ import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorSche
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.app.viewmodel.product.ui.ProductDetailViewModel
-import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.LoadingDetail
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MakingOffer
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferMade
-import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.ProductFound
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.home_5
@@ -89,12 +87,11 @@ class ProductDetailScreen(private val product: Product) : Screen {
         }
 
         ConstraintLayout(
-            modifier = if (uiState is LoadingDetail) Modifier.fillMaxSize()
-                .shimmer() else Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             val (header, back, like, dots, space, content) = createRefs()
 
-            val pagerState = rememberPagerState { imageUrls?.size ?: 5 }
+            val pagerState = rememberPagerState { imageUrls.size }
 
             HorizontalPager(
                 modifier = Modifier.constrainAs(header) {
@@ -105,8 +102,8 @@ class ProductDetailScreen(private val product: Product) : Screen {
             ) { page ->
 
                 AsyncImage(
-                    model = imageUrls?.get(page),
-                    contentDescription = product?.name,
+                    model = imageUrls[page],
+                    contentDescription = product.name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.clipToBounds()
                         .background(
@@ -156,7 +153,7 @@ class ProductDetailScreen(private val product: Product) : Screen {
                     .padding(bottom = 8.dp)
                     .padding(horizontal = 8.dp),
 
-                totalDots = imageUrls?.size ?: 5,
+                totalDots = imageUrls.size,
                 selectedIndex = pagerState.currentPage,
                 selectedColor = Color(0xFF474567),
                 unSelectedColor = Color(0xFFF4EAE9)
@@ -224,7 +221,7 @@ class ProductDetailScreen(private val product: Product) : Screen {
                 }
 
                 Text(
-                    text = product?.name ?: loadingTxt,
+                    text = product.name,
                     modifier = Modifier
                         .constrainAs(productTitle) {
                             top.linkTo(tags.bottom)
@@ -237,7 +234,7 @@ class ProductDetailScreen(private val product: Product) : Screen {
 
 
                 Text(
-                    text = product?.description ?: loadingTxt,
+                    text = product.description,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .padding(bottom = 32.dp)
@@ -275,14 +272,17 @@ class ProductDetailScreen(private val product: Product) : Screen {
                              modifier = Modifier.padding(vertical = 8.dp)
                          )
                      }*/
-                    if (viewModel.isUserLoggedIn() && !viewModel.isMyProduct() && uiState is ProductFound
-                    )
+                    if (viewModel.isUserLoggedIn() && !viewModel.isMyProduct(product.userId))
                         Button(
                             modifier = if (uiState is MakingOffer) Modifier
                                 .weight(1f).shimmer() else Modifier.weight(1f),
                             onClick = {
                                 nav.push(MyProductsScreen { pickedProductIds ->
-                                    viewModel.makeOffer(pickedProductIds)
+                                    viewModel.makeOffer(
+                                        productId = product.id,
+                                        offerReceiverId = product.userId,
+                                        offeredProductIds = pickedProductIds
+                                    )
                                 })
                             },
                             shape = MaterialTheme.shapes.medium,
