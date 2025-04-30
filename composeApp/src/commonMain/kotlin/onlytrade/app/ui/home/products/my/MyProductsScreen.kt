@@ -417,21 +417,21 @@ class MyProductsScreen(private val productIdsCallback: ((HashSet<Long>) -> Unit)
             }
 
 
-
-            Column(modifier = Modifier.fillMaxHeight()) {
-                if (selected)
-                    Icon(
-                        modifier = Modifier.align(Alignment.Start),
-                        imageVector = Icons.Outlined.Check,
-                        contentDescription = stringResource(Res.string.search)
-                    )
-                if (selectionMode.not())
-                    Icon(
-                        modifier = Modifier.align(Alignment.End),
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = stringResource(Res.string.search)
-                    )
-            }
+            if (product != null)
+                Column(modifier = Modifier.fillMaxHeight()) {
+                    if (selected)
+                        Icon(
+                            modifier = Modifier.align(Alignment.Start),
+                            imageVector = Icons.Outlined.Check,
+                            contentDescription = stringResource(Res.string.search)
+                        )
+                    if (selectionMode.not())
+                        Icon(
+                            modifier = Modifier.align(Alignment.End),
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = stringResource(Res.string.search)
+                        )
+                }
         }
     }
 }
