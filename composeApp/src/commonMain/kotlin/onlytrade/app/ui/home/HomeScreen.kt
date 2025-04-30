@@ -169,9 +169,6 @@ class HomeScreen : Screen {
                        expanded = isSearchBarExtended,
                        onExpandedChange = {}
                    ) { }*/
-
-
-
                 AnimatedVisibility(visible = headerVisible) {
                     Box(
                         modifier = Modifier
@@ -179,14 +176,22 @@ class HomeScreen : Screen {
                             .padding(16.dp)
                             .fillMaxWidth()
                     ) {
-                        val pagerState = rememberPagerState { 5 }
+                        val pagerState = rememberPagerState {
+                            if (products.isEmpty()) 5 else products.size
+                        }
 
                         HorizontalPager(
                             state = pagerState
                         ) {
 
-                            Spacer(
-                                modifier = Modifier
+                            val randomProduct = randomProduct(
+                                products
+                            )
+                            AsyncImage(
+                                model = randomProduct?.first,
+                                contentDescription = randomProduct?.second,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.clip(MaterialTheme.shapes.medium)
                                     .background(
                                         color = Color(
                                             Random.nextFloat(),
@@ -611,5 +616,17 @@ class HomeScreen : Screen {
                   )*/
             }
         }
+    }
+
+    private fun randomProduct(products: List<Product>): Pair<String, String>? {
+        if (products.isEmpty())
+            return null
+        val randomProduct = products[Random.nextInt(0, products.size)]
+        val randomProductImages = randomProduct.imageUrls
+        val randomProductImageCount = randomProductImages.size
+        return Pair(
+            randomProductImages[Random.nextInt(0, randomProductImageCount)],
+            randomProduct.description
+        )
     }
 }
