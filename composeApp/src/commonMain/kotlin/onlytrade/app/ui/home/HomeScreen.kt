@@ -28,6 +28,7 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -138,7 +139,7 @@ class HomeScreen : Screen {
                         Spacer(modifier = Modifier.width(16.dp))
 
                         Icon(
-                            imageVector = Icons.Outlined.Person,
+                            imageVector = Icons.Outlined.Info,
                             contentDescription = stringResource(Res.string.search)
                         )
                     }
@@ -214,24 +215,25 @@ class HomeScreen : Screen {
                 }
             }
         }, bottomBar = {
-            Row(
-                modifier = Modifier
-                    .background(homeColorScheme.botBarBG)
-                    .padding(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Column(Modifier.weight(1f)) {
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.Home,
-                        contentDescription = stringResource(Res.string.app_name)
-                    )
+            if (viewModel.isUserLoggedIn)
+                Row(
+                    modifier = Modifier
+                        .background(homeColorScheme.botBarBG)
+                        .padding(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = Icons.Outlined.Home,
+                            contentDescription = stringResource(Res.string.app_name)
+                        )
 
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = stringResource(Res.string.botBar_1),
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                }/*   Column(Modifier.weight(1f)) {
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = stringResource(Res.string.botBar_1),
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }/*   Column(Modifier.weight(1f)) {
                            Icon(
                                modifier = Modifier.align(Alignment.CenterHorizontally),
                                imageVector = Icons.Outlined.Menu,
@@ -244,56 +246,56 @@ class HomeScreen : Screen {
                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                            )
                        }*/
-                Column(Modifier.weight(1f)) {
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = vectorResource(Res.drawable.outline_compare_arrows_24),
-                        contentDescription = stringResource(Res.string.app_name)
-                    )
+                    Column(Modifier.weight(1f)) {
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = vectorResource(Res.drawable.outline_compare_arrows_24),
+                            contentDescription = stringResource(Res.string.app_name)
+                        )
 
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = stringResource(Res.string.botBar_2),
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = stringResource(Res.string.botBar_2),
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }
+                    Column(
+                        Modifier
+                            .weight(1f)
+                            .clickable {
+                                nav.push(MyProductsScreen())
+                            }) {
+
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = Icons.Outlined.Favorite,
+                            contentDescription = stringResource(Res.string.app_name)
+                        )
+
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = stringResource(Res.string.botBar_3),
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }
+                    Column(
+                        Modifier
+                            .weight(1f)
+                            .clickable { nav.push(ProfileScreen()) }
+                    ) {
+
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = Icons.Outlined.Person,
+                            contentDescription = stringResource(Res.string.app_name)
+                        )
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = stringResource(Res.string.botBar_4),
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }
                 }
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .clickable {
-                            nav.push(MyProductsScreen())
-                        }) {
-
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.Favorite,
-                        contentDescription = stringResource(Res.string.app_name)
-                    )
-
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = stringResource(Res.string.botBar_3),
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                }
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .clickable { nav.push(ProfileScreen()) }
-                ) {
-
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.Person,
-                        contentDescription = stringResource(Res.string.app_name)
-                    )
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = stringResource(Res.string.botBar_4),
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                }
-            }
 
         }, floatingActionButton = {
             if (viewModel.isUserLoggedIn) {
