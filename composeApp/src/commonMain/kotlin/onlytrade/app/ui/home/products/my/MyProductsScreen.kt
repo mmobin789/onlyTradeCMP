@@ -300,7 +300,7 @@ class MyProductsScreen(private val productIdsCallback: ((HashSet<Long>) -> Unit)
                     val id = product.id
                     if (selectionMode) {
                         selected = viewModel.selectProduct(id)
-                    } else nav.push(ProductDetailScreen(productId = id))
+                    } else nav.push(ProductDetailScreen(product = product))
                 }) {
             AsyncImage(
                 model = product?.imageUrls?.get(0),

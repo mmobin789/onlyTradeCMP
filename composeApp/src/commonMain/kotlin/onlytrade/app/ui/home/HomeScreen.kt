@@ -457,7 +457,7 @@ class HomeScreen : Screen {
         val size = (sharedCMP.screenWidth / 2).dp
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
-            nav.push(ProductDetailScreen(productId = product.id))
+            nav.push(ProductDetailScreen(product = product))
         }) {
             Box(
                 Modifier

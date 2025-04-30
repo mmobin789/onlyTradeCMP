@@ -27,11 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -68,7 +64,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class ProductDetailScreen(private val productId: Long) : Screen {
+class ProductDetailScreen(private val product: Product) : Screen {
 
     @Composable
     override fun Content() {
@@ -76,18 +72,13 @@ class ProductDetailScreen(private val productId: Long) : Screen {
         val sharedCMP = LocalSharedCMP.current
         val viewModel = koinViewModel<ProductDetailViewModel>()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-        var product by remember { mutableStateOf<Product?>(null) }
         val loadingTxt = stringResource(Res.string.home_5)
-        val imageUrls = product?.imageUrls
-
-        LaunchedEffect(Unit) {
-            viewModel.getProductDetail(productId)
-        }
+        val imageUrls = product.imageUrls
 
         when (uiState) {
-            is ProductFound -> {
-                product = (uiState as ProductFound).product
-            }
+            /*  is ProductFound -> {
+                  product = (uiState as ProductFound).product
+              }*/
 
             is OfferMade -> {
                 getToast().showToast("Offer successfully placed.")
