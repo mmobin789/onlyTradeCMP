@@ -284,7 +284,8 @@ class ProductDetailScreen(private val productId: Long) : Screen {
                              modifier = Modifier.padding(vertical = 8.dp)
                          )
                      }*/
-                    if (viewModel.isUserLoggedIn() && viewModel.isMyProduct().not())
+                    if (viewModel.isUserLoggedIn() && !viewModel.isMyProduct() && uiState is ProductFound
+                    )
                         Button(
                             modifier = if (uiState is MakingOffer) Modifier
                                 .weight(1f).shimmer() else Modifier.weight(1f),
@@ -298,7 +299,9 @@ class ProductDetailScreen(private val productId: Long) : Screen {
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = stringResource(Res.string.productDetail_1),
+                                    text = if (uiState is MakingOffer) loadingTxt else stringResource(
+                                        Res.string.productDetail_1
+                                    ),
                                     modifier = Modifier.padding(vertical = 8.dp)
                                 )
 
