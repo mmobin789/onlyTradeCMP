@@ -59,6 +59,9 @@
 
     <!-- Product Detail -->
     <string name="productDetail_1">Offer Trade</string>
+    <string name="productDetail_2">Making Offer…</string>
+    <string name="productDetail_3">Withdraw Offer</string>
+    <string name="productDetail_4">View Offers</string>
 
 
     <!-- My Products -->

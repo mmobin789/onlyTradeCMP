@@ -1,5 +1,6 @@
 package onlytrade.app.ui.home.products.details
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,9 +26,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -55,9 +59,11 @@ import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MakingOffer
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferMade
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
-import onlytrade.composeapp.generated.resources.home_5
 import onlytrade.composeapp.generated.resources.ok
 import onlytrade.composeapp.generated.resources.productDetail_1
+import onlytrade.composeapp.generated.resources.productDetail_2
+import onlytrade.composeapp.generated.resources.productDetail_3
+import onlytrade.composeapp.generated.resources.productDetail_4
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
@@ -70,13 +76,11 @@ class ProductDetailScreen(private val product: Product) : Screen {
         val sharedCMP = LocalSharedCMP.current
         val viewModel = koinViewModel<ProductDetailViewModel>()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-        val loadingTxt = stringResource(Res.string.home_5)
         val imageUrls = product.imageUrls
 
         when (uiState) {
             is OfferMade -> {
                 getToast().showToast("Offer successfully placed.")
-                viewModel.idle()
             }
 
             else -> {}
@@ -244,65 +248,107 @@ class ProductDetailScreen(private val product: Product) : Screen {
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W300)
                 )
+                if (viewModel.isUserLoggedIn())
+                    Row(
+                        modifier = Modifier
+                            .constrainAs(buttons) {
+                                top.linkTo(productDescription.bottom)
+                                start.linkTo(productDescription.start)
+                                end.linkTo(productDescription.end)
+                            }
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val myProduct = viewModel.isMyProduct(product.userId)
 
-                Row(
-                    modifier = Modifier
-                        .constrainAs(buttons) {
-                            top.linkTo(productDescription.bottom)
-                            start.linkTo(productDescription.start)
-                            end.linkTo(productDescription.end)
+                        val madeOffer by remember {
+                            mutableStateOf(product.offers?.find { viewModel.hasMyOffer(it.offerMakerId) } != null)
                         }
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    /* OutlinedButton(
-                         modifier = Modifier.weight(1f),
-                         onClick = { },
-                         shape = MaterialTheme.shapes.medium,
-                         border = BorderStroke(1.dp, productDetailColorScheme.offerTradeBtnBorder),
-                     ) {
-                         Text(
-                             text = "Offer Trade",
-                             color = productDetailColorScheme.offerTradeBtnText,
-                             modifier = Modifier.padding(vertical = 8.dp)
-                         )
-                     }*/
-                    if (viewModel.isUserLoggedIn() && !viewModel.isMyProduct(product.userId))
-                        Button(
-                            modifier = if (uiState is MakingOffer) Modifier
-                                .weight(1f).shimmer() else Modifier.weight(1f),
-                            onClick = {
-                                nav.push(MyProductsScreen { pickedProductIds ->
-                                    viewModel.makeOffer(
-                                        productId = product.id,
-                                        offerReceiverId = product.userId,
-                                        offeredProductIds = pickedProductIds
-                                    )
-                                })
-                            },
-                            shape = MaterialTheme.shapes.medium,
-                            colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+
+                        val receivedOffer by remember {
+                            mutableStateOf(product.offers?.find { viewModel.gotAnOffer(it.offerReceiverId) } != null)
+                        }
+                        if (madeOffer)
+                            OutlinedButton(
+                                modifier = Modifier.weight(1f),
+                                onClick = { //todo withdraw offer
+                                },
+                                shape = MaterialTheme.shapes.medium,
+                                border = BorderStroke(
+                                    1.dp,
+                                    productDetailColorScheme.offerTradeBtnBorder
+                                ),
+                            ) {
                                 Text(
-                                    text = if (uiState is MakingOffer) loadingTxt else stringResource(
-                                        Res.string.productDetail_1
-                                    ),
+                                    text = stringResource(Res.string.productDetail_3),
+                                    color = productDetailColorScheme.offerTradeBtnText,
                                     modifier = Modifier.padding(vertical = 8.dp)
                                 )
-
-                                Spacer(modifier = Modifier.width(8.dp))
-
-                                Icon(
-                                    Icons.AutoMirrored.Filled.ArrowForward,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onPrimary
-                                )
                             }
-                        }
 
-                }
+
+                        if (myProduct.not() && madeOffer.not())
+                            Button(
+                                modifier = if (uiState is MakingOffer) Modifier
+                                    .weight(1f).shimmer() else Modifier.weight(1f),
+                                onClick = {
+                                    nav.push(MyProductsScreen { pickedProductIds ->
+                                        viewModel.makeOffer(
+                                            productId = product.id,
+                                            offerReceiverId = product.userId,
+                                            offeredProductIds = pickedProductIds
+                                        )
+                                    })
+                                },
+                                shape = MaterialTheme.shapes.medium,
+                                colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = stringResource(
+                                            if (uiState is MakingOffer) Res.string.productDetail_2 else Res.string.productDetail_1
+                                        ),
+                                        modifier = Modifier.padding(vertical = 8.dp)
+                                    )
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowForward,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
+                            }
+
+                        if (receivedOffer)
+                            Button(
+                                modifier = if (uiState is MakingOffer) Modifier
+                                    .weight(1f).shimmer() else Modifier.weight(1f),
+                                onClick = {
+                                    //todo view offers.
+                                },
+                                shape = MaterialTheme.shapes.medium,
+                                colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = stringResource(Res.string.productDetail_4),
+                                        modifier = Modifier.padding(vertical = 8.dp)
+                                    )
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowForward,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
+                            }
+
+                    }
 
             }
         }
