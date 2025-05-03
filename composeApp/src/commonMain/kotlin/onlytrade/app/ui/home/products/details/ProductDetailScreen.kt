@@ -69,7 +69,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
 class ProductDetailScreen(private val product: Product) : Screen {
-
+    //todo add offer check from offline db as well.
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
