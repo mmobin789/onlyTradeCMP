@@ -93,6 +93,7 @@ class MyProductsScreen(private val productIdsCallback: ((HashSet<Long>) -> Unit)
         val products by viewModel.productList.collectAsStateWithLifecycle()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val selectionMode = productIdsCallback != null
+        var refreshProducts by remember { mutableStateOf(false) } //todo change to true on error user action.
         Scaffold(topBar = {
             AnimatedVisibility(visible = headerVisible) {
                 Column {
@@ -261,11 +262,11 @@ class MyProductsScreen(private val productIdsCallback: ((HashSet<Long>) -> Unit)
                     }
 
                     when (uiState) {
-                        LoadingProducts -> items(2) { i ->
+                        LoadingProducts -> items(viewModel.productPageSizeExpected) {
                             ProductUI(viewModel, sharedCMP)
                         }
 
-                        ProductsNotFound -> { //todo display error with call to action to reload products then call viewModel.getProducts( tryAgain = true) as action.
+                        ProductsNotFound -> { ////todo display error with call to action to reload products using refreshProducts = true.
                             getToast().showToast("Products not found.")
                             viewModel.idle()
                         }

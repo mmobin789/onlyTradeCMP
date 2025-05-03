@@ -28,9 +28,9 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -40,6 +40,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,6 +62,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
+import kotlinx.coroutines.delay
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
@@ -108,6 +112,7 @@ class HomeScreen : Screen {
         val nav = LocalNavigator.currentOrThrow
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
+        var refreshProducts by remember { mutableStateOf(false) } //todo change to true on error user action.
         Scaffold(topBar = {
             Column {
                 //   AnimatedVisibility(visible = headerVisible.not()) {
@@ -139,7 +144,7 @@ class HomeScreen : Screen {
                         Spacer(modifier = Modifier.width(16.dp))
 
                         Icon(
-                            imageVector = Icons.Outlined.Info,
+                            imageVector = Icons.Outlined.Settings,
                             contentDescription = stringResource(Res.string.search)
                         )
                     }
@@ -180,18 +185,31 @@ class HomeScreen : Screen {
                             if (products.isEmpty()) 5 else products.size
                         }
 
+                        // Auto-scroll logic for banner.
+                        LaunchedEffect(uiState !is LoadingProducts) {
+                            while (headerVisible) {
+                                val nextPage =
+                                    (pagerState.currentPage + 1) % pagerState.pageCount
+                                pagerState.animateScrollToPage(nextPage)
+                                delay(3000) // Delay between scrolls (3 seconds)
+                            }
+                        }
+
                         HorizontalPager(
                             state = pagerState
                         ) {
 
-                            val randomProduct = randomProduct(
-                                products
-                            )
+                            val randomProduct by remember { mutableStateOf(randomProduct(products)) }
+
                             AsyncImage(
                                 model = randomProduct?.first,
-                                contentDescription = randomProduct?.second,
+                                contentDescription = randomProduct?.second?.description,
                                 contentScale = ContentScale.Crop,
-                                modifier = Modifier.clip(MaterialTheme.shapes.medium)
+                                modifier = Modifier.clickable {
+                                    randomProduct?.second?.let {
+                                        nav.push(ProductDetailScreen(it))
+                                    }
+                                }.clip(MaterialTheme.shapes.medium)
                                     .background(
                                         color = Color(
                                             Random.nextFloat(),
@@ -210,7 +228,7 @@ class HomeScreen : Screen {
                                 .padding(bottom = 8.dp)
                                 .padding(horizontal = 8.dp)
                                 .align(Alignment.BottomEnd),
-                            totalDots = 5,
+                            totalDots = pagerState.pageCount,
                             selectedIndex = pagerState.currentPage,
                             selectedColor = MaterialTheme.colorScheme.tertiary,
                             unSelectedColor = Color(0xFFC0C0C0)
@@ -416,7 +434,7 @@ class HomeScreen : Screen {
                     snapshotFlow { productGridState.layoutInfo }.collect { layoutInfo ->
                         val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
                         val total = layoutInfo.totalItemsCount
-                        if (lastVisible >= total - viewModel.productPageSizeExpected / 2) {
+                        if (refreshProducts || lastVisible >= total - viewModel.productPageSizeExpected / 2) {
                             viewModel.getProducts()
 
                         }
@@ -438,11 +456,11 @@ class HomeScreen : Screen {
                     }
 
                     when (uiState) {
-                        LoadingProducts -> items(2) {
+                        LoadingProducts -> items(viewModel.productPageSizeExpected) {
                             ProductUI(sharedCMP)
                         }
 
-                        ProductsNotFound -> { //todo display error with call to action to reload products then call viewModel.getProducts( tryAgain = true) as action.
+                        ProductsNotFound -> { //todo display error with call to action to reload products using refreshProducts = true.
                             getToast().showToast("Products not found.")
                             viewModel.idle()
                         }
@@ -618,7 +636,7 @@ class HomeScreen : Screen {
         }
     }
 
-    private fun randomProduct(products: List<Product>): Pair<String, String>? {
+    private fun randomProduct(products: List<Product>): Pair<String, Product>? {
         if (products.isEmpty())
             return null
         val randomProduct = products[Random.nextInt(0, products.size)]
@@ -626,7 +644,7 @@ class HomeScreen : Screen {
         val randomProductImageCount = randomProductImages.size
         return Pair(
             randomProductImages[Random.nextInt(0, randomProductImageCount)],
-            randomProduct.description
+            randomProduct
         )
     }
 }
