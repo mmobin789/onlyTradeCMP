@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,8 +56,9 @@ import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorSche
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.app.viewmodel.product.ui.ProductDetailViewModel
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.GuestUser
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MakingOffer
-import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferMade
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MyOfferPlaced
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.ok
@@ -69,7 +71,6 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
 class ProductDetailScreen(private val product: Product) : Screen {
-    //todo add offer check from offline db as well.
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
@@ -77,14 +78,6 @@ class ProductDetailScreen(private val product: Product) : Screen {
         val viewModel = koinViewModel<ProductDetailViewModel>()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val imageUrls = product.imageUrls
-
-        when (uiState) {
-            is OfferMade -> {
-                getToast().showToast("Offer successfully placed.")
-            }
-
-            else -> {}
-        }
 
         ConstraintLayout(
             modifier = Modifier.fillMaxSize()
@@ -105,53 +98,42 @@ class ProductDetailScreen(private val product: Product) : Screen {
                     model = imageUrls[page],
                     contentDescription = product.name,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.clipToBounds()
-                        .background(
-                            color = Color(
-                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                            )
+                    modifier = Modifier.clipToBounds().background(
+                        color = Color(
+                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
                         )
-                        .fillMaxWidth()
-                        .height((sharedCMP.screenHeight / 3).dp)
+                    ).fillMaxWidth().height((sharedCMP.screenHeight / 3).dp)
                 )
 
 
             }
 
             Icon(
-                modifier = Modifier
-                    .constrainAs(back) {
-                        top.linkTo(header.top)
-                        start.linkTo(header.start)
-                    }
-                    .clickable { nav.pop() }
-                    .padding(16.dp),
+                modifier = Modifier.constrainAs(back) {
+                    top.linkTo(header.top)
+                    start.linkTo(header.start)
+                }.clickable { nav.pop() }.padding(16.dp),
                 imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                contentDescription = stringResource(Res.string.ok))
+                contentDescription = stringResource(Res.string.ok)
+            )
 
             Icon(
-                modifier = Modifier
-                    .constrainAs(like) {
-                        top.linkTo(header.top)
-                        end.linkTo(header.end)
-                    }
-                    .padding(8.dp)
-                    .background(
-                        shape = CircleShape, color = MaterialTheme.colorScheme.tertiary
-                    )
-                    .padding(8.dp),
+                modifier = Modifier.constrainAs(like) {
+                    top.linkTo(header.top)
+                    end.linkTo(header.end)
+                }.padding(8.dp).background(
+                    shape = CircleShape, color = MaterialTheme.colorScheme.tertiary
+                ).padding(8.dp),
                 imageVector = Icons.Outlined.Favorite,
-                contentDescription = stringResource(Res.string.app_name))
+                contentDescription = stringResource(Res.string.app_name)
+            )
 
             DotsIndicator(
-                modifier = Modifier
-                    .constrainAs(dots) {
-                        start.linkTo(header.start)
-                        end.linkTo(header.end)
-                        bottom.linkTo(space.top)
-                    }
-                    .padding(bottom = 8.dp)
-                    .padding(horizontal = 8.dp),
+                modifier = Modifier.constrainAs(dots) {
+                    start.linkTo(header.start)
+                    end.linkTo(header.end)
+                    bottom.linkTo(space.top)
+                }.padding(bottom = 8.dp).padding(horizontal = 8.dp),
 
                 totalDots = imageUrls.size,
                 selectedIndex = pagerState.currentPage,
@@ -161,58 +143,46 @@ class ProductDetailScreen(private val product: Product) : Screen {
 
 
             Spacer(
-                modifier = Modifier
-                    .size(16.dp)
-                    .background(
-                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                        color = MaterialTheme.colorScheme.background
-                    )
-                    .constrainAs(space) {
-                        bottom.linkTo(header.bottom)
-                        start.linkTo(header.start)
-                        end.linkTo(header.end)
-                    }
-            )
+                modifier = Modifier.size(16.dp).background(
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                    color = MaterialTheme.colorScheme.background
+                ).constrainAs(space) {
+                    bottom.linkTo(header.bottom)
+                    start.linkTo(header.start)
+                    end.linkTo(header.end)
+                })
 
 
 
             ConstraintLayout(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        color = productDetailColorScheme.screenBG,
-                        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
-                    )
-                    .constrainAs(content) {
-                        top.linkTo(dots.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
+                modifier = Modifier.fillMaxSize().background(
+                    color = productDetailColorScheme.screenBG,
+                    shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                ).constrainAs(content) {
+                    top.linkTo(dots.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
 
             ) {
                 val (tags, productTitle, productDescription, buttons) = createRefs()
 
                 Row(
-                    modifier = Modifier
-                        .constrainAs(tags) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
+                    modifier = Modifier.constrainAs(tags) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
 
-                        }
-                        .padding(top = 16.dp)
-                        .padding(horizontal = 16.dp),
+                    }.padding(top = 16.dp).padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     repeat(times = 2) { i ->
 
 
                         Text(
-                            modifier = Modifier
-                                .background(
-                                    color = productDetailColorScheme.productTagsBG,
-                                    shape = MaterialTheme.shapes.medium
-                                )
-                                .padding(8.dp),
+                            modifier = Modifier.background(
+                                color = productDetailColorScheme.productTagsBG,
+                                shape = MaterialTheme.shapes.medium
+                            ).padding(8.dp),
                             text = if (i == 0) "1st Hand" else "In Demand",
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                         )
@@ -222,12 +192,10 @@ class ProductDetailScreen(private val product: Product) : Screen {
 
                 Text(
                     text = product.name,
-                    modifier = Modifier
-                        .constrainAs(productTitle) {
-                            top.linkTo(tags.bottom)
-                            start.linkTo(tags.start)
-                        }
-                        .padding(16.dp),
+                    modifier = Modifier.constrainAs(productTitle) {
+                        top.linkTo(tags.bottom)
+                        start.linkTo(tags.start)
+                    }.padding(16.dp),
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
                 )
@@ -235,11 +203,8 @@ class ProductDetailScreen(private val product: Product) : Screen {
 
                 Text(
                     text = product.description,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 32.dp)
-                        .verticalScroll(rememberScrollState())
-                        .constrainAs(productDescription) {
+                    modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 32.dp)
+                        .verticalScroll(rememberScrollState()).constrainAs(productDescription) {
                             top.linkTo(productTitle.bottom)
                             start.linkTo(productTitle.start)
                             end.linkTo(parent.end)
@@ -248,107 +213,116 @@ class ProductDetailScreen(private val product: Product) : Screen {
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W300)
                 )
-                if (viewModel.isUserLoggedIn())
-                    Row(
-                        modifier = Modifier
-                            .constrainAs(buttons) {
-                                top.linkTo(productDescription.bottom)
-                                start.linkTo(productDescription.start)
-                                end.linkTo(productDescription.end)
-                            }
-                            .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val myProduct = viewModel.isMyProduct(product.userId)
+                Row(
+                    modifier = Modifier.constrainAs(buttons) {
+                        top.linkTo(productDescription.bottom)
+                        start.linkTo(productDescription.start)
+                        end.linkTo(productDescription.end)
+                    }.padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val myProduct by remember { mutableStateOf(viewModel.isMyProduct(product.userId)) }
 
-                        val madeOffer by remember {
-                            mutableStateOf(product.offers?.find { viewModel.hasMyOffer(it.offerMakerId) } != null)
+                    val madeOffer by remember {
+                        mutableStateOf(myProduct.not() && (product.offers?.find {
+                            viewModel.hasMyOffer(
+                                it.offerMakerId
+                            )
+                        } != null || uiState is MyOfferPlaced)) // client persists the offer if placed.
+                    }
+
+                    if (myProduct.not())
+                        LaunchedEffect(Unit) {
+                            viewModel.getMyOffer(offerReceiverProductId = product.id)
                         }
 
-                        val receivedOffer by remember {
-                            mutableStateOf(product.offers?.find { viewModel.gotAnOffer(it.offerReceiverId) } != null)
+
+                    val receivedOffer by remember { //todo also need to call remote api to check if user has any offers on this product.
+                        mutableStateOf(myProduct && product.offers?.find { viewModel.gotAnOffer(it.offerReceiverId) } != null)
+                    }
+                    if (madeOffer)
+                        OutlinedButton(
+                            modifier = Modifier.weight(1f),
+                            onClick = { //todo withdraw offer
+                            },
+                            shape = MaterialTheme.shapes.medium,
+                            border = BorderStroke(
+                                1.dp, productDetailColorScheme.offerTradeBtnBorder
+                            ),
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.productDetail_3),
+                                color = productDetailColorScheme.offerTradeBtnText,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
                         }
-                        if (madeOffer)
-                            OutlinedButton(
-                                modifier = Modifier.weight(1f),
-                                onClick = { //todo withdraw offer
-                                },
-                                shape = MaterialTheme.shapes.medium,
-                                border = BorderStroke(
-                                    1.dp,
-                                    productDetailColorScheme.offerTradeBtnBorder
-                                ),
-                            ) {
+
+
+                    if (uiState == GuestUser || (myProduct.not() && madeOffer.not()))
+                        Button(
+                            modifier = if (uiState is MakingOffer) Modifier.weight(1f)
+                                .shimmer() else Modifier.weight(1f),
+                            onClick = {
+                                if (uiState == GuestUser) {
+                                    //todo display login screen.
+                                    getToast().showToast("Please login first.")
+                                    return@Button
+                                }
+                                nav.push(MyProductsScreen { pickedProductIds ->
+                                    viewModel.makeOffer(
+                                        productId = product.id,
+                                        offerReceiverId = product.userId,
+                                        offeredProductIds = pickedProductIds
+                                    )
+                                })
+                            },
+                            shape = MaterialTheme.shapes.medium,
+                            colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = stringResource(Res.string.productDetail_3),
-                                    color = productDetailColorScheme.offerTradeBtnText,
-                                    modifier = Modifier.padding(vertical = 8.dp)
+                                    text = stringResource(
+                                        if (uiState is MakingOffer) Res.string.productDetail_2 else Res.string.productDetail_1
+                                    ), modifier = Modifier.padding(vertical = 8.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowForward,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
+                        }
 
+                    if (receivedOffer) Button(
+                        modifier = if (uiState is MakingOffer) Modifier.weight(1f)
+                            .shimmer() else Modifier.weight(1f),
+                        onClick = {
+                            //todo view offers.
+                        },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = stringResource(Res.string.productDetail_4),
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
 
-                        if (myProduct.not() && madeOffer.not())
-                            Button(
-                                modifier = if (uiState is MakingOffer) Modifier
-                                    .weight(1f).shimmer() else Modifier.weight(1f),
-                                onClick = {
-                                    nav.push(MyProductsScreen { pickedProductIds ->
-                                        viewModel.makeOffer(
-                                            productId = product.id,
-                                            offerReceiverId = product.userId,
-                                            offeredProductIds = pickedProductIds
-                                        )
-                                    })
-                                },
-                                shape = MaterialTheme.shapes.medium,
-                                colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(
-                                        text = stringResource(
-                                            if (uiState is MakingOffer) Res.string.productDetail_2 else Res.string.productDetail_1
-                                        ),
-                                        modifier = Modifier.padding(vertical = 8.dp)
-                                    )
+                            Spacer(modifier = Modifier.width(8.dp))
 
-                                    Spacer(modifier = Modifier.width(8.dp))
-
-                                    Icon(
-                                        Icons.AutoMirrored.Filled.ArrowForward,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onPrimary
-                                    )
-                                }
-                            }
-
-                        if (receivedOffer)
-                            Button(
-                                modifier = if (uiState is MakingOffer) Modifier
-                                    .weight(1f).shimmer() else Modifier.weight(1f),
-                                onClick = {
-                                    //todo view offers.
-                                },
-                                shape = MaterialTheme.shapes.medium,
-                                colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(
-                                        text = stringResource(Res.string.productDetail_4),
-                                        modifier = Modifier.padding(vertical = 8.dp)
-                                    )
-
-                                    Spacer(modifier = Modifier.width(8.dp))
-
-                                    Icon(
-                                        Icons.AutoMirrored.Filled.ArrowForward,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onPrimary
-                                    )
-                                }
-                            }
-
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
                     }
+
+                }
 
             }
         }

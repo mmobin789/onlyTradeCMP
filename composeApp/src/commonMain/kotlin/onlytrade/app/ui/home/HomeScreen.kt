@@ -114,7 +114,7 @@ class HomeScreen : Screen {
         val headerVisible = productGridState.canScrollBackward.not()
         var refreshProducts by remember { mutableStateOf(false) } //todo change to true on error user action.
         Scaffold(topBar = {
-            Column {
+            Column(modifier = if (uiState is LoadingProducts) Modifier.shimmer() else Modifier) {
                 //   AnimatedVisibility(visible = headerVisible.not()) {
                 Row(
                     modifier = Modifier
