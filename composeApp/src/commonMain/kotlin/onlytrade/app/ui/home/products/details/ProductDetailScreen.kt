@@ -56,11 +56,15 @@ import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorSche
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.app.viewmodel.product.ui.ProductDetailViewModel
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.CheckingOffer
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.GuestUser
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MakingOffer
-import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MyOfferPlaced
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferMade
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferNotMade
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferReceived
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
+import onlytrade.composeapp.generated.resources.home_5
 import onlytrade.composeapp.generated.resources.ok
 import onlytrade.composeapp.generated.resources.productDetail_1
 import onlytrade.composeapp.generated.resources.productDetail_2
@@ -222,84 +226,78 @@ class ProductDetailScreen(private val product: Product) : Screen {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val myProduct by remember { mutableStateOf(viewModel.isMyProduct(product.userId)) }
+                    LaunchedEffect(Unit) {
+                        viewModel.checkOffer(productId = product.id)
+                    }
 
                     val madeOffer by remember {
-                        mutableStateOf(myProduct.not() && (product.offers?.find {
-                            viewModel.hasMyOffer(
+                        mutableStateOf(product.offers?.find {
+                            viewModel.madeOffer(
                                 it.offerMakerId
                             )
-                        } != null || uiState is MyOfferPlaced)) // client persists the offer if placed.
+                        } != null || uiState is OfferMade) // client persists the offer if placed.
                     }
 
-                    if (myProduct.not())
-                        LaunchedEffect(Unit) {
-                            viewModel.getMyOffer(offerReceiverProductId = product.id)
-                        }
-
-
-                    val receivedOffer by remember { //todo also need to call remote api to check if user has any offers on this product.
-                        mutableStateOf(myProduct && product.offers?.find { viewModel.gotAnOffer(it.offerReceiverId) } != null)
+                    val receivedOffer by remember {
+                        mutableStateOf(product.offers?.find { viewModel.receivedOffer(it.offerReceiverId) } != null || uiState == OfferReceived)
                     }
-                    if (madeOffer)
-                        OutlinedButton(
-                            modifier = Modifier.weight(1f),
-                            onClick = { //todo withdraw offer
-                            },
-                            shape = MaterialTheme.shapes.medium,
-                            border = BorderStroke(
-                                1.dp, productDetailColorScheme.offerTradeBtnBorder
-                            ),
-                        ) {
+                    if (madeOffer) OutlinedButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = { //todo withdraw offer
+                        },
+                        shape = MaterialTheme.shapes.medium,
+                        border = BorderStroke(
+                            1.dp, productDetailColorScheme.offerTradeBtnBorder
+                        ),
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.productDetail_3),
+                            color = productDetailColorScheme.offerTradeBtnText,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
+
+
+                    if (uiState == GuestUser || uiState == CheckingOffer || uiState == OfferNotMade) Button(
+                        modifier = if (uiState == CheckingOffer || uiState is MakingOffer) Modifier.weight(
+                            1f
+                        )
+                            .shimmer() else Modifier.weight(1f),
+                        onClick = {
+                            if (uiState == GuestUser) {
+                                //todo display login screen.
+                                getToast().showToast("Please login first.")
+
+                            } else nav.push(MyProductsScreen { pickedProductIds ->
+                                viewModel.makeOffer(
+                                    productId = product.id,
+                                    offerReceiverId = product.userId,
+                                    offeredProductIds = pickedProductIds
+                                )
+                            })
+                        },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = stringResource(Res.string.productDetail_3),
-                                color = productDetailColorScheme.offerTradeBtnText,
-                                modifier = Modifier.padding(vertical = 8.dp)
+                                text = stringResource(
+                                    if (uiState == CheckingOffer) Res.string.home_5 else if (uiState is MakingOffer) Res.string.productDetail_2 else Res.string.productDetail_1
+                                ), modifier = Modifier.padding(vertical = 8.dp)
+                            )
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
-
-
-                    if (uiState == GuestUser || (myProduct.not() && madeOffer.not()))
-                        Button(
-                            modifier = if (uiState is MakingOffer) Modifier.weight(1f)
-                                .shimmer() else Modifier.weight(1f),
-                            onClick = {
-                                if (uiState == GuestUser) {
-                                    //todo display login screen.
-                                    getToast().showToast("Please login first.")
-                                    return@Button
-                                }
-                                nav.push(MyProductsScreen { pickedProductIds ->
-                                    viewModel.makeOffer(
-                                        productId = product.id,
-                                        offerReceiverId = product.userId,
-                                        offeredProductIds = pickedProductIds
-                                    )
-                                })
-                            },
-                            shape = MaterialTheme.shapes.medium,
-                            colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = stringResource(
-                                        if (uiState is MakingOffer) Res.string.productDetail_2 else Res.string.productDetail_1
-                                    ), modifier = Modifier.padding(vertical = 8.dp)
-                                )
-
-                                Spacer(modifier = Modifier.width(8.dp))
-
-                                Icon(
-                                    Icons.AutoMirrored.Filled.ArrowForward,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onPrimary
-                                )
-                            }
-                        }
+                    }
 
                     if (receivedOffer) Button(
-                        modifier = if (uiState is MakingOffer) Modifier.weight(1f)
-                            .shimmer() else Modifier.weight(1f),
+                        modifier = Modifier.weight(1f),
                         onClick = {
                             //todo view offers.
                         },
