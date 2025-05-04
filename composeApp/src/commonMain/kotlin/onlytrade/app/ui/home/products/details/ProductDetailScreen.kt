@@ -226,11 +226,14 @@ class ProductDetailScreen(private val product: Product) : Screen {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    LaunchedEffect(Unit) {
-                        viewModel.checkOffer(productId = product.id)
+                    val noOffersOnProducts by remember(product.offers) { mutableStateOf(product.offers.isNullOrEmpty()) }
+
+                    if (noOffersOnProducts) LaunchedEffect(Unit) {
+
+                        viewModel.checkOffer(product)
                     }
 
-                    val madeOffer by remember {
+                    val madeOffer by remember(product.offers, uiState) {
                         mutableStateOf(product.offers?.find {
                             viewModel.madeOffer(
                                 it.offerMakerId
@@ -238,9 +241,11 @@ class ProductDetailScreen(private val product: Product) : Screen {
                         } != null || uiState is OfferMade) // client persists the offer if placed.
                     }
 
-                    val receivedOffer by remember {
+
+                    val receivedOffer by remember(product.offers, uiState) {
                         mutableStateOf(product.offers?.find { viewModel.receivedOffer(it.offerReceiverId) } != null || uiState == OfferReceived)
                     }
+
                     if (madeOffer) OutlinedButton(
                         modifier = Modifier.weight(1f),
                         onClick = { //todo withdraw offer
@@ -258,11 +263,10 @@ class ProductDetailScreen(private val product: Product) : Screen {
                     }
 
 
-                    if (uiState == GuestUser || uiState == OfferNotMade) Button(
+                    if (uiState == GuestUser || uiState == LoadingOfferReceived || uiState == OfferNotMade) Button(
                         modifier = if (uiState == LoadingOfferReceived || uiState is MakingOffer) Modifier.weight(
                             1f
-                        )
-                            .shimmer() else Modifier.weight(1f),
+                        ).shimmer() else Modifier.weight(1f),
                         onClick = {
                             if (uiState == GuestUser) {
                                 //todo display login screen.
