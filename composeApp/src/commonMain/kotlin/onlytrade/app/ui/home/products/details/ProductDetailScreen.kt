@@ -56,8 +56,8 @@ import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorSche
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.app.viewmodel.product.ui.ProductDetailViewModel
-import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.CheckingOffer
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.GuestUser
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.LoadingOfferReceived
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MakingOffer
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferMade
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferNotMade
@@ -258,8 +258,8 @@ class ProductDetailScreen(private val product: Product) : Screen {
                     }
 
 
-                    if (uiState == GuestUser || uiState == CheckingOffer || uiState == OfferNotMade) Button(
-                        modifier = if (uiState == CheckingOffer || uiState is MakingOffer) Modifier.weight(
+                    if (uiState == GuestUser || uiState == OfferNotMade) Button(
+                        modifier = if (uiState == LoadingOfferReceived || uiState is MakingOffer) Modifier.weight(
                             1f
                         )
                             .shimmer() else Modifier.weight(1f),
@@ -282,7 +282,7 @@ class ProductDetailScreen(private val product: Product) : Screen {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = stringResource(
-                                    if (uiState == CheckingOffer) Res.string.home_5 else if (uiState is MakingOffer) Res.string.productDetail_2 else Res.string.productDetail_1
+                                    if (uiState == LoadingOfferReceived) Res.string.home_5 else if (uiState is MakingOffer) Res.string.productDetail_2 else Res.string.productDetail_1
                                 ), modifier = Modifier.padding(vertical = 8.dp)
                             )
 
