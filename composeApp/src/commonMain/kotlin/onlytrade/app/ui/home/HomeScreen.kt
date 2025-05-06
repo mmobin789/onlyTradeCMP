@@ -106,6 +106,7 @@ class HomeScreen : Screen {
     @Composable
     override fun Content() {
         val viewModel = koinViewModel<HomeViewModel>()
+        val userLoggedIn by remember { mutableStateOf(viewModel.isUserLoggedIn) }
         val products by viewModel.productList.collectAsStateWithLifecycle()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val sharedCMP = LocalSharedCMP.current
@@ -238,7 +239,7 @@ class HomeScreen : Screen {
                 }
             }
         }, bottomBar = {
-            if (viewModel.isUserLoggedIn)
+            if (userLoggedIn)
                 Row(
                     modifier = Modifier
                         .background(homeColorScheme.botBarBG)
@@ -269,7 +270,9 @@ class HomeScreen : Screen {
                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                            )
                        }*/
-                    Column(Modifier.weight(1f)) {
+                    Column(Modifier.weight(1f).clickable {
+                        //    nav.push()
+                    }) {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                             imageVector = vectorResource(Res.drawable.outline_compare_arrows_24),
@@ -321,7 +324,7 @@ class HomeScreen : Screen {
                 }
 
         }, floatingActionButton = {
-            if (viewModel.isUserLoggedIn) {
+            if (userLoggedIn) {
 
                 val addProductClicked = {
                     nav.push(AddProductScreen())
