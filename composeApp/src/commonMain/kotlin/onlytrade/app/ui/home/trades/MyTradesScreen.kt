@@ -319,7 +319,7 @@ class MyTradesScreen : Screen {
 
                 // Auto-scroll logic for banner.
                 LaunchedEffect(offer != null) {
-                    while (offerListState.isScrollInProgress.not()) {
+                    while (offer != null) {
                         val nextPage =
                             (pagerState.currentPage + 1) % pagerState.pageCount
                         pagerState.animateScrollToPage(nextPage)

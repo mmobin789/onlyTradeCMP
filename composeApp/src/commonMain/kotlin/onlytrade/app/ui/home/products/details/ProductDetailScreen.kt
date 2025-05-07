@@ -226,9 +226,9 @@ class ProductDetailScreen(private val product: Product) : Screen {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val noOffersOnProducts by remember(product.offers) { mutableStateOf(product.offers.isNullOrEmpty()) }
+                    val noOfferOnProduct by remember(product.offers) { mutableStateOf(product.offers.isNullOrEmpty()) }
 
-                    if (noOffersOnProducts) LaunchedEffect(Unit) {
+                    if (noOfferOnProduct) LaunchedEffect(Unit) {
 
                         viewModel.checkOffer(product)
                     }
