@@ -70,6 +70,9 @@ import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.LoadingOffersMade
 import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.LoadingOffersReceived
 import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.NoOffersMade
 import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.NoOffersReceived
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.OfferDeleteApiError
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.OfferDeleted
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.OfferNotFound
 import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.OffersMade
 import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.OffersMadeError
 import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.OffersReceived
@@ -98,6 +101,8 @@ class MyTradesScreen : Screen {
         val sharedCMP = LocalSharedCMP.current
         val viewModel = koinViewModel<MyTradesViewModel>()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+        var offerSentBtn by remember { mutableStateOf(true) }
+        var offerReceivedBtn by remember { mutableStateOf(false) }
         var refreshTrades by remember { mutableStateOf(false) } //todo change to true on error user action.
         Scaffold(topBar = {
             AnimatedVisibility(visible = headerVisible) {
@@ -207,12 +212,13 @@ class MyTradesScreen : Screen {
             }
 
         }) { paddingValues ->
+
             Column(
                 modifier = Modifier.padding(paddingValues)
                     .background(myProductsColorScheme.screenBG)
             ) {
                 Row(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
                         .border(
                             width = 1.dp,
                             color = myProductsColorScheme.buySellTabBGOutline,
@@ -221,13 +227,21 @@ class MyTradesScreen : Screen {
                 ) {
                     Text(
                         fontSize = 15.sp,
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier.clickable {
+                            offerSentBtn = true
+                            offerReceivedBtn = false
+                            viewModel.getOffersMade()
+                        }.padding(horizontal = 16.dp),
                         text = stringResource(Res.string.myTrades_1),
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = W300)
                     )
                     Text(
                         fontSize = 15.sp,
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier.clickable {
+                            offerSentBtn = false
+                            offerReceivedBtn = true
+                            viewModel.getOffersReceived()
+                        }.padding(horizontal = 16.dp),
                         text = stringResource(Res.string.myTrades_2),
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = W300)
                     )
@@ -275,6 +289,18 @@ class MyTradesScreen : Screen {
                         is OffersReceivedError -> {
                             getToast().showToast((uiState as OffersReceivedError).error)
                             viewModel.idle()
+                        }
+
+                        OfferDeleted -> {
+                            getToast().showToast("Offer withdrawn successfully!")
+                        }
+
+                        OfferNotFound -> {
+                            getToast().showToast("Offer not found.")
+                        }
+
+                        is OfferDeleteApiError -> {
+                            getToast().showToast((uiState as OfferDeleteApiError).error)
                         }
 
                         Idle -> {} // do nothing.
@@ -356,7 +382,10 @@ class MyTradesScreen : Screen {
                         .padding(bottom = 8.dp)
                         .padding(horizontal = 8.dp)
                         .align(Alignment.BottomEnd),
-                    totalDots = pagerState.pageCount,
+                    totalDots = pagerState.pageCount.let {
+                        if (it > 20)
+                            20 else it
+                    },
                     selectedIndex = pagerState.currentPage,
                     selectedColor = MaterialTheme.colorScheme.tertiary,
                     unSelectedColor = Color(0xFFC0C0C0)

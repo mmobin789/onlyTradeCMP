@@ -59,9 +59,11 @@ import onlytrade.app.viewmodel.product.ui.ProductDetailViewModel
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.GuestUser
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.LoadingOfferReceived
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MakingOffer
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferDeleted
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferMade
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferNotMade
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferReceived
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.WithdrawingOffer
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.home_5
@@ -70,6 +72,8 @@ import onlytrade.composeapp.generated.resources.productDetail_1
 import onlytrade.composeapp.generated.resources.productDetail_2
 import onlytrade.composeapp.generated.resources.productDetail_3
 import onlytrade.composeapp.generated.resources.productDetail_4
+import onlytrade.composeapp.generated.resources.productDetail_5
+import onlytrade.composeapp.generated.resources.productDetail_6
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
@@ -248,7 +252,11 @@ class ProductDetailScreen(private val product: Product) : Screen {
 
                     if (madeOffer) OutlinedButton(
                         modifier = Modifier.weight(1f),
-                        onClick = { //todo withdraw offer
+                        onClick = {
+                            if (uiState == OfferDeleted) { // offer deleted click disabled.
+                                return@OutlinedButton
+                            }
+                            viewModel.withdrawOffer(product.id)
                         },
                         shape = MaterialTheme.shapes.medium,
                         border = BorderStroke(
@@ -256,7 +264,7 @@ class ProductDetailScreen(private val product: Product) : Screen {
                         ),
                     ) {
                         Text(
-                            text = stringResource(Res.string.productDetail_3),
+                            text = stringResource(if (uiState == WithdrawingOffer) Res.string.productDetail_5 else if (uiState == OfferDeleted) Res.string.productDetail_6 else Res.string.productDetail_3),
                             color = productDetailColorScheme.offerTradeBtnText,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
