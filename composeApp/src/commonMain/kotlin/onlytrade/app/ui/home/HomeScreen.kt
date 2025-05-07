@@ -74,6 +74,7 @@ import onlytrade.app.ui.home.products.add.AddProductScreen
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.ui.home.profile.ProfileScreen
+import onlytrade.app.ui.home.trades.MyTradesScreen
 import onlytrade.app.viewmodel.home.ui.HomeUiState.GetProductsApiError
 import onlytrade.app.viewmodel.home.ui.HomeUiState.Idle
 import onlytrade.app.viewmodel.home.ui.HomeUiState.LoadingProducts
@@ -197,7 +198,8 @@ class HomeScreen : Screen {
                         }
 
                         HorizontalPager(
-                            state = pagerState
+                            state = pagerState,
+                            userScrollEnabled = false
                         ) {
 
                             val randomProduct by remember { mutableStateOf(randomProduct(products)) }
@@ -271,7 +273,7 @@ class HomeScreen : Screen {
                            )
                        }*/
                     Column(Modifier.weight(1f).clickable {
-                        //    nav.push()
+                        nav.push(MyTradesScreen())
                     }) {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),

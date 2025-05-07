@@ -19,11 +19,13 @@
     <string name="ob1_2">Explore a wide range of products</string>
     <string name="ob1_3">Explore a wide range of products at your fingertips. QuickMart offers an extensive collection to suit your needs.</string>
     <string name="ob1_4">Next</string>
+
     <!-- Onboarding Page 2 -->
     <string name="ob2_1">Skip for now</string>
     <string name="ob2_2">Unlock exclusive offers and discounts</string>
     <string name="ob2_3">Get access to limited-time deals and special promotions available only to our valued\n customers.</string>
     <string name="ob2_4">Next</string>
+
     <!-- Onboarding Page 3 -->
     <string name="ob3_1">Skip for now</string>
     <string name="ob3_2">Safe and Secure\nDeals</string>
@@ -47,6 +49,7 @@
     <string name="home_3">SEE ALL</string>
     <string name="home_4">Add Product</string>
     <string name="home_5">Loading…</string>
+
     <!-- Add Product -->
     <string name="addProduct_1">Add a New Trade Product</string>
     <string name="addProduct_2">Add Product Image</string>
@@ -63,16 +66,20 @@
     <string name="productDetail_3">Withdraw Offer</string>
     <string name="productDetail_4">View Offers</string>
 
-
     <!-- My Products -->
     <string name="myProducts_1">Select Products</string>
     <string name="myProducts_2">Done</string>
+
+    <!-- My Trades -->
+    <string name="myTrades_1">Offers Sent</string>
+    <string name="myTrades_2">Offers Received</string>
 
     <!-- Bottom Bar -->
     <string name="botBar_1">Home</string>
     <string name="botBar_2">My Trades</string>
     <string name="botBar_3">My Products</string>
     <string name="botBar_4">Profile</string>
+
     <!-- Profile Screen -->
     <string name="profile_1">My Profile</string>
     <string name="profile_2">Active Trades</string>

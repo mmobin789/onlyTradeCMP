@@ -81,7 +81,8 @@ import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class MyProductsScreen(private val productIdsCallback: ((HashSet<Long>) -> Unit)? = null) : Screen {
+class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) -> Unit)? = null) :
+    Screen {
 
     @Composable
     override fun Content() {
