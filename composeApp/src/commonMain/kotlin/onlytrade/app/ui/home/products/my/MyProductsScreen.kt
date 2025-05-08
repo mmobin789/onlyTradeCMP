@@ -118,11 +118,12 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
                         }
 
                         if (selectionMode) Text(
-                            modifier = Modifier.align(Alignment.CenterEnd)
-                                .clickable {
-                                    productIdsCallback?.invoke(viewModel.pickedProductIds)
-                                    nav.pop()
-                                },
+                            modifier = Modifier.align(Alignment.CenterEnd).clickable {
+                                if (viewModel.pickedProductIds.isNotEmpty()) productIdsCallback?.invoke(
+                                    viewModel.pickedProductIds
+                                )
+                                nav.pop()
+                            },
                             text = stringResource(Res.string.myProducts_2),
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
                         )
@@ -137,27 +138,26 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
                 }
             }
         }, bottomBar = {
-            if (selectionMode.not())
-                Row(
-                    modifier = Modifier.background(myProductsColorScheme.botBarBG).padding(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Column(
-                        Modifier.weight(1f).clickable {
-                            nav.pop()
-                        }) {
-                        Icon(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = Icons.Outlined.Home,
-                            contentDescription = stringResource(Res.string.app_name)
-                        )
+            if (selectionMode.not()) Row(
+                modifier = Modifier.background(myProductsColorScheme.botBarBG).padding(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Column(
+                    Modifier.weight(1f).clickable {
+                        nav.pop()
+                    }) {
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.Home,
+                        contentDescription = stringResource(Res.string.app_name)
+                    )
 
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "Home",
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                        )
-                    }/*   Column(Modifier.weight(1f)) {
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = "Home",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
+                }/*   Column(Modifier.weight(1f)) {
                            Icon(
                                modifier = Modifier.align(Alignment.CenterHorizontally),
                                imageVector = Icons.Outlined.Menu,
@@ -170,48 +170,48 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                            )
                        }*/
-                    Column(Modifier.weight(1f)) {
-                        Icon(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = vectorResource(Res.drawable.outline_compare_arrows_24),
-                            contentDescription = stringResource(Res.string.app_name)
-                        )
+                Column(Modifier.weight(1f)) {
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = vectorResource(Res.drawable.outline_compare_arrows_24),
+                        contentDescription = stringResource(Res.string.app_name)
+                    )
 
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "My Trades",
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                        )
-                    }
-                    Column(Modifier.weight(1f)) {
-
-                        Icon(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = Icons.Outlined.Favorite,
-                            contentDescription = stringResource(Res.string.app_name)
-                        )
-
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = stringResource(Res.string.botBar_3),
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                        )
-                    }
-                    Column(
-                        Modifier.weight(1f).clickable { nav.push(ProfileScreen()) }) {
-
-                        Icon(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = Icons.Outlined.Person,
-                            contentDescription = stringResource(Res.string.app_name)
-                        )
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "Profile",
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                        )
-                    }
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = "My Trades",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
                 }
+                Column(Modifier.weight(1f)) {
+
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.Favorite,
+                        contentDescription = stringResource(Res.string.app_name)
+                    )
+
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = stringResource(Res.string.botBar_3),
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
+                }
+                Column(
+                    Modifier.weight(1f).clickable { nav.push(ProfileScreen()) }) {
+
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.Person,
+                        contentDescription = stringResource(Res.string.app_name)
+                    )
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = "Profile",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
+                }
+            }
 
         }) { paddingValues ->
             Column(
@@ -419,21 +419,18 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
             }
 
 
-            if (product != null)
-                Column(modifier = Modifier.fillMaxHeight()) {
-                    if (selected)
-                        Icon(
-                            modifier = Modifier.align(Alignment.Start),
-                            imageVector = Icons.Outlined.Check,
-                            contentDescription = stringResource(Res.string.search)
-                        )
-                    if (selectionMode.not())
-                        Icon(
-                            modifier = Modifier.align(Alignment.End),
-                            imageVector = Icons.Outlined.Delete,
-                            contentDescription = stringResource(Res.string.search)
-                        )
-                }
+            if (product != null) Column(modifier = Modifier.fillMaxHeight()) {
+                if (selected) Icon(
+                    modifier = Modifier.align(Alignment.Start),
+                    imageVector = Icons.Outlined.Check,
+                    contentDescription = stringResource(Res.string.search)
+                )
+                if (selectionMode.not()) Icon(
+                    modifier = Modifier.align(Alignment.End),
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = stringResource(Res.string.search)
+                )
+            }
         }
     }
 }

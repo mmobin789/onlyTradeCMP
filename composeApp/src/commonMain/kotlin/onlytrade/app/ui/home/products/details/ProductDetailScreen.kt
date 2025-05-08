@@ -54,10 +54,12 @@ import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
 import onlytrade.app.ui.home.products.my.MyProductsScreen
+import onlytrade.app.ui.home.trades.MyTradesScreen
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.app.viewmodel.product.ui.ProductDetailViewModel
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.GuestUser
-import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.LoadingOfferReceived
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.LoadingOfferMade
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MakeOfferFail
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MakingOffer
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferDeleted
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferMade
@@ -73,7 +75,6 @@ import onlytrade.composeapp.generated.resources.productDetail_2
 import onlytrade.composeapp.generated.resources.productDetail_3
 import onlytrade.composeapp.generated.resources.productDetail_4
 import onlytrade.composeapp.generated.resources.productDetail_5
-import onlytrade.composeapp.generated.resources.productDetail_6
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
@@ -230,10 +231,9 @@ class ProductDetailScreen(private val product: Product) : Screen {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val noOfferOnProduct by remember(product.offers) { mutableStateOf(product.offers.isNullOrEmpty()) }
+                    // val noOfferOnProduct by remember(product.offers) { mutableStateOf(product.offers.isNullOrEmpty()) }
 
-                    if (noOfferOnProduct) LaunchedEffect(Unit) {
-
+                    LaunchedEffect(Unit) {
                         viewModel.checkOffer(product)
                     }
 
@@ -250,13 +250,26 @@ class ProductDetailScreen(private val product: Product) : Screen {
                         mutableStateOf(product.offers?.find { viewModel.receivedOffer(it.offerReceiverId) } != null || uiState == OfferReceived)
                     }
 
-                    if (madeOffer) OutlinedButton(
-                        modifier = Modifier.weight(1f),
+                    val offerTrade by remember(uiState) {
+                        mutableStateOf(uiState == GuestUser || uiState == LoadingOfferMade || uiState == MakingOffer || uiState == MakeOfferFail || uiState == OfferNotMade || uiState == OfferDeleted)
+                    }
+
+                    if ((madeOffer && offerTrade.not()) || uiState == WithdrawingOffer) OutlinedButton(
+                        modifier = if (uiState == WithdrawingOffer) Modifier.weight(1f)
+                            .shimmer() else Modifier.weight(1f),
                         onClick = {
-                            if (uiState == OfferDeleted) { // offer deleted click disabled.
-                                return@OutlinedButton
+                            when (uiState) {
+                                WithdrawingOffer -> {
+                                    getToast().showToast("Withdrawing offer please wait")
+
+                                }
+
+                                OfferDeleted -> { // offer deleted click disabled.
+                                    getToast().showToast("Offer deleted. please await refresh.")
+                                }
+
+                                else -> viewModel.withdrawOffer(product.id)
                             }
-                            viewModel.withdrawOffer(product.id)
                         },
                         shape = MaterialTheme.shapes.medium,
                         border = BorderStroke(
@@ -264,29 +277,36 @@ class ProductDetailScreen(private val product: Product) : Screen {
                         ),
                     ) {
                         Text(
-                            text = stringResource(if (uiState == WithdrawingOffer) Res.string.productDetail_5 else if (uiState == OfferDeleted) Res.string.productDetail_6 else Res.string.productDetail_3),
+                            text = stringResource(if (uiState == WithdrawingOffer) Res.string.productDetail_5 else Res.string.productDetail_3),
                             color = productDetailColorScheme.offerTradeBtnText,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
 
 
-                    if (uiState == GuestUser || uiState == LoadingOfferReceived || uiState == OfferNotMade) Button(
-                        modifier = if (uiState == LoadingOfferReceived || uiState is MakingOffer) Modifier.weight(
+                    if (offerTrade) Button(
+                        modifier = if (uiState == LoadingOfferMade || uiState is MakingOffer) Modifier.weight(
                             1f
                         ).shimmer() else Modifier.weight(1f),
                         onClick = {
-                            if (uiState == GuestUser) {
-                                //todo display login screen.
-                                getToast().showToast("Please login first.")
+                            when (uiState) {
+                                GuestUser -> {
+                                    //todo display login screen.
+                                    getToast().showToast("Please login first.")
 
-                            } else nav.push(MyProductsScreen { pickedProductIds ->
-                                viewModel.makeOffer(
-                                    productId = product.id,
-                                    offerReceiverId = product.userId,
-                                    offeredProductIds = pickedProductIds
-                                )
-                            })
+                                }
+
+                                is MakingOffer -> getToast().showToast("Please wait for offer to be made.")
+                                else -> nav.push(MyProductsScreen { pickedProductIds ->
+                                    viewModel.makeOffer(
+                                        productId = product.id,
+                                        offerReceiverId = product.userId,
+                                        offeredProductIds = pickedProductIds
+                                    )
+
+
+                                })
+                            }
                         },
                         shape = MaterialTheme.shapes.medium,
                         colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
@@ -294,7 +314,7 @@ class ProductDetailScreen(private val product: Product) : Screen {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = stringResource(
-                                    if (uiState == LoadingOfferReceived) Res.string.home_5 else if (uiState is MakingOffer) Res.string.productDetail_2 else Res.string.productDetail_1
+                                    if (uiState == LoadingOfferMade) Res.string.home_5 else if (uiState is MakingOffer) Res.string.productDetail_2 else Res.string.productDetail_1
                                 ), modifier = Modifier.padding(vertical = 8.dp)
                             )
 
@@ -311,7 +331,7 @@ class ProductDetailScreen(private val product: Product) : Screen {
                     if (receivedOffer) Button(
                         modifier = Modifier.weight(1f),
                         onClick = {
-                            //todo view offers.
+                            nav.push(MyTradesScreen())
                         },
                         shape = MaterialTheme.shapes.medium,
                         colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
