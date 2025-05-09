@@ -79,7 +79,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class ProductDetailScreen(private val product: Product) : Screen {
+class ProductDetailScreen(private val product: Product, private val tradeView: Boolean = false) :
+    Screen {
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
@@ -260,12 +261,12 @@ class ProductDetailScreen(private val product: Product) : Screen {
                         onClick = {
                             when (uiState) {
                                 WithdrawingOffer -> {
-                                    getToast().showToast("Withdrawing offer please wait")
+                                    getToast().showToast("Withdrawing trade please wait")
 
                                 }
 
                                 OfferDeleted -> { // offer deleted click disabled.
-                                    getToast().showToast("Offer deleted. please await refresh.")
+                                    getToast().showToast("Trade withdrawn. please await refresh.")
                                 }
 
                                 else -> viewModel.withdrawOffer(product.id)
@@ -328,7 +329,7 @@ class ProductDetailScreen(private val product: Product) : Screen {
                         }
                     }
 
-                    if (receivedOffer) Button(
+                    if (receivedOffer && tradeView.not()) Button(
                         modifier = Modifier.weight(1f),
                         onClick = {
                             nav.push(MyTradesScreen())

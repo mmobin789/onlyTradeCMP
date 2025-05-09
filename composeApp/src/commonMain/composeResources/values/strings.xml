@@ -61,19 +61,30 @@
     <string name="addProduct_8">Enter valid amount</string>
 
     <!-- Product Detail -->
-    <string name="productDetail_1">Offer Trade</string>
-    <string name="productDetail_2">Making Offer…</string>
-    <string name="productDetail_3">Withdraw Offer</string>
-    <string name="productDetail_4">View Offers</string>
-    <string name="productDetail_5">Withdrawing Offer…</string>
+    <string name="productDetail_1">Trade</string>
+    <string name="productDetail_2">Making Trade…</string>
+    <string name="productDetail_3">Withdraw Trade</string>
+    <string name="productDetail_4">View Trades</string>
+    <string name="productDetail_5">Withdrawing Trade…</string>
 
     <!-- My Products -->
     <string name="myProducts_1">Select Products</string>
     <string name="myProducts_2">Done</string>
 
     <!-- My Trades -->
-    <string name="myTrades_1">Offers Sent</string>
-    <string name="myTrades_2">Offers Received</string>
+    <string name="myTrades_1">Trade to</string>
+    <string name="myTrades_2">to Trade</string>
+    <string name="myTrades_3">No Trade Found</string>
+
+
+    <!-- Trade Detail -->
+    <string name="tradeDetail_1">Trade Detail</string>
+    <string name="tradeDetail_2">Withdraw</string>
+    <string name="tradeDetail_3">Accept</string>
+    <string name="tradeDetail_4">Reject</string>
+    <string name="tradeDetail_5">Accepting…</string>
+    <string name="tradeDetail_6">Rejecting…</string>
+    <string name="tradeDetail_7">Trade Withdrawn</string>
 
     <!-- Bottom Bar -->
     <string name="botBar_1">Home</string>

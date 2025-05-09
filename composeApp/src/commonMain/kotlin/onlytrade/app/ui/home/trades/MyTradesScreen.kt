@@ -44,7 +44,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.text.font.FontWeight.Companion.W300
+import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,6 +64,7 @@ import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.products.my.colorScheme.myProductsColorScheme
 import onlytrade.app.ui.home.profile.ProfileScreen
+import onlytrade.app.ui.home.trades.detail.TradeDetailScreen
 import onlytrade.app.viewmodel.product.offer.repository.data.db.Offer
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.app.viewmodel.trades.ui.MyTradesViewModel
@@ -85,6 +88,7 @@ import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.home_5
 import onlytrade.composeapp.generated.resources.myTrades_1
 import onlytrade.composeapp.generated.resources.myTrades_2
+import onlytrade.composeapp.generated.resources.myTrades_3
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -276,19 +280,28 @@ class MyTradesScreen : Screen {
                             getToast().showToast((uiState as OffersMadeError).error)
                         }
 
-                        NoOffersMade -> {
-                            getToast().showToast("No Offers made.")
-                            viewModel.idle()
+                        NoOffersMade -> item {
+                            Text(
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth(),
+                                fontSize = 20.sp,
+                                text = stringResource(Res.string.myTrades_3),
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                            )
                         }
 
-                        NoOffersReceived -> {
-                            getToast().showToast("No Offers received.")
-                            viewModel.idle()
+                        NoOffersReceived -> item {
+                            Text(
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth(),
+                                fontSize = 20.sp,
+                                text = stringResource(Res.string.myTrades_3),
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                            )
                         }
 
                         is OffersReceivedError -> {
                             getToast().showToast((uiState as OffersReceivedError).error)
-                            viewModel.idle()
                         }
 
                         OfferDeleted -> {
@@ -326,7 +339,7 @@ class MyTradesScreen : Screen {
         Column(
             modifier = if (offer == null) Modifier.shimmer() else Modifier.fillMaxWidth()
                 .clickable {
-                    //todo view offer details.
+                    nav.push(TradeDetailScreen(offer))
                 }) {
             Box(
                 modifier = Modifier
@@ -489,7 +502,7 @@ class MyTradesScreen : Screen {
 
                         }.padding(horizontal = 16.dp),
                         textDecoration = TextDecoration.Underline,
-                        text = if (offeredProducts.isEmpty()) stringResource(Res.string.home_5) else "View all ${offeredProducts.size} products",
+                        text = if (offeredProducts.isEmpty()) stringResource(Res.string.home_5) else "View ${offeredProducts.size} products",
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
                     )
                 }
