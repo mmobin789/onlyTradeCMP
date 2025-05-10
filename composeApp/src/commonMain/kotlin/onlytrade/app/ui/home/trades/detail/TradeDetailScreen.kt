@@ -61,7 +61,10 @@ import onlytrade.app.viewmodel.product.offer.repository.data.db.Offer
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.app.viewmodel.trades.ui.TradeDetailViewModel
 import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.AcceptingOffer
+import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.CompletingOffer
 import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.OfferAccepted
+import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.OfferCompleteApiError
+import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.OfferCompleted
 import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.OfferRejected
 import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.OfferWithdrawn
 import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.RejectingOffer
@@ -74,11 +77,14 @@ import onlytrade.composeapp.generated.resources.productDetail_3
 import onlytrade.composeapp.generated.resources.productDetail_5
 import onlytrade.composeapp.generated.resources.search
 import onlytrade.composeapp.generated.resources.tradeDetail_1
+import onlytrade.composeapp.generated.resources.tradeDetail_10
 import onlytrade.composeapp.generated.resources.tradeDetail_3
 import onlytrade.composeapp.generated.resources.tradeDetail_4
 import onlytrade.composeapp.generated.resources.tradeDetail_5
 import onlytrade.composeapp.generated.resources.tradeDetail_6
 import onlytrade.composeapp.generated.resources.tradeDetail_7
+import onlytrade.composeapp.generated.resources.tradeDetail_8
+import onlytrade.composeapp.generated.resources.tradeDetail_9
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
@@ -225,9 +231,9 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                     val madeOffer = viewModel.madeOffer(offer.offerMakerId)
 
                     //    val receivedOffer = viewModel.receivedOffer(offer.offerReceiverId)
-
-
-                    if (madeOffer || uiState == WithdrawingOffer) OutlinedButton(
+                    if (offer.accepted && madeOffer) {
+                        //todo show offer accepted to offer maker.
+                    } else if (madeOffer || uiState == WithdrawingOffer) OutlinedButton(
                         modifier = if (uiState == WithdrawingOffer) Modifier.weight(1f)
                             .shimmer() else Modifier.weight(1f),
                         onClick = {
@@ -256,30 +262,92 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                         )
                     }
                     else {
-                        if (uiState != RejectingOffer || uiState != OfferRejected)
-                            Button(
-                                modifier = if (uiState == AcceptingOffer) Modifier.weight(1f)
-                                    .shimmer() else Modifier.weight(1f),
-                                onClick = {
-                                    when (uiState) {
-                                        AcceptingOffer -> {
-                                            getToast().showToast("Accepting offer please wait")
+                        val completingOffer =
+                            offer.accepted || uiState == OfferAccepted || uiState == CompletingOffer || uiState == OfferCompleted || uiState is OfferCompleteApiError
+                        if (offer.accepted.not()) {
+                            val hideRejectBtn =
+                                uiState == AcceptingOffer || uiState == OfferAccepted
+                            val hideAcceptBtn =
+                                uiState == RejectingOffer || uiState == OfferRejected
 
+                            if (hideAcceptBtn.not())
+                                Button(
+                                    modifier = if (uiState == AcceptingOffer) Modifier.weight(1f)
+                                        .shimmer() else Modifier.weight(1f),
+                                    onClick = {
+                                        when (uiState) {
+                                            AcceptingOffer -> {
+                                                getToast().showToast("Accepting offer please wait")
+
+                                            }
+
+                                            OfferAccepted -> {
+                                                getToast().showToast("Offer accepted. please await refresh.")
+                                            }
+
+                                            else -> viewModel.acceptOffer(offer)
                                         }
+                                    },
+                                    shape = MaterialTheme.shapes.medium,
+                                    colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(
+                                            text = stringResource(if (uiState == AcceptingOffer) Res.string.tradeDetail_5 else Res.string.tradeDetail_3),
+                                            modifier = Modifier.padding(vertical = 8.dp)
+                                        )
 
-                                        OfferAccepted -> {
-                                            getToast().showToast("Offer accepted. please await refresh.")
-                                        }
+                                        Spacer(modifier = Modifier.width(8.dp))
 
-                                        else -> viewModel.acceptOffer(offer)
+                                        Icon(
+                                            Icons.AutoMirrored.Filled.ArrowForward,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onPrimary
+                                        )
                                     }
+                                }
+                            if (hideRejectBtn.not())
+                                OutlinedButton(
+                                    modifier = if (uiState == RejectingOffer) Modifier.weight(1f)
+                                        .shimmer() else Modifier.weight(1f),
+                                    onClick = {
+                                        when (uiState) {
+                                            RejectingOffer -> {
+                                                getToast().showToast("Rejecting offer please wait")
+
+                                            }
+
+                                            OfferRejected -> {
+                                                getToast().showToast("Offer rejected. please await refresh.")
+                                            }
+
+                                            else -> viewModel.rejectOffer(offer)
+                                        }
+                                    },
+                                    shape = MaterialTheme.shapes.medium,
+                                    border = BorderStroke(
+                                        1.dp, productDetailColorScheme.offerTradeBtnBorder
+                                    ),
+                                ) {
+                                    Text(
+                                        text = stringResource(if (uiState == RejectingOffer) Res.string.tradeDetail_6 else Res.string.tradeDetail_4),
+                                        color = productDetailColorScheme.offerTradeBtnText,
+                                        modifier = Modifier.padding(vertical = 8.dp)
+                                    )
+                                }
+                        } else if (completingOffer) {
+                            Button(
+                                modifier = Modifier.weight(1f),
+                                onClick = {
+                                    //todo open leave comments.
+                                    getToast().showToast("Under Development")
                                 },
                                 shape = MaterialTheme.shapes.medium,
                                 colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
-                                        text = stringResource(if (uiState == AcceptingOffer) Res.string.tradeDetail_5 else Res.string.tradeDetail_3),
+                                        text = stringResource(Res.string.tradeDetail_10),
                                         modifier = Modifier.padding(vertical = 8.dp)
                                     )
 
@@ -292,22 +360,22 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                                     )
                                 }
                             }
-                        if (uiState != AcceptingOffer || uiState != OfferAccepted)
+
                             OutlinedButton(
-                                modifier = if (uiState == RejectingOffer) Modifier.weight(1f)
+                                modifier = if (uiState == CompletingOffer) Modifier.weight(1f)
                                     .shimmer() else Modifier.weight(1f),
                                 onClick = {
                                     when (uiState) {
-                                        RejectingOffer -> {
-                                            getToast().showToast("Rejecting offer please wait")
+                                        CompletingOffer -> {
+                                            getToast().showToast("Completing trade please wait")
 
                                         }
 
-                                        OfferRejected -> {
-                                            getToast().showToast("Offer rejected. please await refresh.")
+                                        OfferCompleted -> {
+                                            getToast().showToast("Trade Completed. please await refresh.")
                                         }
 
-                                        else -> viewModel.rejectOffer(offer)
+                                        else -> viewModel.completeOffer(offer)
                                     }
                                 },
                                 shape = MaterialTheme.shapes.medium,
@@ -316,11 +384,12 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                                 ),
                             ) {
                                 Text(
-                                    text = stringResource(if (uiState == RejectingOffer) Res.string.tradeDetail_6 else Res.string.tradeDetail_4),
+                                    text = stringResource(if (uiState == CompletingOffer) Res.string.tradeDetail_8 else Res.string.tradeDetail_9),
                                     color = productDetailColorScheme.offerTradeBtnText,
                                     modifier = Modifier.padding(vertical = 8.dp)
                                 )
                             }
+                        }
                     }
 
                 }

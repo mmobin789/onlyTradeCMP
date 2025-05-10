@@ -63,7 +63,7 @@
 
     <!-- Product Detail -->
     <string name="productDetail_1">Trade</string>
-    <string name="productDetail_2">Making Trade…</string>
+    <string name="productDetail_2">Offering Trade…</string>
     <string name="productDetail_3">Withdraw Trade</string>
     <string name="productDetail_4">View Trades</string>
     <string name="productDetail_5">Withdrawing Trade…</string>
@@ -86,6 +86,9 @@
     <string name="tradeDetail_5">Accepting…</string>
     <string name="tradeDetail_6">Rejecting…</string>
     <string name="tradeDetail_7">Trade Withdrawn</string>
+    <string name="tradeDetail_8">Completing Trade…</string>
+    <string name="tradeDetail_9">Complete Trade</string>
+    <string name="tradeDetail_10">Leave Comment</string>
 
     <!-- Bottom Bar -->
     <string name="botBar_1">Home</string>
