@@ -53,8 +53,10 @@ import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.text.font.FontWeight.Companion.W300
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
@@ -66,7 +68,6 @@ import kotlinx.coroutines.delay
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
-import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
 import onlytrade.app.ui.home.colorScheme.homeColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
@@ -93,6 +94,7 @@ import onlytrade.composeapp.generated.resources.home_2
 import onlytrade.composeapp.generated.resources.home_3
 import onlytrade.composeapp.generated.resources.home_4
 import onlytrade.composeapp.generated.resources.home_5
+import onlytrade.composeapp.generated.resources.home_6
 import onlytrade.composeapp.generated.resources.ic_quickmart_intro
 import onlytrade.composeapp.generated.resources.ic_quickmart_intro_dark
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
@@ -466,8 +468,15 @@ class HomeScreen : Screen {
                         }
 
                         ProductsNotFound -> { //todo display error with call to action to reload products using refreshProducts = true.
-                            getToast().showToast("Products not found.")
-                            viewModel.idle()
+                            item {
+                                Text(
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    fontSize = 20.sp,
+                                    text = stringResource(Res.string.home_6),
+                                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                                )
+                            }
                         }
 
                         is GetProductsApiError -> { //todo show error.

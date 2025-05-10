@@ -223,137 +223,138 @@ class ProductDetailScreen(private val product: Product, private val tradeView: B
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W300)
                 )
-                Row(
-                    modifier = Modifier.constrainAs(buttons) {
-                        top.linkTo(productDescription.bottom)
-                        start.linkTo(productDescription.start)
-                        end.linkTo(productDescription.end)
-                    }.padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // val noOfferOnProduct by remember(product.offers) { mutableStateOf(product.offers.isNullOrEmpty()) }
-
-                    LaunchedEffect(Unit) {
-                        viewModel.checkOffer(product)
-                    }
-
-                    val madeOffer by remember(product.offers, uiState) {
-                        mutableStateOf(product.offers?.find {
-                            viewModel.madeOffer(
-                                it.offerMakerId
-                            )
-                        } != null || uiState is OfferMade) // client persists the offer if placed.
-                    }
-
-
-                    val receivedOffer by remember(product.offers, uiState) {
-                        mutableStateOf(product.offers?.find { viewModel.receivedOffer(it.offerReceiverId) } != null || uiState == OfferReceived)
-                    }
-
-                    val offerTrade by remember(uiState) {
-                        mutableStateOf(uiState == GuestUser || uiState == LoadingOfferMade || uiState == MakingOffer || uiState == MakeOfferFail || uiState == OfferNotMade || uiState == OfferDeleted)
-                    }
-
-                    if ((madeOffer && offerTrade.not()) || uiState == WithdrawingOffer) OutlinedButton(
-                        modifier = if (uiState == WithdrawingOffer) Modifier.weight(1f)
-                            .shimmer() else Modifier.weight(1f),
-                        onClick = {
-                            when (uiState) {
-                                WithdrawingOffer -> {
-                                    getToast().showToast("Withdrawing trade please wait")
-
-                                }
-
-                                OfferDeleted -> { // offer deleted click disabled.
-                                    getToast().showToast("Trade withdrawn. please await refresh.")
-                                }
-
-                                else -> viewModel.withdrawOffer(product.id)
-                            }
-                        },
-                        shape = MaterialTheme.shapes.medium,
-                        border = BorderStroke(
-                            1.dp, productDetailColorScheme.offerTradeBtnBorder
-                        ),
+                if (tradeView.not())
+                    Row(
+                        modifier = Modifier.constrainAs(buttons) {
+                            top.linkTo(productDescription.bottom)
+                            start.linkTo(productDescription.start)
+                            end.linkTo(productDescription.end)
+                        }.padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = stringResource(if (uiState == WithdrawingOffer) Res.string.productDetail_5 else Res.string.productDetail_3),
-                            color = productDetailColorScheme.offerTradeBtnText,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-                    }
+                        // val noOfferOnProduct by remember(product.offers) { mutableStateOf(product.offers.isNullOrEmpty()) }
 
-
-                    if (offerTrade) Button(
-                        modifier = if (uiState == LoadingOfferMade || uiState is MakingOffer) Modifier.weight(
-                            1f
-                        ).shimmer() else Modifier.weight(1f),
-                        onClick = {
-                            when (uiState) {
-                                GuestUser -> {
-                                    //todo display login screen.
-                                    getToast().showToast("Please login first.")
-
-                                }
-
-                                is MakingOffer -> getToast().showToast("Please wait for offer to be made.")
-                                else -> nav.push(MyProductsScreen { pickedProductIds ->
-                                    viewModel.makeOffer(
-                                        productId = product.id,
-                                        offerReceiverId = product.userId,
-                                        offeredProductIds = pickedProductIds
-                                    )
-
-
-                                })
-                            }
-                        },
-                        shape = MaterialTheme.shapes.medium,
-                        colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = stringResource(
-                                    if (uiState == LoadingOfferMade) Res.string.home_5 else if (uiState is MakingOffer) Res.string.productDetail_2 else Res.string.productDetail_1
-                                ), modifier = Modifier.padding(vertical = 8.dp)
-                            )
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
+                        LaunchedEffect(Unit) {
+                            viewModel.checkOffer(product)
                         }
-                    }
 
-                    if (receivedOffer && tradeView.not()) Button(
-                        modifier = Modifier.weight(1f),
-                        onClick = {
-                            nav.push(MyTradesScreen())
-                        },
-                        shape = MaterialTheme.shapes.medium,
-                        colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        val madeOffer by remember(product.offers, uiState) {
+                            mutableStateOf(product.offers?.find {
+                                viewModel.madeOffer(
+                                    it.offerMakerId
+                                )
+                            } != null || uiState is OfferMade) // client persists the offer if placed.
+                        }
+
+
+                        val receivedOffer by remember(product.offers, uiState) {
+                            mutableStateOf(product.offers?.find { viewModel.receivedOffer(it.offerReceiverId) } != null || uiState == OfferReceived)
+                        }
+
+                        val offerTrade by remember(uiState) {
+                            mutableStateOf(uiState == GuestUser || uiState == LoadingOfferMade || uiState == MakingOffer || uiState == MakeOfferFail || uiState == OfferNotMade || uiState == OfferDeleted)
+                        }
+
+                        if ((madeOffer && offerTrade.not()) || uiState == WithdrawingOffer) OutlinedButton(
+                            modifier = if (uiState == WithdrawingOffer) Modifier.weight(1f)
+                                .shimmer() else Modifier.weight(1f),
+                            onClick = {
+                                when (uiState) {
+                                    WithdrawingOffer -> {
+                                        getToast().showToast("Withdrawing trade please wait")
+
+                                    }
+
+                                    OfferDeleted -> { // offer deleted click disabled.
+                                        getToast().showToast("Trade withdrawn. please await refresh.")
+                                    }
+
+                                    else -> viewModel.withdrawOffer(product.id)
+                                }
+                            },
+                            shape = MaterialTheme.shapes.medium,
+                            border = BorderStroke(
+                                1.dp, productDetailColorScheme.offerTradeBtnBorder
+                            ),
+                        ) {
                             Text(
-                                text = stringResource(Res.string.productDetail_4),
+                                text = stringResource(if (uiState == WithdrawingOffer) Res.string.productDetail_5 else Res.string.productDetail_3),
+                                color = productDetailColorScheme.offerTradeBtnText,
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
                         }
-                    }
 
-                }
+
+                        if (offerTrade) Button(
+                            modifier = if (uiState == LoadingOfferMade || uiState is MakingOffer) Modifier.weight(
+                                1f
+                            ).shimmer() else Modifier.weight(1f),
+                            onClick = {
+                                when (uiState) {
+                                    GuestUser -> {
+                                        //todo display login screen.
+                                        getToast().showToast("Please login first.")
+
+                                    }
+
+                                    is MakingOffer -> getToast().showToast("Please wait for offer to be made.")
+                                    else -> nav.push(MyProductsScreen { pickedProductIds ->
+                                        viewModel.makeOffer(
+                                            productId = product.id,
+                                            offerReceiverId = product.userId,
+                                            offeredProductIds = pickedProductIds
+                                        )
+
+
+                                    })
+                                }
+                            },
+                            shape = MaterialTheme.shapes.medium,
+                            colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = stringResource(
+                                        if (uiState == LoadingOfferMade) Res.string.home_5 else if (uiState is MakingOffer) Res.string.productDetail_2 else Res.string.productDetail_1
+                                    ), modifier = Modifier.padding(vertical = 8.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowForward,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                        }
+
+                        if (receivedOffer) Button(
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                nav.push(MyTradesScreen())
+                            },
+                            shape = MaterialTheme.shapes.medium,
+                            colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = stringResource(Res.string.productDetail_4),
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowForward,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                        }
+
+                    }
 
             }
         }

@@ -49,6 +49,7 @@
     <string name="home_3">SEE ALL</string>
     <string name="home_4">Add Product</string>
     <string name="home_5">Loading…</string>
+    <string name="home_6">No Products Found click to refresh.</string>
 
     <!-- Add Product -->
     <string name="addProduct_1">Add a New Trade Product</string>
