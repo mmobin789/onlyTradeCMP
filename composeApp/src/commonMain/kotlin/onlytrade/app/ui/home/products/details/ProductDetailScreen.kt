@@ -61,10 +61,11 @@ import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.GuestUser
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.LoadingOfferMade
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MakeOfferFail
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MakingOffer
-import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferDeleted
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferMade
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferNotMade
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferReceived
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferRejected
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferWithdrawn
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.WithdrawingOffer
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
@@ -253,11 +254,10 @@ class ProductDetailScreen(private val product: Product, private val tradeView: B
                             mutableStateOf(product.offers?.find { viewModel.receivedOffer(it.offerReceiverId) } != null || uiState == OfferReceived)
                         }
 
-                        val offerTrade by remember(uiState) {
-                            mutableStateOf(uiState == GuestUser || uiState == LoadingOfferMade || uiState == MakingOffer || uiState == MakeOfferFail || uiState == OfferNotMade || uiState == OfferDeleted)
-                        }
+                        val offerTrade =
+                            uiState == GuestUser || uiState == LoadingOfferMade || uiState == MakingOffer || uiState == MakeOfferFail || uiState == OfferNotMade || uiState == OfferWithdrawn
 
-                        if ((madeOffer && offerTrade.not()) || uiState == WithdrawingOffer) OutlinedButton(
+                        if (madeOffer || uiState == WithdrawingOffer) OutlinedButton(
                             modifier = if (uiState == WithdrawingOffer) Modifier.weight(1f)
                                 .shimmer() else Modifier.weight(1f),
                             onClick = {
@@ -267,8 +267,14 @@ class ProductDetailScreen(private val product: Product, private val tradeView: B
 
                                     }
 
-                                    OfferDeleted -> { // offer deleted click disabled.
+                                    OfferWithdrawn -> { // offer withdrawn click disabled.
                                         getToast().showToast("Trade withdrawn. please await refresh.")
+                                        viewModel.idle()
+                                    }
+
+                                    OfferRejected -> { // offer rejected by receiver click disabled.
+                                        getToast().showToast("Trade rejected. please await refresh.")
+                                        viewModel.idle()
                                     }
 
                                     else -> viewModel.withdrawOffer(product.id)
@@ -285,9 +291,7 @@ class ProductDetailScreen(private val product: Product, private val tradeView: B
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
                         }
-
-
-                        if (offerTrade) Button(
+                        else if (offerTrade) Button(
                             modifier = if (uiState == LoadingOfferMade || uiState is MakingOffer) Modifier.weight(
                                 1f
                             ).shimmer() else Modifier.weight(1f),
@@ -330,8 +334,7 @@ class ProductDetailScreen(private val product: Product, private val tradeView: B
                                 )
                             }
                         }
-
-                        if (receivedOffer) Button(
+                        else if (receivedOffer) Button(
                             modifier = Modifier.weight(1f),
                             onClick = {
                                 nav.push(MyTradesScreen())
