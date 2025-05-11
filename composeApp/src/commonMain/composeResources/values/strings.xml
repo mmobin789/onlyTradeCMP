@@ -92,6 +92,8 @@
     <string name="tradeDetail_11">Contact Detail</string>
     <string name="tradeDetail_12">View Contact</string>
     <string name="tradeDetail_13">Go Back</string>
+    <string name="tradeDetail_14">Rejected</string>
+    <string name="tradeDetail_15">Accepted</string>
 
     <!-- Bottom Bar -->
     <string name="botBar_1">Home</string>

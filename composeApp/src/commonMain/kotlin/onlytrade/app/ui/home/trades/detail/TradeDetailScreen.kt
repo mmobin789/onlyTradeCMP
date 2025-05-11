@@ -85,6 +85,8 @@ import onlytrade.composeapp.generated.resources.tradeDetail_10
 import onlytrade.composeapp.generated.resources.tradeDetail_11
 import onlytrade.composeapp.generated.resources.tradeDetail_12
 import onlytrade.composeapp.generated.resources.tradeDetail_13
+import onlytrade.composeapp.generated.resources.tradeDetail_14
+import onlytrade.composeapp.generated.resources.tradeDetail_15
 import onlytrade.composeapp.generated.resources.tradeDetail_3
 import onlytrade.composeapp.generated.resources.tradeDetail_4
 import onlytrade.composeapp.generated.resources.tradeDetail_5
@@ -353,7 +355,7 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Text(
-                                            text = stringResource(if (uiState == AcceptingOffer) Res.string.tradeDetail_5 else Res.string.tradeDetail_3),
+                                            text = stringResource(if (uiState == AcceptingOffer) Res.string.tradeDetail_5 else if (uiState == OfferAccepted) Res.string.tradeDetail_15 else Res.string.tradeDetail_3),
                                             modifier = Modifier.padding(vertical = 8.dp)
                                         )
 
@@ -395,7 +397,7 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                                     ),
                                 ) {
                                     Text(
-                                        text = stringResource(if (uiState == RejectingOffer) Res.string.tradeDetail_6 else Res.string.tradeDetail_4),
+                                        text = stringResource(if (uiState == RejectingOffer) Res.string.tradeDetail_6 else if (uiState == OfferRejected) Res.string.tradeDetail_14 else Res.string.tradeDetail_4),
                                         color = productDetailColorScheme.offerTradeBtnText,
                                         modifier = Modifier.padding(vertical = 8.dp)
                                     )
