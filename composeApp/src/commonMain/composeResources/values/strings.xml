@@ -75,5 +75,6 @@
     <string name="profile_2">Active Trades</string>
     <string name="profile_3">My Offers</string>
     <string name="profile_4">Logout</string>
+    <string name="profile_5">Login</string>
 
 </resources>
