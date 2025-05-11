@@ -239,7 +239,25 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
 
                     //    val receivedOffer = viewModel.receivedOffer(offer.offerReceiverId)
                     if (madeOffer && offer.accepted) { // ui case where offer is accepted by receiver and viewed by maker.
-                        //todo show offer accepted to offer maker.
+
+                        OutlinedButton(
+                            modifier = Modifier.weight(
+                                1f
+                            ),
+                            onClick = {
+                                //todo view contact info of offer receiver.
+                            },
+                            shape = MaterialTheme.shapes.medium,
+                            border = BorderStroke(
+                                1.dp, productDetailColorScheme.offerTradeBtnBorder
+                            ),
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.tradeDetail_12),
+                                color = productDetailColorScheme.offerTradeBtnText,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        }
                     } else if (madeOffer || uiState == WithdrawingOffer) OutlinedButton(
                         // ui case where offer is sent to receiver but can be withdrawn by maker.
                         modifier = if (uiState == WithdrawingOffer) Modifier.weight(1f)
@@ -400,7 +418,7 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                                 AlertDialog(
                                     onDismissRequest = { showCompleteBtnDialog = false },
                                     title = { Text(stringResource(Res.string.tradeDetail_11)) },
-                                    text = { //todo show contact detail.
+                                    text = { //todo show contact detail of offer maker.
                                         Text("Offer maker's contact details show here")
                                     },
                                     dismissButton = {
@@ -413,11 +431,11 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                                         }
                                     },
                                     confirmButton = {
-                                        Button(
-                                            modifier = if (uiState == CompletingOffer) Modifier.weight(
-                                                1f
-                                            )
-                                                .shimmer() else Modifier.weight(1f),
+                                        OutlinedButton(
+                                            modifier = if (uiState == CompletingOffer) Modifier.shimmer() else Modifier,
+                                            border = BorderStroke(
+                                                1.dp, productDetailColorScheme.offerTradeBtnBorder
+                                            ),
                                             onClick = {
                                                 when (uiState) {
                                                     CompletingOffer -> {
@@ -434,14 +452,10 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                                                 }
                                             },
                                             shape = MaterialTheme.shapes.medium,
-                                            colors = ButtonDefaults.buttonColors(
-                                                productDetailColorScheme.buyProductBtn
-                                            ),
                                         ) {
                                             Text(
                                                 text = stringResource(if (uiState == CompletingOffer) Res.string.tradeDetail_8 else Res.string.tradeDetail_9),
-                                                color = productDetailColorScheme.offerTradeBtnText,
-                                                modifier = Modifier.padding(vertical = 8.dp)
+                                                color = productDetailColorScheme.offerTradeBtnText
                                             )
                                         }
                                     }

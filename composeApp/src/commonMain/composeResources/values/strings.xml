@@ -86,10 +86,10 @@
     <string name="tradeDetail_5">Accepting…</string>
     <string name="tradeDetail_6">Rejecting…</string>
     <string name="tradeDetail_7">Trade Withdrawn</string>
-    <string name="tradeDetail_8">Completing Trade…</string>
-    <string name="tradeDetail_9">Complete Trade</string>
+    <string name="tradeDetail_8">Completing…</string>
+    <string name="tradeDetail_9">Complete</string>
     <string name="tradeDetail_10">Leave Comment</string>
-    <string name="tradeDetail_11">Contact Information</string>
+    <string name="tradeDetail_11">Contact Detail</string>
     <string name="tradeDetail_12">View Contact</string>
     <string name="tradeDetail_13">Go Back</string>
 
