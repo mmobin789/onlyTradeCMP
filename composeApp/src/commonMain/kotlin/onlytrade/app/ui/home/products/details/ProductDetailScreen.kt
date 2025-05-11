@@ -83,6 +83,7 @@ class ProductDetailScreen(private val product: Product, private val tradeView: B
     Screen {
     @Composable
     override fun Content() {
+        //val product by remember {  }
         val nav = LocalNavigator.currentOrThrow
         val sharedCMP = LocalSharedCMP.current
         val viewModel = koinViewModel<ProductDetailViewModel>()

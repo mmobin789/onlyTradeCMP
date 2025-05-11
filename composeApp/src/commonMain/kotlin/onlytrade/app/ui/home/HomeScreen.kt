@@ -200,8 +200,7 @@ class HomeScreen : Screen {
                         }
 
                         HorizontalPager(
-                            state = pagerState,
-                            userScrollEnabled = false
+                            state = pagerState
                         ) {
 
                             val randomProduct by remember { mutableStateOf(randomProduct(products)) }

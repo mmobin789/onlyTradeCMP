@@ -89,6 +89,9 @@
     <string name="tradeDetail_8">Completing Trade…</string>
     <string name="tradeDetail_9">Complete Trade</string>
     <string name="tradeDetail_10">Leave Comment</string>
+    <string name="tradeDetail_11">Contact Information</string>
+    <string name="tradeDetail_12">View Contact</string>
+    <string name="tradeDetail_13">Go Back</string>
 
     <!-- Bottom Bar -->
     <string name="botBar_1">Home</string>
