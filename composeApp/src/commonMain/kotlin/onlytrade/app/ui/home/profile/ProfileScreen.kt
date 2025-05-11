@@ -29,7 +29,6 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,7 +55,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.design.components.getToast
@@ -65,7 +63,6 @@ import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorSche
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.ui.home.profile.colorScheme.profileColorScheme
 import onlytrade.app.ui.login.LoginScreen
-import onlytrade.app.ui.login.colorScheme.loginColorScheme
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.BlankNameError
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Error
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Idle
