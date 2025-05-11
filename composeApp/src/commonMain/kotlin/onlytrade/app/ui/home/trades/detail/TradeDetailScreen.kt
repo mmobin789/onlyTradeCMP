@@ -229,7 +229,6 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // val noOfferOnProduct by remember(product.offers) { mutableStateOf(product.offers.isNullOrEmpty()) }
 
                     LaunchedEffect(Unit) {
                         viewModel.checkOffer(offer)
@@ -237,7 +236,7 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
 
                     val madeOffer = viewModel.madeOffer(offer.offerMakerId)
 
-                    //    val receivedOffer = viewModel.receivedOffer(offer.offerReceiverId)
+
                     if (madeOffer && offer.accepted) { // ui case where offer is accepted by receiver and viewed by maker.
 
                         OutlinedButton(
@@ -257,6 +256,30 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                                 color = productDetailColorScheme.offerTradeBtnText,
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
+                        }
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                //todo open leave comments.
+                                getToast().showToast("Under Development")
+                            },
+                            shape = MaterialTheme.shapes.medium,
+                            colors = ButtonDefaults.buttonColors(productDetailColorScheme.buyProductBtn)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = stringResource(Res.string.tradeDetail_10),
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowForward,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
                         }
                     } else if (madeOffer || uiState == WithdrawingOffer) OutlinedButton(
                         // ui case where offer is sent to receiver but can be withdrawn by maker.
@@ -468,6 +491,14 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
 
             }
         }
+    }
+
+    @Composable
+    private fun offerMakerUi(viewModel: TradeDetailViewModel, offer: Offer) {
+    }
+
+    @Composable
+    private fun offerReceiverUi(viewModel: TradeDetailViewModel, offer: Offer) {
     }
 
     @Composable
