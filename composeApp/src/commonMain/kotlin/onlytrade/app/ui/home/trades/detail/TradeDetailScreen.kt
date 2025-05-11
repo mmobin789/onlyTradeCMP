@@ -69,8 +69,8 @@ import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.CompletingOffe
 import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.OfferAccepted
 import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.OfferCompleteApiError
 import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.OfferCompleted
+import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.OfferDeleted
 import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.OfferRejected
-import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.OfferWithdrawn
 import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.RejectingOffer
 import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.WithdrawingOffer
 import onlytrade.composeapp.generated.resources.Res
@@ -292,7 +292,7 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
 
                                 }
 
-                                OfferWithdrawn -> { // offer deleted click disabled.
+                                OfferDeleted -> { // offer deleted click disabled.
                                     getToast().showToast("Offer deleted. please await refresh.")
                                 }
 
@@ -305,7 +305,7 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                         ),
                     ) {
                         Text(
-                            text = stringResource(if (uiState == WithdrawingOffer) Res.string.productDetail_5 else if (uiState == OfferWithdrawn) Res.string.tradeDetail_7 else Res.string.productDetail_3),
+                            text = stringResource(if (uiState == WithdrawingOffer) Res.string.productDetail_5 else if (uiState == OfferDeleted) Res.string.tradeDetail_7 else Res.string.productDetail_3),
                             color = productDetailColorScheme.offerTradeBtnText,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
@@ -340,8 +340,8 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                                                 getToast().showToast("Offer accepted. please await refresh.")
                                             }
 
-                                            OfferWithdrawn -> {
-                                                getToast().showToast("Offer withdrawn. please await refresh.")
+                                            OfferDeleted -> {
+                                                getToast().showToast("Offer Deleted. please await refresh.")
                                                 viewModel.idle()
                                             }
 
@@ -380,8 +380,9 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                                             OfferRejected -> {
                                                 getToast().showToast("Offer rejected. please await refresh.")
                                             }
-                                            OfferWithdrawn -> {
-                                                getToast().showToast("Offer withdrawn. please await refresh.")
+
+                                            OfferDeleted -> {
+                                                getToast().showToast("Offer Deleted. please await refresh.")
                                                 viewModel.idle()
                                             }
 
@@ -479,8 +480,9 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                                                         getToast().showToast("Trade Completed. please await refresh.")
                                                         showCompleteBtnDialog = false
                                                     }
-                                                    OfferWithdrawn -> {
-                                                        getToast().showToast("Offer withdrawn. please await refresh.")
+
+                                                    OfferDeleted -> {
+                                                        getToast().showToast("Offer deleted. please await refresh.")
                                                         viewModel.idle()
                                                     }
 
