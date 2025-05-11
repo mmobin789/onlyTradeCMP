@@ -340,6 +340,10 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                                                 getToast().showToast("Offer accepted. please await refresh.")
                                             }
 
+                                            OfferWithdrawn -> {
+                                                getToast().showToast("Offer withdrawn. please await refresh.")
+                                            }
+
                                             else -> viewModel.acceptOffer(offer)
                                         }
                                     },
@@ -374,6 +378,9 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
 
                                             OfferRejected -> {
                                                 getToast().showToast("Offer rejected. please await refresh.")
+                                            }
+                                            OfferWithdrawn -> {
+                                                getToast().showToast("Offer withdrawn. please await refresh.")
                                             }
 
                                             else -> viewModel.rejectOffer(offer)
