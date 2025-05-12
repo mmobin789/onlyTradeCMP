@@ -57,7 +57,6 @@ import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.LocalSharedCMP
-import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
@@ -87,6 +86,7 @@ import onlytrade.composeapp.generated.resources.tradeDetail_12
 import onlytrade.composeapp.generated.resources.tradeDetail_13
 import onlytrade.composeapp.generated.resources.tradeDetail_14
 import onlytrade.composeapp.generated.resources.tradeDetail_15
+import onlytrade.composeapp.generated.resources.tradeDetail_16
 import onlytrade.composeapp.generated.resources.tradeDetail_3
 import onlytrade.composeapp.generated.resources.tradeDetail_4
 import onlytrade.composeapp.generated.resources.tradeDetail_5
@@ -130,7 +130,7 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                         color = Color(
                             Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
                         )
-                    ).fillMaxWidth().height((sharedCMP.screenHeight / 3).dp)
+                    ).fillMaxWidth().height((sharedCMP.screenHeight / 4).dp)
                 )
 
 
@@ -193,32 +193,47 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                 }
 
             ) {
-                val (tags, offerDetailLabel, products, buttons) = createRefs()
+                val (tags, tradeWithLabel, tradeWith, tradeForLabel, products, buttons) = createRefs()
 
 
                 Text(
                     text = stringResource(Res.string.tradeDetail_1),
-                    modifier = Modifier.constrainAs(offerDetailLabel) {
+                    modifier = Modifier.constrainAs(tradeWithLabel) {
                         top.linkTo(tags.bottom)
-                        start.linkTo(tags.start)
+                        start.linkTo(parent.start)
                     }.padding(16.dp),
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
                 )
+
+                ProductUI(modifier = Modifier.constrainAs(tradeWith) {
+                    top.linkTo(tradeWithLabel.bottom)
+                    start.linkTo(tradeWithLabel.start)
+                }.padding(horizontal = 16.dp), offer.offerReceiverProduct)
+
+
+                Text(
+                    text = stringResource(Res.string.tradeDetail_16),
+                    modifier = Modifier.constrainAs(tradeForLabel) {
+                        top.linkTo(tradeWith.bottom)
+                        start.linkTo(tradeWithLabel.start)
+                    }.padding(bottom = 16.dp).padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                )
+
 
 
                 LazyRow(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                         .padding(bottom = 32.dp)
                         .constrainAs(products) {
-                            top.linkTo(offerDetailLabel.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
+                            top.linkTo(tradeForLabel.bottom)
 
                         }
                 ) {
                     items(offer.offeredProducts) {
-                        ProductUI(sharedCMP, it)
+                        ProductUI(product = it)
                         Spacer(modifier = Modifier.width(8.dp))
                     }
                 }
@@ -312,7 +327,7 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
-                    else { // ui case where offer is accepted and viewed by receiver.
+                    else { // ui case where offer is to be accepted and viewed by receiver.
 
                         LaunchedEffect(Unit) {
                             viewModel.checkOfferAccepted(offer.id)
@@ -343,7 +358,7 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                                             }
 
                                             OfferDeleted -> {
-                                                getToast().showToast("Offer Deleted. please await refresh.")
+                                                getToast().showToast("Offer deleted or already accepted. please await refresh.")
                                                 viewModel.idle()
                                             }
 
@@ -511,18 +526,14 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
     }
 
     @Composable
-    private fun offerMakerUi(viewModel: TradeDetailViewModel, offer: Offer) {
-    }
-
-    @Composable
-    private fun offerReceiverUi(viewModel: TradeDetailViewModel, offer: Offer) {
-    }
-
-    @Composable
-    private fun ProductUI(sharedCMP: SharedCMP, product: Product? = null) {
-        val size = (sharedCMP.screenWidth / 2).dp
+    private fun ProductUI(
+        modifier: Modifier = Modifier,
+        product: Product? = null
+    ) {
+        val sharedCMP = LocalSharedCMP.current
+        val size = (sharedCMP.screenWidth / 3).dp
         val nav = LocalNavigator.currentOrThrow
-        Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
+        Column(modifier = if (product == null) modifier.shimmer() else modifier.clickable {
             nav.push(ProductDetailScreen(product, tradeView = true))
         }) {
             Box(

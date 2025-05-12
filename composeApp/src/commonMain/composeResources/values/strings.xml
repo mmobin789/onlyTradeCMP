@@ -79,7 +79,7 @@
 
 
     <!-- Trade Detail -->
-    <string name="tradeDetail_1">Trade Detail</string>
+    <string name="tradeDetail_1">Give</string>
     <string name="tradeDetail_2">Withdraw</string>
     <string name="tradeDetail_3">Accept</string>
     <string name="tradeDetail_4">Reject</string>
@@ -94,6 +94,7 @@
     <string name="tradeDetail_13">Go Back</string>
     <string name="tradeDetail_14">Rejected</string>
     <string name="tradeDetail_15">Accepted</string>
+    <string name="tradeDetail_16">Get</string>
 
     <!-- Bottom Bar -->
     <string name="botBar_1">Home</string>
