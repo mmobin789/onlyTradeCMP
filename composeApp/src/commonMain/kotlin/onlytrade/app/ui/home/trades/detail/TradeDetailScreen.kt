@@ -52,9 +52,9 @@ import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.getToast
+import onlytrade.app.ui.home.products.details.ProductCache
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
-import onlytrade.app.viewmodel.product.offer.repository.data.db.Offer
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.app.viewmodel.trades.ui.TradeDetailViewModel
 import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.AcceptingOffer
@@ -92,9 +92,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class TradeDetailScreen(private val offer: Offer) : Screen {
+class TradeDetailScreen(private val offerId: Long) : Screen {
     @Composable
     override fun Content() {
+        val offer = TradeCache.get(offerId)!!
         val nav = LocalNavigator.currentOrThrow
         val viewModel = koinViewModel<TradeDetailViewModel>()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -479,7 +480,8 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
         val size = (sharedCMP.screenWidth / 3).dp
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = if (product == null) modifier.shimmer() else modifier.clickable {
-            nav.push(ProductDetailScreen(product, tradeView = true))
+            ProductCache.add(product)
+            nav.push(ProductDetailScreen(product.id, tradeView = true))
         }) {
             Box(
                 Modifier

@@ -64,6 +64,7 @@ import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.products.my.colorScheme.myProductsColorScheme
 import onlytrade.app.ui.home.profile.ProfileScreen
+import onlytrade.app.ui.home.trades.detail.TradeCache
 import onlytrade.app.ui.home.trades.detail.TradeDetailScreen
 import onlytrade.app.viewmodel.product.offer.repository.data.db.Offer
 import onlytrade.app.viewmodel.product.repository.data.db.Product
@@ -339,7 +340,8 @@ class MyTradesScreen : Screen {
         Column(
             modifier = if (offer == null) Modifier.shimmer() else Modifier.fillMaxWidth()
                 .clickable {
-                    nav.push(TradeDetailScreen(offer))
+                    TradeCache.add(offer)
+                    nav.push(TradeDetailScreen(offer.id))
                 }) {
             Box(
                 modifier = Modifier

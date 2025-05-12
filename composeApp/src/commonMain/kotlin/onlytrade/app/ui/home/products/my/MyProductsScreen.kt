@@ -58,6 +58,7 @@ import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.getToast
+import onlytrade.app.ui.home.products.details.ProductCache
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.products.my.colorScheme.myProductsColorScheme
 import onlytrade.app.ui.home.profile.ProfileScreen
@@ -303,7 +304,10 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
                     val id = product.id
                     if (selectionMode) {
                         selected = viewModel.selectProduct(id)
-                    } else nav.push(ProductDetailScreen(product = product))
+                    } else {
+                        ProductCache.add(product)
+                        nav.push(ProductDetailScreen(product.id))
+                    }
                 }) {
             AsyncImage(
                 model = product?.imageUrls?.get(0),

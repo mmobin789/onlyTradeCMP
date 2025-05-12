@@ -55,7 +55,6 @@ import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.ui.home.trades.MyTradesScreen
-import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.app.viewmodel.product.ui.ProductDetailViewModel
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.GuestUser
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.LoadingOfferMade
@@ -80,11 +79,11 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class ProductDetailScreen(private val product: Product, private val tradeView: Boolean = false) :
+class ProductDetailScreen(private val productId: Long, private val tradeView: Boolean = false) :
     Screen {
     @Composable
     override fun Content() {
-        //val product by remember {  }
+        val product = ProductCache.get(productId)!!
         val nav = LocalNavigator.currentOrThrow
         val sharedCMP = LocalSharedCMP.current
         val viewModel = koinViewModel<ProductDetailViewModel>()

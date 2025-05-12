@@ -72,6 +72,7 @@ import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
 import onlytrade.app.ui.home.colorScheme.homeColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
 import onlytrade.app.ui.home.products.add.AddProductScreen
+import onlytrade.app.ui.home.products.details.ProductCache
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.ui.home.profile.ProfileScreen
@@ -190,14 +191,15 @@ class HomeScreen : Screen {
                         }
 
                         // Auto-scroll logic for banner.
-                        LaunchedEffect(uiState !is LoadingProducts) {
-                            while (headerVisible) {
-                                val nextPage =
-                                    (pagerState.currentPage + 1) % pagerState.pageCount
-                                pagerState.animateScrollToPage(nextPage)
-                                delay(3000) // Delay between scrolls (3 seconds)
+                        if (products.isNotEmpty())
+                            LaunchedEffect(uiState !is LoadingProducts) {
+                                while (headerVisible) {
+                                    val nextPage =
+                                        (pagerState.currentPage + 1) % pagerState.pageCount
+                                    pagerState.animateScrollToPage(nextPage)
+                                    delay(3000) // Delay between scrolls (3 seconds)
+                                }
                             }
-                        }
 
                         HorizontalPager(
                             state = pagerState
@@ -211,7 +213,8 @@ class HomeScreen : Screen {
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.clickable {
                                     randomProduct?.second?.let {
-                                        nav.push(ProductDetailScreen(it))
+                                        ProductCache.add(it)
+                                        nav.push(ProductDetailScreen(it.id))
                                     }
                                 }.clip(MaterialTheme.shapes.medium)
                                     .background(
@@ -496,7 +499,8 @@ class HomeScreen : Screen {
         val size = (sharedCMP.screenWidth / 2).dp
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
-            nav.push(ProductDetailScreen(product = product))
+            ProductCache.add(product)
+            nav.push(ProductDetailScreen(product.id))
         }) {
             Box(
                 Modifier
