@@ -374,7 +374,7 @@ class MyTradesScreen : Screen {
 
                     AsyncImage(
                         model = randomProductImage(offeredProducts),
-                        contentDescription = offer?.offeredProductIds.toString(),
+                        contentDescription = offer?.offeredProducts.toString(),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.clip(MaterialTheme.shapes.medium)
                             .background(

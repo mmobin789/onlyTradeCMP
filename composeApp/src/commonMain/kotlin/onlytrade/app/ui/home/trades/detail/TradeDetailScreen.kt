@@ -10,20 +10,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -41,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight.Companion.W300
@@ -55,7 +50,6 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
-import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
@@ -73,7 +67,6 @@ import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.OfferRejected
 import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.RejectingOffer
 import onlytrade.app.viewmodel.trades.ui.state.TradeDetailUiState.WithdrawingOffer
 import onlytrade.composeapp.generated.resources.Res
-import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.home_5
 import onlytrade.composeapp.generated.resources.ok
 import onlytrade.composeapp.generated.resources.productDetail_3
@@ -87,6 +80,7 @@ import onlytrade.composeapp.generated.resources.tradeDetail_13
 import onlytrade.composeapp.generated.resources.tradeDetail_14
 import onlytrade.composeapp.generated.resources.tradeDetail_15
 import onlytrade.composeapp.generated.resources.tradeDetail_16
+import onlytrade.composeapp.generated.resources.tradeDetail_17
 import onlytrade.composeapp.generated.resources.tradeDetail_3
 import onlytrade.composeapp.generated.resources.tradeDetail_4
 import onlytrade.composeapp.generated.resources.tradeDetail_5
@@ -102,84 +96,35 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
-        val sharedCMP = LocalSharedCMP.current
         val viewModel = koinViewModel<TradeDetailViewModel>()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-        val imageUrls = offer.offeredProducts.flatMap { it.imageUrls }
+        //   val imageUrls = offer.offeredProducts.flatMap { it.imageUrls }
 
         ConstraintLayout(
             modifier = Modifier.fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background)
         ) {
-            val (header, back, like, dots, space, content) = createRefs()
+            val (header, back, content) = createRefs()
 
-            val pagerState = rememberPagerState { imageUrls.size }
-
-            HorizontalPager(
+            Text(
+                text = stringResource(Res.string.tradeDetail_17),
                 modifier = Modifier.constrainAs(header) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                }, state = pagerState
-            ) { page ->
-
-                AsyncImage(
-                    model = imageUrls[page],
-                    contentDescription = imageUrls[page],
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.clipToBounds().background(
-                        color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        )
-                    ).fillMaxWidth().height((sharedCMP.screenHeight / 4).dp)
-                )
-
-
-            }
+                }.padding(vertical = 8.dp),
+                color = MaterialTheme.colorScheme.secondary,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+            )
 
             Icon(
                 modifier = Modifier.constrainAs(back) {
-                    top.linkTo(header.top)
-                    start.linkTo(header.start)
-                }.clickable { nav.pop() }.padding(16.dp),
+                    top.linkTo(parent.top)
+                    bottom.linkTo(content.top)
+                }.clickable { nav.pop() }.padding(horizontal = 16.dp),
                 imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                 contentDescription = stringResource(Res.string.ok)
             )
-
-            Icon(
-                modifier = Modifier.constrainAs(like) {
-                    top.linkTo(header.top)
-                    end.linkTo(header.end)
-                }.padding(8.dp).background(
-                    shape = CircleShape, color = MaterialTheme.colorScheme.tertiary
-                ).padding(8.dp),
-                imageVector = Icons.Outlined.Favorite,
-                contentDescription = stringResource(Res.string.app_name)
-            )
-
-            DotsIndicator(
-                modifier = Modifier.constrainAs(dots) {
-                    start.linkTo(header.start)
-                    end.linkTo(header.end)
-                    bottom.linkTo(space.top)
-                }.padding(bottom = 8.dp).padding(horizontal = 8.dp),
-
-                totalDots = imageUrls.size,
-                selectedIndex = pagerState.currentPage,
-                selectedColor = Color(0xFF474567),
-                unSelectedColor = Color(0xFFF4EAE9)
-            )
-
-
-            Spacer(
-                modifier = Modifier.size(16.dp).background(
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                    color = MaterialTheme.colorScheme.background
-                ).constrainAs(space) {
-                    bottom.linkTo(header.bottom)
-                    start.linkTo(header.start)
-                    end.linkTo(header.end)
-                })
-
 
 
             ConstraintLayout(
@@ -187,18 +132,18 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                     color = productDetailColorScheme.screenBG,
                     shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
                 ).constrainAs(content) {
-                    top.linkTo(dots.bottom)
+                    top.linkTo(header.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
 
             ) {
-                val (tags, tradeWithLabel, tradeWith, tradeForLabel, products, buttons) = createRefs()
-
+                val (tags, giveLabel, offerProduct, getLabel, products, buttons) = createRefs()
+                val productOwner = viewModel.receivedOffer(offer.offerReceiverProduct.userId)
 
                 Text(
-                    text = stringResource(Res.string.tradeDetail_1),
-                    modifier = Modifier.constrainAs(tradeWithLabel) {
+                    text = stringResource(if (productOwner) Res.string.tradeDetail_1 else Res.string.tradeDetail_16),
+                    modifier = Modifier.constrainAs(giveLabel) {
                         top.linkTo(tags.bottom)
                         start.linkTo(parent.start)
                     }.padding(16.dp),
@@ -206,17 +151,17 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
                 )
 
-                ProductUI(modifier = Modifier.constrainAs(tradeWith) {
-                    top.linkTo(tradeWithLabel.bottom)
-                    start.linkTo(tradeWithLabel.start)
-                }.padding(horizontal = 16.dp), offer.offerReceiverProduct)
+                ProductUI(modifier = Modifier.constrainAs(offerProduct) {
+                    top.linkTo(giveLabel.bottom)
+                    start.linkTo(giveLabel.start)
+                }.padding(horizontal = 16.dp), product = offer.offerReceiverProduct)
 
 
                 Text(
-                    text = stringResource(Res.string.tradeDetail_16),
-                    modifier = Modifier.constrainAs(tradeForLabel) {
-                        top.linkTo(tradeWith.bottom)
-                        start.linkTo(tradeWithLabel.start)
+                    text = stringResource(if (productOwner.not()) Res.string.tradeDetail_1 else Res.string.tradeDetail_16),
+                    modifier = Modifier.constrainAs(getLabel) {
+                        top.linkTo(offerProduct.bottom)
+                        start.linkTo(giveLabel.start)
                     }.padding(bottom = 16.dp).padding(horizontal = 16.dp),
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
@@ -228,7 +173,7 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                         .padding(bottom = 32.dp)
                         .constrainAs(products) {
-                            top.linkTo(tradeForLabel.bottom)
+                            top.linkTo(getLabel.bottom)
 
                         }
                 ) {
@@ -313,7 +258,7 @@ class TradeDetailScreen(private val offer: Offer) : Screen {
                                     getToast().showToast("Offer deleted. please await refresh.")
                                 }
 
-                                else -> viewModel.withdrawOffer(offer.offerReceiverProductId)
+                                else -> viewModel.withdrawOffer(offer.offerReceiverProduct.id)
                             }
                         },
                         shape = MaterialTheme.shapes.medium,

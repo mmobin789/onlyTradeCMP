@@ -73,8 +73,8 @@
     <string name="myProducts_2">Done</string>
 
     <!-- My Trades -->
-    <string name="myTrades_1">Trade to</string>
-    <string name="myTrades_2">to Trade</string>
+    <string name="myTrades_1">Sent</string>
+    <string name="myTrades_2">Received</string>
     <string name="myTrades_3">No Trade Found</string>
 
 
@@ -95,6 +95,7 @@
     <string name="tradeDetail_14">Rejected</string>
     <string name="tradeDetail_15">Accepted</string>
     <string name="tradeDetail_16">Get</string>
+    <string name="tradeDetail_17">Trade Detail</string>
 
     <!-- Bottom Bar -->
     <string name="botBar_1">Home</string>
