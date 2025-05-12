@@ -254,6 +254,9 @@ class TradeDetailScreen(private val offerId: Long) : Screen {
                                     getToast().showToast("Withdrawing offer please wait")
 
                                 }
+                                OfferRejected -> { // offer rejected click disabled.
+                                    getToast().showToast("Offer Rejected. please await refresh.")
+                                }
 
                                 OfferDeleted -> { // offer deleted click disabled.
                                     getToast().showToast("Offer deleted. please await refresh.")
