@@ -65,6 +65,7 @@ import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferNotMad
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferReceived
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferRejected
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferWithdrawn
+import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OffersExceeded
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.WithdrawingOffer
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
@@ -302,6 +303,7 @@ class ProductDetailScreen(private val productId: Long, private val tradeView: Bo
 
                                     }
 
+                                    OffersExceeded -> getToast().showToast("This product has too many offers please wait.")
                                     is MakingOffer -> getToast().showToast("Please wait for offer to be made.")
                                     else -> nav.push(MyProductsScreen { pickedProductIds ->
                                         viewModel.makeOffer(
