@@ -47,6 +47,7 @@ import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.home.products.colorScheme.productsColorScheme
+import onlytrade.app.ui.home.products.details.ProductCache
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.viewmodel.product.repository.data.db.Product
@@ -220,7 +221,8 @@ class ProductsScreen(private val subcategoryName: String? = null) :
         val size = (sharedCMP.screenWidth / 2).dp
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
-            nav.push(ProductDetailScreen(productId = product.id))
+            ProductCache.add(product)
+            nav.push(ProductDetailScreen(product.id))
         }) {
             Box(
                 Modifier

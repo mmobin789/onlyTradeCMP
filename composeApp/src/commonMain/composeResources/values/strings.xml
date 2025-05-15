@@ -19,11 +19,13 @@
     <string name="ob1_2">Explore a wide range of products</string>
     <string name="ob1_3">Explore a wide range of products at your fingertips. QuickMart offers an extensive collection to suit your needs.</string>
     <string name="ob1_4">Next</string>
+
     <!-- Onboarding Page 2 -->
     <string name="ob2_1">Skip for now</string>
     <string name="ob2_2">Unlock exclusive offers and discounts</string>
     <string name="ob2_3">Get access to limited-time deals and special promotions available only to our valued\n customers.</string>
     <string name="ob2_4">Next</string>
+
     <!-- Onboarding Page 3 -->
     <string name="ob3_1">Skip for now</string>
     <string name="ob3_2">Safe and Secure\nDeals</string>
@@ -47,6 +49,8 @@
     <string name="home_3">SEE ALL</string>
     <string name="home_4">Add Product</string>
     <string name="home_5">Loading…</string>
+    <string name="home_6">No Products Found click to refresh.</string>
+
     <!-- Add Product -->
     <string name="addProduct_1">Add a New Trade Product</string>
     <string name="addProduct_2">Add Product Image</string>
@@ -58,23 +62,51 @@
     <string name="addProduct_8">Enter valid amount</string>
 
     <!-- Product Detail -->
-    <string name="productDetail_1">Offer Trade</string>
-
+    <string name="productDetail_1">Trade</string>
+    <string name="productDetail_2">Offering Trade…</string>
+    <string name="productDetail_3">Withdraw Trade</string>
+    <string name="productDetail_4">View Trades</string>
+    <string name="productDetail_5">Withdrawing Trade…</string>
 
     <!-- My Products -->
     <string name="myProducts_1">Select Products</string>
     <string name="myProducts_2">Done</string>
+
+    <!-- My Trades -->
+    <string name="myTrades_1">Sent</string>
+    <string name="myTrades_2">Received</string>
+    <string name="myTrades_3">No Trade Found</string>
+
+
+    <!-- Trade Detail -->
+    <string name="tradeDetail_1">Give</string>
+    <string name="tradeDetail_2">Withdraw</string>
+    <string name="tradeDetail_3">Accept</string>
+    <string name="tradeDetail_4">Reject</string>
+    <string name="tradeDetail_5">Accepting…</string>
+    <string name="tradeDetail_6">Rejecting…</string>
+    <string name="tradeDetail_7">Trade Withdrawn</string>
+    <string name="tradeDetail_8">Completing…</string>
+    <string name="tradeDetail_9">Complete</string>
+    <string name="tradeDetail_10">Comment</string>
+    <string name="tradeDetail_11">Contact Detail</string>
+    <string name="tradeDetail_12">View Contact</string>
+    <string name="tradeDetail_13">Go Back</string>
+    <string name="tradeDetail_14">Rejected</string>
+    <string name="tradeDetail_15">Accepted</string>
+    <string name="tradeDetail_16">Get</string>
+    <string name="tradeDetail_17">Trade Detail</string>
 
     <!-- Bottom Bar -->
     <string name="botBar_1">Home</string>
     <string name="botBar_2">My Trades</string>
     <string name="botBar_3">My Products</string>
     <string name="botBar_4">Profile</string>
+
     <!-- Profile Screen -->
     <string name="profile_1">My Profile</string>
     <string name="profile_2">Active Trades</string>
     <string name="profile_3">My Offers</string>
     <string name="profile_4">Logout</string>
-    <string name="profile_5">Login</string>
 
 </resources>

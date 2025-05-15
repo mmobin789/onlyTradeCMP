@@ -1,14 +1,14 @@
-package onlytrade.app.ui.home.products.my
+package onlytrade.app.ui.home.trades
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,13 +16,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
@@ -36,7 +37,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,8 +46,10 @@ import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.text.font.FontWeight.Companion.W300
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
@@ -55,47 +57,58 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
+import kotlinx.coroutines.delay
+import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.getToast
-import onlytrade.app.ui.home.products.details.ProductCache
-import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.products.my.colorScheme.myProductsColorScheme
 import onlytrade.app.ui.home.profile.ProfileScreen
+import onlytrade.app.ui.home.trades.detail.TradeCache
+import onlytrade.app.ui.home.trades.detail.TradeDetailScreen
+import onlytrade.app.viewmodel.product.offer.repository.data.db.Offer
 import onlytrade.app.viewmodel.product.repository.data.db.Product
-import onlytrade.app.viewmodel.product.ui.MyProductsViewModel
-import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.GetProductsApiError
-import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.Idle
-import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.LoadingProducts
-import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.ProductsNotFound
+import onlytrade.app.viewmodel.trades.ui.MyTradesViewModel
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.Idle
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.LoadingOffersMade
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.LoadingOffersReceived
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.NoOffersMade
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.NoOffersReceived
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.OfferDeleteApiError
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.OfferDeleted
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.OfferNotFound
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.OffersMade
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.OffersMadeError
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.OffersReceived
+import onlytrade.app.viewmodel.trades.ui.state.MyTradesUiState.OffersReceivedError
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
+import onlytrade.composeapp.generated.resources.botBar_2
 import onlytrade.composeapp.generated.resources.botBar_3
 import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.home_5
-import onlytrade.composeapp.generated.resources.myProducts_1
-import onlytrade.composeapp.generated.resources.myProducts_2
+import onlytrade.composeapp.generated.resources.myTrades_1
+import onlytrade.composeapp.generated.resources.myTrades_2
+import onlytrade.composeapp.generated.resources.myTrades_3
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
-import onlytrade.composeapp.generated.resources.search
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) -> Unit)? = null) :
-    Screen {
+class MyTradesScreen : Screen {
 
     @Composable
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
-        val productListState = rememberLazyListState()
-        val headerVisible = productListState.canScrollBackward.not()
+        val offerListState = rememberLazyListState()
+        val headerVisible = offerListState.canScrollBackward.not()
         val sharedCMP = LocalSharedCMP.current
-        val viewModel = koinViewModel<MyProductsViewModel>()
-        val products by viewModel.productList.collectAsStateWithLifecycle()
+        val viewModel = koinViewModel<MyTradesViewModel>()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-        val selectionMode = productIdsCallback != null
-        var refreshProducts by remember { mutableStateOf(false) } //todo change to true on error user action.
+        var offerSentBtn by remember { mutableStateOf(true) }
+        var offerReceivedBtn by remember { mutableStateOf(false) }
+        var refreshTrades by remember { mutableStateOf(false) } //todo change to true on error user action.
         Scaffold(topBar = {
             AnimatedVisibility(visible = headerVisible) {
                 Column {
@@ -113,21 +126,10 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
 
                             Text(
                                 modifier = Modifier.padding(horizontal = 16.dp),
-                                text = stringResource(if (selectionMode) Res.string.myProducts_1 else Res.string.botBar_3),
+                                text = stringResource(Res.string.botBar_2),
                                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
                             )
                         }
-
-                        if (selectionMode) Text(
-                            modifier = Modifier.align(Alignment.CenterEnd).clickable {
-                                if (viewModel.pickedProductIds.isNotEmpty()) productIdsCallback?.invoke(
-                                    viewModel.pickedProductIds
-                                )
-                                nav.pop()
-                            },
-                            text = stringResource(Res.string.myProducts_2),
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
-                        )
 
                     }
 
@@ -139,7 +141,7 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
                 }
             }
         }, bottomBar = {
-            if (selectionMode.not()) Row(
+            Row(
                 modifier = Modifier.background(myProductsColorScheme.botBarBG).padding(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -215,70 +217,107 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
             }
 
         }) { paddingValues ->
+
             Column(
                 modifier = Modifier.padding(paddingValues)
                     .background(myProductsColorScheme.screenBG)
             ) {
-                /* Row(
-                     modifier = Modifier.padding(16.dp)
-                         .border(
-                             width = 1.dp,
-                             color = myProductsColorScheme.buySellTabBGOutline,
-                             shape = MaterialTheme.shapes.large
-                         ).padding(8.dp)
-                 ) {
-                     Text(
-                         fontSize = 15.sp,
-                         modifier = Modifier.padding(horizontal = 16.dp),
-                         text = stringResource(Res.string.myProducts_1),
-                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = W300)
-                     )
-                     Text(
-                         fontSize = 15.sp,
-                         modifier = Modifier.padding(horizontal = 16.dp),
-                         text = stringResource(Res.string.myProducts_2),
-                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = W300)
-                     )
-                 }*/
-                LaunchedEffect(productListState) {
-                    snapshotFlow { productListState.layoutInfo }.collect { layoutInfo ->
-                        val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-                        val total = layoutInfo.totalItemsCount
-                        if (lastVisible >= total - viewModel.productPageSizeExpected / 2) {
-                            viewModel.getProducts()
-
-                        }
-                    }
+                Row(
+                    modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
+                        .border(
+                            width = 1.dp,
+                            color = myProductsColorScheme.buySellTabBGOutline,
+                            shape = MaterialTheme.shapes.large
+                        ).padding(8.dp)
+                ) {
+                    Text(
+                        fontSize = 15.sp,
+                        modifier = Modifier.clickable {
+                            offerSentBtn = true
+                            offerReceivedBtn = false
+                            viewModel.getOffersMade()
+                        }.padding(horizontal = 16.dp),
+                        text = stringResource(Res.string.myTrades_1),
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = W300)
+                    )
+                    Text(
+                        fontSize = 15.sp,
+                        modifier = Modifier.clickable {
+                            offerSentBtn = false
+                            offerReceivedBtn = true
+                            viewModel.getOffersReceived()
+                        }.padding(horizontal = 16.dp),
+                        text = stringResource(Res.string.myTrades_2),
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = W300)
+                    )
                 }
 
 
                 LazyColumn(
-                    state = productListState,
+                    state = offerListState,
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
                         .fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
 
-                    items(products) { product ->
-                        ProductUI(viewModel, sharedCMP, product, selectionMode)
-                    }
-
                     when (uiState) {
-                        LoadingProducts -> items(viewModel.productPageSizeExpected) {
-                            ProductUI(viewModel, sharedCMP)
+                        LoadingOffersMade -> items(20) {
+                            OfferUI(offerListState, viewModel, sharedCMP)
                         }
 
-                        ProductsNotFound -> { ////todo display error with call to action to reload products using refreshProducts = true.
-                            getToast().showToast("Products not found.")
-                            viewModel.idle()
+                        is OffersMade -> items((uiState as OffersMade).offers) {
+                            OfferUI(offerListState, viewModel, sharedCMP, it)
                         }
 
-                        is GetProductsApiError -> { //todo show error.
-                            viewModel.idle()
+                        LoadingOffersReceived -> items(20) {
+                            OfferUI(offerListState, viewModel, sharedCMP)
+                        }
+
+                        is OffersReceived -> items((uiState as OffersReceived).offers) {
+                            OfferUI(offerListState, viewModel, sharedCMP, it)
+                        }
+
+                        is OffersMadeError -> { //todo show error.
+                            getToast().showToast((uiState as OffersMadeError).error)
+                        }
+
+                        NoOffersMade -> item {
+                            Text(
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth(),
+                                fontSize = 20.sp,
+                                text = stringResource(Res.string.myTrades_3),
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                            )
+                        }
+
+                        NoOffersReceived -> item {
+                            Text(
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth(),
+                                fontSize = 20.sp,
+                                text = stringResource(Res.string.myTrades_3),
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                            )
+                        }
+
+                        is OffersReceivedError -> {
+                            getToast().showToast((uiState as OffersReceivedError).error)
+                        }
+
+                        OfferDeleted -> {
+                            getToast().showToast("Offer withdrawn successfully!")
+                        }
+
+                        OfferNotFound -> {
+                            getToast().showToast("Offer not found.")
+                        }
+
+                        is OfferDeleteApiError -> {
+                            getToast().showToast((uiState as OfferDeleteApiError).error)
                         }
 
                         Idle -> {} // do nothing.
-
                     }
                 }
             }
@@ -289,53 +328,102 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
 
 
     @Composable
-    private fun ProductUI(
-        viewModel: MyProductsViewModel,
+    private fun OfferUI(
+        offerListState: LazyListState,
+        viewModel: MyTradesViewModel,
         sharedCMP: SharedCMP,
-        product: Product? = null,
-        selectionMode: Boolean = false
+        offer: Offer? = null
     ) {
-        val size = (sharedCMP.screenWidth / 3).dp
         val nav = LocalNavigator.currentOrThrow
-        var selected by remember { mutableStateOf(false) }
-        Row(
-            modifier = if (product == null) Modifier.shimmer() else Modifier.fillMaxWidth()
+        val offeredProducts by remember { mutableStateOf(offer?.offeredProducts ?: emptyList()) }
+
+        Column(
+            modifier = if (offer == null) Modifier.shimmer() else Modifier.fillMaxWidth()
                 .clickable {
-                    val id = product.id
-                    if (selectionMode) {
-                        selected = viewModel.selectProduct(id)
-                    } else {
-                        ProductCache.add(product)
-                        nav.push(ProductDetailScreen(product.id))
-                    }
+                    TradeCache.add(offer)
+                    nav.push(TradeDetailScreen(offer.id))
                 }) {
-            AsyncImage(
-                model = product?.imageUrls?.get(0),
-                contentDescription = product?.name,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.clip(MaterialTheme.shapes.extraLarge).size(size).background(
-                    color = Color(
-                        Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                    ), shape = MaterialTheme.shapes.extraLarge
+            Box(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                val pagerState = rememberPagerState {
+                    if (offeredProducts.isEmpty()) 5 else {
+                        var totalImages = 0
+                        offeredProducts.map { it.imageUrls }.forEach {
+                            totalImages += it.size
+                        }
+                        totalImages
+                    }
+                }
+
+                // Auto-scroll logic for banner.
+                LaunchedEffect(offer != null) {
+                    while (offer != null) {
+                        val nextPage =
+                            (pagerState.currentPage + 1) % pagerState.pageCount
+                        pagerState.animateScrollToPage(nextPage)
+                        delay(3000) // Delay between scrolls (3 seconds)
+                    }
+                }
+
+                HorizontalPager(
+                    state = pagerState,
+                    userScrollEnabled = false
+                ) {
+
+
+                    AsyncImage(
+                        model = randomProductImage(offeredProducts),
+                        contentDescription = offer?.offeredProducts.toString(),
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.clip(MaterialTheme.shapes.medium)
+                            .background(
+                                color = Color(
+                                    Random.nextFloat(),
+                                    Random.nextFloat(),
+                                    Random.nextFloat()
+                                ), shape = MaterialTheme.shapes.medium
+                            )
+                            .fillMaxWidth()
+                            .height((sharedCMP.screenHeight / 4).dp)
+                    )
+
+
+                }
+                DotsIndicator(
+                    modifier = Modifier
+                        .padding(bottom = 8.dp)
+                        .padding(horizontal = 8.dp)
+                        .align(Alignment.BottomEnd),
+                    totalDots = pagerState.pageCount.let {
+                        if (it > 20)
+                            20 else it
+                    },
+                    selectedIndex = pagerState.currentPage,
+                    selectedColor = MaterialTheme.colorScheme.tertiary,
+                    unSelectedColor = Color(0xFFC0C0C0)
                 )
-            )
+
+            }
 
             Column(
                 modifier = Modifier.padding(horizontal = 8.dp)
             ) {
 
 
-                Text(
-                    modifier = Modifier,
-                    text = product?.name ?: stringResource(Res.string.home_5),
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
-                )
+                /* Text(
+                     modifier = Modifier,
+                     text = product?.name ?: stringResource(Res.string.home_5),
+                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
+                 )
 
-                Text(
-                    modifier = Modifier,
-                    text = product?.estPrice?.toString() ?: stringResource(Res.string.home_5),
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
-                )
+                 Text(
+                     modifier = Modifier,
+                     text = product?.estPrice?.toString() ?: stringResource(Res.string.home_5),
+                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
+                 )*/
 
                 /*  Text(
                       modifier = Modifier,
@@ -351,8 +439,8 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
                     val (c1, c2, c3, s1, s2, colorsTxt) = createRefs()
 
                     AsyncImage(
-                        model = product?.imageUrls?.get(1),
-                        contentDescription = product?.name,
+                        model = randomProductImage(offeredProducts),
+                        contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.clip(CircleShape).constrainAs(c1) {
                             top.linkTo(parent.top)
@@ -374,8 +462,8 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
                         })
 
                     AsyncImage(
-                        model = product?.imageUrls?.get(2),
-                        contentDescription = product?.name,
+                        model = randomProductImage(offeredProducts),
+                        contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.clip(CircleShape).constrainAs(c2) {
                             start.linkTo(s1.end)
@@ -396,8 +484,8 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
 
                         })
                     AsyncImage(
-                        model = product?.imageUrls?.get(3),
-                        contentDescription = product?.name,
+                        model = randomProductImage(offeredProducts),
+                        contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.clip(CircleShape).constrainAs(c3) {
                             start.linkTo(s2.end)
@@ -416,25 +504,24 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
 
                         }.padding(horizontal = 16.dp),
                         textDecoration = TextDecoration.Underline,
-                        text = if (product == null) stringResource(Res.string.home_5) else "All ${product.imageUrls.size} images",
+                        text = if (offeredProducts.isEmpty()) stringResource(Res.string.home_5) else "View ${offeredProducts.size} products",
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
                     )
                 }
             }
 
 
-            if (product != null) Column(modifier = Modifier.fillMaxHeight()) {
-                if (selected) Icon(
-                    modifier = Modifier.align(Alignment.Start),
-                    imageVector = Icons.Outlined.Check,
-                    contentDescription = stringResource(Res.string.search)
-                )
-                if (selectionMode.not()) Icon(
-                    modifier = Modifier.align(Alignment.End),
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = stringResource(Res.string.search)
-                )
-            }
         }
+    }
+
+    private fun randomProductImage(products: List<Product>?): String? {
+        if (products.isNullOrEmpty())
+            return null
+        val randomProduct = products[Random.nextInt(0, products.size)]
+        val randomProductImages = randomProduct.imageUrls
+        val randomProductImageCount = randomProductImages.size
+        return randomProductImages[Random.nextInt(0, randomProductImageCount)]
+
+
     }
 }
