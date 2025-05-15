@@ -223,26 +223,6 @@ class ProfileScreen : Screen {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
             ) {
-                    Image(
-                        imageVector = Icons.Default.AccountCircle,
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .size(90.dp)
-                            .background(Color.Gray, shape = CircleShape)
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Button(
-                        onClick = { nav.replaceAll(LoginScreen()) },
-                        colors = ButtonDefaults.buttonColors(profileColorScheme.loginBtn)
-                    ) {
-                        Text("Login", color = Color.White)
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
-                    }
-                }
 
                 when (uiState) {
                     Idle -> {
@@ -309,7 +289,7 @@ class ProfileScreen : Screen {
                             )
                             if (loggedInWithPhone) {
                                 OutlinedTextField(
-                                    value = email   ,
+                                    value = email,
                                     onValueChange = { email = it },
                                     label = { Text("Email") },
                                     modifier = Modifier.fillMaxWidth(),
@@ -322,7 +302,7 @@ class ProfileScreen : Screen {
                                 )
                             } else {
                                 OutlinedTextField(
-                                    value = phone   ,
+                                    value = phone,
                                     onValueChange = { phone = it },
                                     label = { Text("Phone") },
                                     modifier = Modifier.fillMaxWidth(),
@@ -409,5 +389,6 @@ class ProfileScreen : Screen {
                 }
 
             }
+        }
     }
 }
