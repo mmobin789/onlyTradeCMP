@@ -69,8 +69,8 @@ import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Idle
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.InvalidEmailFormatError
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.InvalidPhoneFormatError
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Loading
-import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Success
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.LoggedOut
+import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Success
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Updated
 import onlytrade.app.viewmodel.profile.ui.ProfileViewModel
 import onlytrade.composeapp.generated.resources.Res
@@ -223,7 +223,6 @@ class ProfileScreen : Screen {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
             ) {
-                if(!viewModel.isUserLoggedIn) {
                     Image(
                         imageVector = Icons.Default.AccountCircle,
                         contentDescription = "Profile Picture",
@@ -391,7 +390,7 @@ class ProfileScreen : Screen {
                             }
 
                             Button(
-                                onClick = { viewModel.logout() },
+                                onClick = { viewModel.logOut() },
                                 colors = ButtonDefaults.buttonColors(profileColorScheme.logoutBtn),
                                 shape = MaterialTheme.shapes.small,
                                 modifier = Modifier.fillMaxWidth()
@@ -410,6 +409,5 @@ class ProfileScreen : Screen {
                 }
 
             }
-        }
     }
 }
