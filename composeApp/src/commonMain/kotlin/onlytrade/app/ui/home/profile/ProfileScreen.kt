@@ -232,7 +232,7 @@ class ProfileScreen : Screen {
                     )
                     Spacer(Modifier.height(8.dp))
                     Button(
-                        onClick = { nav.push(LoginScreen()) },
+                        onClick = { nav.replaceAll(LoginScreen()) },
                         colors = ButtonDefaults.buttonColors(profileColorScheme.loginBtn)
                     ) {
                         Text("Login", color = Color.White)
