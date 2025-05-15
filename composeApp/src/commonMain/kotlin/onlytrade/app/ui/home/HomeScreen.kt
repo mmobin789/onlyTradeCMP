@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -39,6 +40,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,8 +53,10 @@ import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.text.font.FontWeight.Companion.W300
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
@@ -58,17 +64,19 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
+import kotlinx.coroutines.delay
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
-import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
 import onlytrade.app.ui.home.colorScheme.homeColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
 import onlytrade.app.ui.home.products.add.AddProductScreen
+import onlytrade.app.ui.home.products.details.ProductCache
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.ui.home.profile.ProfileScreen
+import onlytrade.app.ui.home.trades.MyTradesScreen
 import onlytrade.app.viewmodel.home.ui.HomeUiState.GetProductsApiError
 import onlytrade.app.viewmodel.home.ui.HomeUiState.Idle
 import onlytrade.app.viewmodel.home.ui.HomeUiState.LoadingProducts
@@ -87,6 +95,7 @@ import onlytrade.composeapp.generated.resources.home_2
 import onlytrade.composeapp.generated.resources.home_3
 import onlytrade.composeapp.generated.resources.home_4
 import onlytrade.composeapp.generated.resources.home_5
+import onlytrade.composeapp.generated.resources.home_6
 import onlytrade.composeapp.generated.resources.ic_quickmart_intro
 import onlytrade.composeapp.generated.resources.ic_quickmart_intro_dark
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
@@ -101,14 +110,16 @@ class HomeScreen : Screen {
     @Composable
     override fun Content() {
         val viewModel = koinViewModel<HomeViewModel>()
+        val userLoggedIn by remember { mutableStateOf(viewModel.isUserLoggedIn) }
         val products by viewModel.productList.collectAsStateWithLifecycle()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val sharedCMP = LocalSharedCMP.current
         val nav = LocalNavigator.currentOrThrow
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
+        var refreshProducts by remember { mutableStateOf(false) } //todo change to true on error user action.
         Scaffold(topBar = {
-            Column {
+            Column(modifier = if (uiState is LoadingProducts) Modifier.shimmer() else Modifier) {
                 //   AnimatedVisibility(visible = headerVisible.not()) {
                 Row(
                     modifier = Modifier
@@ -138,7 +149,7 @@ class HomeScreen : Screen {
                         Spacer(modifier = Modifier.width(16.dp))
 
                         Icon(
-                            imageVector = Icons.Outlined.Person,
+                            imageVector = Icons.Outlined.Settings,
                             contentDescription = stringResource(Res.string.search)
                         )
                     }
@@ -168,9 +179,6 @@ class HomeScreen : Screen {
                        expanded = isSearchBarExtended,
                        onExpandedChange = {}
                    ) { }*/
-
-
-
                 AnimatedVisibility(visible = headerVisible) {
                     Box(
                         modifier = Modifier
@@ -178,14 +186,37 @@ class HomeScreen : Screen {
                             .padding(16.dp)
                             .fillMaxWidth()
                     ) {
-                        val pagerState = rememberPagerState { 5 }
+                        val pagerState = rememberPagerState {
+                            if (products.isEmpty()) 5 else products.size
+                        }
+
+                        // Auto-scroll logic for banner.
+                        if (products.isNotEmpty())
+                            LaunchedEffect(uiState !is LoadingProducts) {
+                                while (headerVisible) {
+                                    val nextPage =
+                                        (pagerState.currentPage + 1) % pagerState.pageCount
+                                    pagerState.animateScrollToPage(nextPage)
+                                    delay(3000) // Delay between scrolls (3 seconds)
+                                }
+                            }
 
                         HorizontalPager(
                             state = pagerState
                         ) {
 
-                            Spacer(
-                                modifier = Modifier
+                            val randomProduct by remember { mutableStateOf(randomProduct(products)) }
+
+                            AsyncImage(
+                                model = randomProduct?.first,
+                                contentDescription = randomProduct?.second?.description,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.clickable {
+                                    randomProduct?.second?.let {
+                                        ProductCache.add(it)
+                                        nav.push(ProductDetailScreen(it.id))
+                                    }
+                                }.clip(MaterialTheme.shapes.medium)
                                     .background(
                                         color = Color(
                                             Random.nextFloat(),
@@ -204,7 +235,7 @@ class HomeScreen : Screen {
                                 .padding(bottom = 8.dp)
                                 .padding(horizontal = 8.dp)
                                 .align(Alignment.BottomEnd),
-                            totalDots = 5,
+                            totalDots = pagerState.pageCount,
                             selectedIndex = pagerState.currentPage,
                             selectedColor = MaterialTheme.colorScheme.tertiary,
                             unSelectedColor = Color(0xFFC0C0C0)
@@ -214,24 +245,25 @@ class HomeScreen : Screen {
                 }
             }
         }, bottomBar = {
-            Row(
-                modifier = Modifier
-                    .background(homeColorScheme.botBarBG)
-                    .padding(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Column(Modifier.weight(1f)) {
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.Home,
-                        contentDescription = stringResource(Res.string.app_name)
-                    )
+            if (userLoggedIn)
+                Row(
+                    modifier = Modifier
+                        .background(homeColorScheme.botBarBG)
+                        .padding(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = Icons.Outlined.Home,
+                            contentDescription = stringResource(Res.string.app_name)
+                        )
 
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = stringResource(Res.string.botBar_1),
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                }/*   Column(Modifier.weight(1f)) {
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = stringResource(Res.string.botBar_1),
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }/*   Column(Modifier.weight(1f)) {
                            Icon(
                                modifier = Modifier.align(Alignment.CenterHorizontally),
                                imageVector = Icons.Outlined.Menu,
@@ -244,59 +276,61 @@ class HomeScreen : Screen {
                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
                            )
                        }*/
-                Column(Modifier.weight(1f)) {
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = vectorResource(Res.drawable.outline_compare_arrows_24),
-                        contentDescription = stringResource(Res.string.app_name)
-                    )
+                    Column(Modifier.weight(1f).clickable {
+                        nav.push(MyTradesScreen())
+                    }) {
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = vectorResource(Res.drawable.outline_compare_arrows_24),
+                            contentDescription = stringResource(Res.string.app_name)
+                        )
 
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = stringResource(Res.string.botBar_2),
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = stringResource(Res.string.botBar_2),
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }
+                    Column(
+                        Modifier
+                            .weight(1f)
+                            .clickable {
+                                nav.push(MyProductsScreen())
+                            }) {
+
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = Icons.Outlined.Favorite,
+                            contentDescription = stringResource(Res.string.app_name)
+                        )
+
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = stringResource(Res.string.botBar_3),
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }
+                    Column(
+                        Modifier
+                            .weight(1f)
+                            .clickable { nav.push(ProfileScreen()) }
+                    ) {
+
+                        Icon(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            imageVector = Icons.Outlined.Person,
+                            contentDescription = stringResource(Res.string.app_name)
+                        )
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = stringResource(Res.string.botBar_4),
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                        )
+                    }
                 }
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .clickable {
-                            nav.push(MyProductsScreen())
-                        }) {
-
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.Favorite,
-                        contentDescription = stringResource(Res.string.app_name)
-                    )
-
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = stringResource(Res.string.botBar_3),
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                }
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .clickable { nav.push(ProfileScreen()) }
-                ) {
-
-                    Icon(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        imageVector = Icons.Outlined.Person,
-                        contentDescription = stringResource(Res.string.app_name)
-                    )
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = stringResource(Res.string.botBar_4),
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                    )
-                }
-            }
 
         }, floatingActionButton = {
-            if (viewModel.isUserLoggedIn) {
+            if (userLoggedIn) {
 
                 val addProductClicked = {
                     nav.push(AddProductScreen())
@@ -409,7 +443,7 @@ class HomeScreen : Screen {
                     snapshotFlow { productGridState.layoutInfo }.collect { layoutInfo ->
                         val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
                         val total = layoutInfo.totalItemsCount
-                        if (lastVisible >= total - viewModel.productPageSizeExpected / 2) {
+                        if (refreshProducts || lastVisible >= total - viewModel.productPageSizeExpected / 2) {
                             viewModel.getProducts()
 
                         }
@@ -427,20 +461,28 @@ class HomeScreen : Screen {
                 ) {
 
                     items(products) { product ->
-                        ProductUI(sharedCMP, product.id.toInt(), product)
+                        ProductUI(sharedCMP, product)
                     }
 
                     when (uiState) {
-                        LoadingProducts -> items(2) { i ->
-                            ProductUI(sharedCMP, i)
+                        LoadingProducts -> items(viewModel.productPageSizeExpected) {
+                            ProductUI(sharedCMP)
                         }
 
-                        ProductsNotFound -> { //todo display error with call to action to reload products then call viewModel.getProducts( tryAgain = true) as action.
-                            getToast().showToast("Products not found.")
+                        ProductsNotFound -> { //todo display error with call to action to reload products using refreshProducts = true.
+                            item {
+                                Text(
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    fontSize = 20.sp,
+                                    text = stringResource(Res.string.home_6),
+                                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                                )
+                            }
                         }
 
                         is GetProductsApiError -> { //todo show error.
-
+                            viewModel.idle()
                         }
 
                         Idle -> {} // do nothing.
@@ -453,11 +495,12 @@ class HomeScreen : Screen {
     }
 
     @Composable
-    private fun ProductUI(sharedCMP: SharedCMP, index: Int, product: Product? = null) {
+    private fun ProductUI(sharedCMP: SharedCMP, product: Product? = null) {
         val size = (sharedCMP.screenWidth / 2).dp
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
-            nav.push(ProductDetailScreen(index))
+            ProductCache.add(product)
+            nav.push(ProductDetailScreen(product.id))
         }) {
             Box(
                 Modifier
@@ -608,5 +651,17 @@ class HomeScreen : Screen {
                   )*/
             }
         }
+    }
+
+    private fun randomProduct(products: List<Product>): Pair<String, Product>? {
+        if (products.isEmpty())
+            return null
+        val randomProduct = products[Random.nextInt(0, products.size)]
+        val randomProductImages = randomProduct.imageUrls
+        val randomProductImageCount = randomProductImages.size
+        return Pair(
+            randomProductImages[Random.nextInt(0, randomProductImageCount)],
+            randomProduct
+        )
     }
 }
