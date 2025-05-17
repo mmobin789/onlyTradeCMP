@@ -1,5 +1,5 @@
 [versions]
-agp = "8.9.2"
+agp = "8.9.3"
 sqlDelightDriver = "2.0.2"
 compose = "1.8.1"
 compose-material3 = "1.3.2"
@@ -47,6 +47,7 @@ sqlDelight = "2.0.2"
 android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelightDriver" }
 compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "composeShimmer" }
 constraintlayout-compose-multiplatform = { module = "tech.annexflow.compose:constraintlayout-compose-multiplatform", version.ref = "constraintlayoutComposeMultiplatform" }
+exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed-version" }
 imagekit-java = { module = "com.github.imagekit-developer:imagekit-java", version.ref = "imagekitJava" }
 jbcrypt = { module = "org.mindrot:jbcrypt", version.ref = "jbcrypt" }
 kotlin-css = { module = "org.jetbrains.kotlin-wrappers:kotlin-css", version.ref = "kotlinCss" }
