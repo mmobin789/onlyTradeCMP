@@ -57,16 +57,19 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.ShowToast
+import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.ui.home.profile.colorScheme.profileColorScheme
+import onlytrade.app.ui.login.LoginScreen
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.BlankNameError
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Error
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Idle
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.InvalidEmailFormatError
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.InvalidPhoneFormatError
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Loading
+import onlytrade.app.viewmodel.profile.ui.ProfileUiState.LoggedOut
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Success
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Updated
 import onlytrade.app.viewmodel.profile.ui.ProfileViewModel
@@ -103,18 +106,17 @@ class ProfileScreen : Screen {
         var phone by rememberSaveable { mutableStateOf("") }
         val loggedInWithPhone = phone.isNotBlank()
 
-        val initialized = remember { mutableStateOf(false) }
-
-        LaunchedEffect(Unit) {
-            viewModel.getProfile()
-        }
-
-        if (uiState is Success && !initialized.value) {
-            val state = uiState as Success
-            name = state.name
-            email = state.email ?: ""
-            phone = state.phone ?: ""
-            initialized.value = true
+        LaunchedEffect(uiState) {
+            if (uiState is Success) {
+                val state = uiState as Success
+                if (name != state.name || email != (state.email ?: "") || phone != (state.phone ?: "")) {
+                    name = state.name
+                    email = state.email ?: ""
+                    phone = state.phone ?: ""
+                }
+            } else if (uiState == Idle) {
+                viewModel.getProfile()
+            }
         }
 
         Scaffold(
@@ -219,24 +221,15 @@ class ProfileScreen : Screen {
                     .fillMaxSize()
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
+                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
             ) {
-                Image(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .size(90.dp)
-                        .background(Color.Gray, shape = CircleShape)
-                )
 
                 when (uiState) {
                     Idle -> {
                         //do nothing
                     }
 
-                    Loading -> {
-                        viewModel.idle()
-                    }
+                    Loading -> { }
 
                     is Error -> {
                         ShowToast((uiState as Error).error)
@@ -262,9 +255,20 @@ class ProfileScreen : Screen {
                         viewModel.idle()
                     }
 
-                    is Success -> {
+                    LoggedOut -> {
+                        getToast().showToast("Logged Out Successfully")
+                        nav.replaceAll(LoginScreen())
+                    }
 
-                        Spacer(Modifier.height(16.dp))
+                    is Success -> {
+                        Image(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Profile Picture",
+                            modifier = Modifier
+                                .size(90.dp)
+                                .background(Color.Gray, shape = CircleShape)
+                        )
+                        Spacer(Modifier.height(8.dp))
                         Text(
                             text = "Welcome, ${name.ifBlank { "User" }}",
                             style = MaterialTheme.typography.titleLarge
@@ -285,7 +289,7 @@ class ProfileScreen : Screen {
                             )
                             if (loggedInWithPhone) {
                                 OutlinedTextField(
-                                    value = email   ,
+                                    value = email,
                                     onValueChange = { email = it },
                                     label = { Text("Email") },
                                     modifier = Modifier.fillMaxWidth(),
@@ -298,7 +302,7 @@ class ProfileScreen : Screen {
                                 )
                             } else {
                                 OutlinedTextField(
-                                    value = phone   ,
+                                    value = phone,
                                     onValueChange = { phone = it },
                                     label = { Text("Phone") },
                                     modifier = Modifier.fillMaxWidth(),
@@ -336,11 +340,11 @@ class ProfileScreen : Screen {
                             }
                         }
 
-                        if (!isEditing){
+                        if (!isEditing) {
                             Spacer(Modifier.height(16.dp))
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 OutlinedButton(
@@ -366,7 +370,7 @@ class ProfileScreen : Screen {
                             }
 
                             Button(
-                                onClick = { /* TODO: Logout */ },
+                                onClick = { viewModel.logOut() },
                                 colors = ButtonDefaults.buttonColors(profileColorScheme.logoutBtn),
                                 shape = MaterialTheme.shapes.small,
                                 modifier = Modifier.fillMaxWidth()
@@ -381,6 +385,7 @@ class ProfileScreen : Screen {
                             }
                         }
                     }
+
                 }
 
             }

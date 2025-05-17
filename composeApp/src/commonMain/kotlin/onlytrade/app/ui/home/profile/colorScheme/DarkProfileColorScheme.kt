@@ -17,4 +17,6 @@ object DarkProfileColorScheme: ProfileColorScheme {
         get() = Color(0xFFD7F0D8)
     override val logoutBtn: Color
         get() = Color(0xFF9AD1D4)
+    override val loginBtn: Color
+        get() = Color(0xFF232D36)
 }

@@ -13,6 +13,7 @@ interface ProfileColorScheme {
     val activeTradesBtn: Color
     val myOffersBtn: Color
     val logoutBtn: Color
+    val loginBtn: Color
 }
 
 
