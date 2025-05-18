@@ -53,6 +53,7 @@ import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.home.products.add.colorScheme.addProductColorScheme
 import onlytrade.app.ui.login.LoginScreen.Companion.validatePhoneNumber
+import onlytrade.app.ui.login.kyc.colorScheme.kycColorScheme
 import onlytrade.app.viewmodel.login.ui.KycViewModel
 import onlytrade.app.viewmodel.login.ui.state.KycUiState.BlankEmailInputError
 import onlytrade.app.viewmodel.login.ui.state.KycUiState.BlankMobileInputError
@@ -99,7 +100,7 @@ class KYCScreen : Screen {
                 AnimatedVisibility(visible = headerVisible) {
                     Column {
                         Row(
-                            modifier = Modifier.background(addProductColorScheme.topBarBG)
+                            modifier = Modifier.background(kycColorScheme.completeKycBarBG)
                                 .fillMaxWidth().padding(horizontal = 16.dp).padding(top = 16.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
@@ -117,7 +118,7 @@ class KYCScreen : Screen {
                         }
 
                         Spacer(
-                            modifier = Modifier.background(addProductColorScheme.topBarBG)
+                            modifier = Modifier.background(kycColorScheme.completeKycBarBG)
                                 .height(1.dp).fillMaxWidth()
                         )
 
@@ -126,11 +127,11 @@ class KYCScreen : Screen {
             },
             bottomBar = {
 
-                Column(modifier = Modifier.background(addProductColorScheme.screenBG)) {
+                Column(modifier = Modifier.background(kycColorScheme.screenBG)) {
 
                     Button(
                         onClick = { showImagePicker = true },
-                        colors = ButtonDefaults.buttonColors(addProductColorScheme.submitProductBtn),
+                        colors = ButtonDefaults.buttonColors(kycColorScheme.addDocumentsBtn),
                         shape = MaterialTheme.shapes.extraSmall,
                         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
                     ) {
@@ -146,7 +147,7 @@ class KYCScreen : Screen {
                                 email.ifBlank { null },
                                 phone.ifBlank { null })
                         },
-                        colors = ButtonDefaults.buttonColors(addProductColorScheme.submitProductBtn),
+                        colors = ButtonDefaults.buttonColors(kycColorScheme.uploadBtn),
                         shape = MaterialTheme.shapes.extraSmall,
                         modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp)
                             .fillMaxWidth()
@@ -163,7 +164,7 @@ class KYCScreen : Screen {
             ) { paddingValues ->
             Column(
                 modifier = Modifier.padding(paddingValues)
-                    .background(addProductColorScheme.screenBG).fillMaxSize().padding(16.dp),
+                    .background(kycColorScheme.screenBG).fillMaxSize().padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(

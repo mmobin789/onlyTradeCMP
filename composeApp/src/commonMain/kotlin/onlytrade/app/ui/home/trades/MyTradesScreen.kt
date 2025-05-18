@@ -62,8 +62,8 @@ import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.getToast
-import onlytrade.app.ui.home.products.my.colorScheme.myProductsColorScheme
 import onlytrade.app.ui.home.profile.ProfileScreen
+import onlytrade.app.ui.home.trades.colorScheme.myTradesColorScheme
 import onlytrade.app.ui.home.trades.detail.TradeCache
 import onlytrade.app.ui.home.trades.detail.TradeDetailScreen
 import onlytrade.app.viewmodel.product.offer.repository.data.db.Offer
@@ -113,7 +113,7 @@ class MyTradesScreen : Screen {
             AnimatedVisibility(visible = headerVisible) {
                 Column {
                     Box(
-                        modifier = Modifier.background(myProductsColorScheme.myProductsBarBG)
+                        modifier = Modifier.background(myTradesColorScheme.myTradesBarBG)
                             .fillMaxWidth().padding(16.dp)
                     ) {
 
@@ -134,7 +134,7 @@ class MyTradesScreen : Screen {
                     }
 
                     Spacer(
-                        modifier = Modifier.background(myProductsColorScheme.myProductsBarBG)
+                        modifier = Modifier.background(myTradesColorScheme.myTradesBarBG)
                             .height(1.dp).fillMaxWidth()
                     )
 
@@ -142,7 +142,7 @@ class MyTradesScreen : Screen {
             }
         }, bottomBar = {
             Row(
-                modifier = Modifier.background(myProductsColorScheme.botBarBG).padding(8.dp),
+                modifier = Modifier.background(myTradesColorScheme.botBarBG).padding(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Column(
@@ -220,13 +220,13 @@ class MyTradesScreen : Screen {
 
             Column(
                 modifier = Modifier.padding(paddingValues)
-                    .background(myProductsColorScheme.screenBG)
+                    .background(myTradesColorScheme.screenBG)
             ) {
                 Row(
                     modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
                         .border(
                             width = 1.dp,
-                            color = myProductsColorScheme.buySellTabBGOutline,
+                            color = myTradesColorScheme.sentReceivedTabOutline,
                             shape = MaterialTheme.shapes.large
                         ).padding(8.dp)
                 ) {
