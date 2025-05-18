@@ -1,6 +1,5 @@
 package onlytrade.app.ui.home.profile
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,7 +32,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -59,10 +57,10 @@ import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.HomeScreen
-import onlytrade.app.ui.home.products.details.colorScheme.productDetailColorScheme
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.ui.home.profile.colorScheme.profileColorScheme
 import onlytrade.app.ui.login.LoginScreen
+import onlytrade.app.ui.login.kyc.KYCScreen
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.BlankNameError
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Error
 import onlytrade.app.viewmodel.profile.ui.ProfileUiState.Idle
@@ -82,9 +80,8 @@ import onlytrade.composeapp.generated.resources.botBar_4
 import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import onlytrade.composeapp.generated.resources.profile_1
-import onlytrade.composeapp.generated.resources.profile_2
-import onlytrade.composeapp.generated.resources.profile_3
 import onlytrade.composeapp.generated.resources.profile_4
+import onlytrade.composeapp.generated.resources.profile_5
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -109,7 +106,9 @@ class ProfileScreen : Screen {
         LaunchedEffect(uiState) {
             if (uiState is Success) {
                 val state = uiState as Success
-                if (name != state.name || email != (state.email ?: "") || phone != (state.phone ?: "")) {
+                if (name != state.name || email != (state.email ?: "") || phone != (state.phone
+                        ?: "")
+                ) {
                     name = state.name
                     email = state.email ?: ""
                     phone = state.phone ?: ""
@@ -119,107 +118,94 @@ class ProfileScreen : Screen {
             }
         }
 
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(text = stringResource(Res.string.profile_1)) },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = profileColorScheme.topBarBG
-                    ),
-                    navigationIcon = {
-                        IconButton(onClick = { nav.pop() }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                                contentDescription = stringResource(Res.string.cancel)
-                            )
-                        }
-                    },
-                    actions = {
-                        /*IconButton(onClick = { isEditing = !isEditing }) {
-                            Icon(
-                                imageVector = if (isEditing) Icons.Default.Check else Icons.Default.Edit,
-                                contentDescription = if (isEditing) "Save" else "Edit"
-                            )
-                        }*/
-                    }
-                )
-            },
-            bottomBar = {
-                Row(
-                    modifier = Modifier
-                        .background(profileColorScheme.botBarBG)
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Column(
-                        Modifier
-                            .weight(1f)
-                            .clickable { nav.push(HomeScreen()) })
-                    {
+        Scaffold(topBar = {
+            TopAppBar(
+                title = { Text(text = stringResource(Res.string.profile_1)) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = profileColorScheme.topBarBG
+                ),
+                navigationIcon = {
+                    IconButton(onClick = { nav.pop() }) {
                         Icon(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = Icons.Outlined.Home,
-                            contentDescription = stringResource(Res.string.app_name)
-                        )
-
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = stringResource(Res.string.botBar_1),
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                            contentDescription = stringResource(Res.string.cancel)
                         )
                     }
-                    Column(Modifier.weight(1f)) {
+                },
+                actions = {
+                    /*IconButton(onClick = { isEditing = !isEditing }) {
                         Icon(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = vectorResource(Res.drawable.outline_compare_arrows_24),
-                            contentDescription = stringResource(Res.string.app_name)
+                            imageVector = if (isEditing) Icons.Default.Check else Icons.Default.Edit,
+                            contentDescription = if (isEditing) "Save" else "Edit"
                         )
+                    }*/
+                })
+        }, bottomBar = {
+            Row(
+                modifier = Modifier.background(profileColorScheme.botBarBG).padding(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Column(
+                    Modifier.weight(1f).clickable { nav.push(HomeScreen()) }) {
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.Home,
+                        contentDescription = stringResource(Res.string.app_name)
+                    )
 
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = stringResource(Res.string.botBar_2),
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                        )
-                    }
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = stringResource(Res.string.botBar_1),
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
+                }
+                Column(Modifier.weight(1f)) {
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = vectorResource(Res.drawable.outline_compare_arrows_24),
+                        contentDescription = stringResource(Res.string.app_name)
+                    )
 
-                    Column(
-                        Modifier
-                            .weight(1f)
-                            .clickable { nav.push(MyProductsScreen()) }) {
-                        Icon(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = Icons.Outlined.Favorite,
-                            contentDescription = stringResource(Res.string.app_name)
-                        )
-
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = stringResource(Res.string.botBar_3),
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                        )
-                    }
-
-                    Column(Modifier.weight(1f)) {
-                        Icon(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = Icons.Outlined.Person,
-                            contentDescription = stringResource(Res.string.app_name)
-                        )
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = stringResource(Res.string.botBar_4),
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                        )
-                    }
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = stringResource(Res.string.botBar_2),
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
                 }
 
-            }) { paddingValues ->
+                Column(
+                    Modifier.weight(1f).clickable { nav.push(MyProductsScreen()) }) {
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.Favorite,
+                        contentDescription = stringResource(Res.string.app_name)
+                    )
+
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = stringResource(Res.string.botBar_3),
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
+                }
+
+                Column(Modifier.weight(1f)) {
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Outlined.Person,
+                        contentDescription = stringResource(Res.string.app_name)
+                    )
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = stringResource(Res.string.botBar_4),
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                    )
+                }
+            }
+
+        }) { paddingValues ->
             Column(
-                modifier = Modifier
-                    .background(profileColorScheme.screenBG)
-                    .padding(paddingValues)
-                    .fillMaxSize()
-                    .padding(16.dp),
+                modifier = Modifier.background(profileColorScheme.screenBG).padding(paddingValues)
+                    .fillMaxSize().padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
             ) {
@@ -229,7 +215,7 @@ class ProfileScreen : Screen {
                         //do nothing
                     }
 
-                    Loading -> { }
+                    Loading -> {}
 
                     is Error -> {
                         ShowToast((uiState as Error).error)
@@ -264,8 +250,7 @@ class ProfileScreen : Screen {
                         Image(
                             imageVector = Icons.Default.AccountCircle,
                             contentDescription = "Profile Picture",
-                            modifier = Modifier
-                                .size(90.dp)
+                            modifier = Modifier.size(90.dp)
                                 .background(Color.Gray, shape = CircleShape)
                         )
                         Spacer(Modifier.height(8.dp))
@@ -285,8 +270,7 @@ class ProfileScreen : Screen {
                                         imageVector = Icons.Default.Person,
                                         contentDescription = "Name"
                                     )
-                                }
-                            )
+                                })
                             if (loggedInWithPhone) {
                                 OutlinedTextField(
                                     value = email,
@@ -298,8 +282,7 @@ class ProfileScreen : Screen {
                                             imageVector = Icons.Default.Email,
                                             contentDescription = "Email Icon"
                                         )
-                                    }
-                                )
+                                    })
                             } else {
                                 OutlinedTextField(
                                     value = phone,
@@ -311,13 +294,11 @@ class ProfileScreen : Screen {
                                             imageVector = Icons.Default.Phone,
                                             contentDescription = "Phone Icon"
                                         )
-                                    }
-                                )
+                                    })
                             }
                         } else {
                             if (phone.isNotBlank()) {
-                                Row (verticalAlignment = Alignment.CenterVertically)
-                                {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
                                         imageVector = Icons.Outlined.Phone,
                                         contentDescription = "Phone Icon"
@@ -328,8 +309,7 @@ class ProfileScreen : Screen {
                             }
 
                             if (email.isNotBlank()) {
-                                Row (verticalAlignment = Alignment.CenterVertically)
-                                {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
                                         imageVector = Icons.Outlined.Email,
                                         contentDescription = "Email Icon"
@@ -347,25 +327,25 @@ class ProfileScreen : Screen {
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                OutlinedButton(
-                                    modifier = Modifier.weight(1f),
-                                    onClick = { /* TODO */ },
+                                /*   OutlinedButton(
+                                       modifier = Modifier.weight(1f),
+                                       onClick = { *//* TODO *//* },
                                     shape = MaterialTheme.shapes.small,
                                     border = BorderStroke(1.dp, profileColorScheme.activeTradesBtn),
                                 ) {
                                     Text(
-                                        text = stringResource(Res.string.profile_2),
+                                        text = stringResource(Res.string.profile_5),
                                         color = productDetailColorScheme.offerTradeBtnText
                                     )
-                                }
+                                }*/
 
                                 Button(
                                     modifier = Modifier.weight(1f),
-                                    onClick = { /* TODO */ },
+                                    onClick = { nav.push(KYCScreen()) },
                                     shape = MaterialTheme.shapes.small,
                                     colors = ButtonDefaults.buttonColors(profileColorScheme.myOffersBtn)
                                 ) {
-                                    Text(text = stringResource(Res.string.profile_3))
+                                    Text(text = stringResource(Res.string.profile_5))
                                 }
                             }
 

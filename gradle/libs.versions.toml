@@ -39,7 +39,7 @@ kotlin = "2.1.10"
 kotlinx-coroutines = "1.10.1"
 logback = "1.5.16"
 postgres-version = "42.7.5"
-exposed-version = "0.58.0"
+exposed-version = "1.0.0-beta-1"
 h2-version = "2.3.232"
 sqlDelight = "2.0.2"
 
@@ -48,6 +48,7 @@ android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = 
 compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "composeShimmer" }
 constraintlayout-compose-multiplatform = { module = "tech.annexflow.compose:constraintlayout-compose-multiplatform", version.ref = "constraintlayoutComposeMultiplatform" }
 exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed-version" }
+exposed-migration = { module = "org.jetbrains.exposed:exposed-migration", version.ref = "exposed-version" }
 imagekit-java = { module = "com.github.imagekit-developer:imagekit-java", version.ref = "imagekitJava" }
 jbcrypt = { module = "org.mindrot:jbcrypt", version.ref = "jbcrypt" }
 kotlin-css = { module = "org.jetbrains.kotlin-wrappers:kotlin-css", version.ref = "kotlinCss" }

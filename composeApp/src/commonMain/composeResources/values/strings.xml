@@ -43,6 +43,20 @@
     <string name="login_7">Forgot password?</string>
     <string name="login_8">Login</string>
 
+    <!-- Profile Screen -->
+    <string name="profile_1">My Profile</string>
+    <string name="profile_2">Active Trades</string>
+    <string name="profile_3">My Offers</string>
+    <string name="profile_4">Logout</string>
+    <string name="profile_5">Complete Verification</string>
+
+
+    <!--> KYC Screen -->
+    <string name="kyc_1">Complete KYC</string>
+    <string name="kyc_2">Please add your details with selfie and (ID card (Front &amp; Back) or passport's 1st 2 pages) to complete our verification process.</string>
+    <string name="kyc_3">Add Documents</string>
+    <string name="kyc_4">Upload</string>
+
     <!-- Home -->
     <string name="home_1">Categories</string>
     <string name="home_2">Latest Products</string>
@@ -103,10 +117,5 @@
     <string name="botBar_3">My Products</string>
     <string name="botBar_4">Profile</string>
 
-    <!-- Profile Screen -->
-    <string name="profile_1">My Profile</string>
-    <string name="profile_2">Active Trades</string>
-    <string name="profile_3">My Offers</string>
-    <string name="profile_4">Logout</string>
 
 </resources>
