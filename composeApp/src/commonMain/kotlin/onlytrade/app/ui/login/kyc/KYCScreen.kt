@@ -85,7 +85,6 @@ class KYCScreen : Screen {
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
         var showImagePicker by remember { mutableStateOf(false) }
-        var toastMsg by remember { mutableStateOf("") }
         var galleryImages by remember {
             mutableStateOf(listOf<ByteArray>())
         }
@@ -167,7 +166,7 @@ class KYCScreen : Screen {
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    modifier = Modifier,
+                    modifier = Modifier.padding(bottom = 8.dp),
                     text = stringResource(Res.string.kyc_2),
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500),
                 )
@@ -196,7 +195,7 @@ class KYCScreen : Screen {
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
+                        keyboardType = KeyboardType.Email, imeAction = ImeAction.Done
                     ),
                 )
                 else OutlinedTextField(
@@ -229,7 +228,7 @@ class KYCScreen : Screen {
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Phone, imeAction = ImeAction.Next
+                        keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done
                     ),
                 )
 
@@ -262,31 +261,49 @@ class KYCScreen : Screen {
 
             }
 
-            if (toastMsg.isNotBlank()) {
-                ShowToast(toastMsg)
-                if (uiState == InReview) LaunchedEffect(Unit) {
-                    nav.pop()
-                }
-                toastMsg = ""
-                viewModel.idle()
-            }
 
             when (uiState) {
                 Uploading -> {
-                    toastMsg = "Uploading Docs..."
+                    ShowToast("Uploading Docs...")
                 }
 
-                BlankEmailInputError -> toastMsg = "BlankEmail"
-                BlankMobileInputError -> toastMsg = "BlankMobileNo"
-                DocsIncomplete -> toastMsg = "Docs required."
-                EmailFormatInputError -> toastMsg = "EmailFormatInputError"
+                BlankEmailInputError -> {
+                    ShowToast("BlankEmail")
+                    viewModel.idle()
+                }
+
+                BlankMobileInputError -> {
+                    ShowToast("BlankMobileNo")
+                    viewModel.idle()
+                }
+
+                DocsIncomplete -> {
+                    ShowToast("Docs required.")
+                    viewModel.idle()
+                }
+
+                EmailFormatInputError -> {
+                    ShowToast("EmailFormatInputError")
+                    viewModel.idle()
+                }
+
                 Idle -> {} // do nothing.
-                InReview -> toastMsg = "Added for review."
-                is KycApiError -> {
-                    toastMsg = (uiState as KycApiError).error
+                InReview -> {
+                    ShowToast("Added for review.")
+                    LaunchedEffect(Unit) {
+                        nav.pop()
+                    }
                 }
 
-                MobileNoFormatInputError -> toastMsg = "Wrong format for Mobile No"
+                is KycApiError -> {
+                    ShowToast((uiState as KycApiError).error)
+                    viewModel.idle()
+                }
+
+                MobileNoFormatInputError -> {
+                    ShowToast("Wrong format for Mobile No")
+                    viewModel.idle()
+                }
             }
         }
     }
