@@ -242,7 +242,7 @@ class KYCScreen : Screen {
                         shape = MaterialTheme.shapes.extraSmall
                     ).padding(16.dp)
                 ) {
-                    if (galleryImages.isEmpty()) items(3) { i ->
+                    if (galleryImages.isEmpty()) items(2) { i ->
                         docUI(sharedCMP, i)
                     }
                     else itemsIndexed(galleryImages) { i, doc ->

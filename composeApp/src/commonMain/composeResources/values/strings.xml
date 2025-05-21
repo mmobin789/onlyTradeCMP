@@ -53,7 +53,7 @@
 
     <!--> KYC Screen -->
     <string name="kyc_1">Complete KYC</string>
-    <string name="kyc_2">Please add your details with selfie and (ID card or passport) to complete our verification process.</string>
+    <string name="kyc_2">Please add your selfie with ID card or passport to complete our verification process.</string>
     <string name="kyc_3">Add Documents</string>
     <string name="kyc_4">Upload</string>
 
