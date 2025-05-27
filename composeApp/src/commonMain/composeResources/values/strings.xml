@@ -110,6 +110,8 @@
     <string name="tradeDetail_15">Accepted</string>
     <string name="tradeDetail_16">Get</string>
     <string name="tradeDetail_17">Trade Detail</string>
+    <string name="tradeDetail_18">Your trade has been accepted! Contact your trade partner: Name: %1$s, Phone: %2$s</string>
+
 
     <!-- Bottom Bar -->
     <string name="botBar_1">Home</string>
