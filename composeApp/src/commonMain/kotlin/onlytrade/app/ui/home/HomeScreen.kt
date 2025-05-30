@@ -354,6 +354,10 @@ class HomeScreen : Screen {
 
         }) { paddingValues ->
 
+            LaunchedEffect(Unit) {
+                viewModel.refreshHomePage()
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

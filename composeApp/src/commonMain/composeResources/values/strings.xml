@@ -81,6 +81,7 @@
     <string name="productDetail_3">Withdraw Trade</string>
     <string name="productDetail_4">View Trades</string>
     <string name="productDetail_5">Withdrawing Trade…</string>
+    <string name="productDetail_6">Trade Withdrawn</string>
 
     <!-- My Products -->
     <string name="myProducts_1">Select Products</string>

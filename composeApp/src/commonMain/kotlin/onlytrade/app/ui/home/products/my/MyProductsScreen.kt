@@ -82,7 +82,7 @@ import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) -> Unit)? = null) :
+class MyProductsScreen(private val selectionMode: Boolean = false) :
     Screen {
 
     @Composable
@@ -94,7 +94,6 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
         val viewModel = koinViewModel<MyProductsViewModel>()
         val products by viewModel.productList.collectAsStateWithLifecycle()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-        val selectionMode = productIdsCallback != null
         var refreshProducts by remember { mutableStateOf(false) } //todo change to true on error user action.
         Scaffold(topBar = {
             AnimatedVisibility(visible = headerVisible) {
@@ -120,9 +119,7 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
 
                         if (selectionMode) Text(
                             modifier = Modifier.align(Alignment.CenterEnd).clickable {
-                                if (viewModel.pickedProductIds.isNotEmpty()) productIdsCallback?.invoke(
-                                    viewModel.pickedProductIds
-                                )
+                                viewModel.sendOfferedProducts()
                                 nav.pop()
                             },
                             text = stringResource(Res.string.myProducts_2),
