@@ -40,18 +40,18 @@ import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.login.colorScheme.loginColorScheme
 import onlytrade.app.ui.login.forgotPassword.ForgotPasswordScreen
-import onlytrade.app.viewmodel.login.ui.LoginUiState.ApiError
-import onlytrade.app.viewmodel.login.ui.LoginUiState.BlankEmailInputError
-import onlytrade.app.viewmodel.login.ui.LoginUiState.BlankFormError
-import onlytrade.app.viewmodel.login.ui.LoginUiState.BlankMobileInputError
-import onlytrade.app.viewmodel.login.ui.LoginUiState.BlankPwdInputError
-import onlytrade.app.viewmodel.login.ui.LoginUiState.EmailFormatInputError
-import onlytrade.app.viewmodel.login.ui.LoginUiState.Idle
-import onlytrade.app.viewmodel.login.ui.LoginUiState.Loading
-import onlytrade.app.viewmodel.login.ui.LoginUiState.LoggedIn
-import onlytrade.app.viewmodel.login.ui.LoginUiState.MobileNoFormatInputError
-import onlytrade.app.viewmodel.login.ui.LoginUiState.SmallPwdInputError
 import onlytrade.app.viewmodel.login.ui.LoginViewModel
+import onlytrade.app.viewmodel.login.ui.state.LoginUiState.ApiError
+import onlytrade.app.viewmodel.login.ui.state.LoginUiState.BlankEmailInputError
+import onlytrade.app.viewmodel.login.ui.state.LoginUiState.BlankFormError
+import onlytrade.app.viewmodel.login.ui.state.LoginUiState.BlankMobileInputError
+import onlytrade.app.viewmodel.login.ui.state.LoginUiState.BlankPwdInputError
+import onlytrade.app.viewmodel.login.ui.state.LoginUiState.EmailFormatInputError
+import onlytrade.app.viewmodel.login.ui.state.LoginUiState.Idle
+import onlytrade.app.viewmodel.login.ui.state.LoginUiState.Loading
+import onlytrade.app.viewmodel.login.ui.state.LoginUiState.LoggedIn
+import onlytrade.app.viewmodel.login.ui.state.LoginUiState.MobileNoFormatInputError
+import onlytrade.app.viewmodel.login.ui.state.LoginUiState.SmallPwdInputError
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_logo
 import onlytrade.composeapp.generated.resources.forgot_pwd
@@ -74,7 +74,7 @@ class LoginScreen : Screen {
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val nav = LocalNavigator.currentOrThrow
         var email by remember { mutableStateOf("") }
-        var phone by remember { mutableStateOf(value = "") }
+        var phone by remember { mutableStateOf("") }
         var password by remember { mutableStateOf(TextFieldValue()) }
         var passwordVisible by remember { mutableStateOf(true) }
         val orLabelVisible = email.isBlank() && phone.isBlank()
@@ -217,7 +217,8 @@ class LoginScreen : Screen {
                         } else {
                             vectorResource(Res.drawable.pwd_visibility_off_24)
                         }
-                        Icon(imageVector = eyeIcon,
+                        Icon(
+                            imageVector = eyeIcon,
                             tint = MaterialTheme.colorScheme.secondary,
                             contentDescription = null,
                             modifier = Modifier.clickable { passwordVisible = !passwordVisible })
@@ -259,7 +260,7 @@ class LoginScreen : Screen {
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(loginColorScheme.loginBtn),
 
-            ){
+                ) {
                 Text(text = "Login", color = MaterialTheme.colorScheme.onBackground)
             }
 
@@ -315,19 +316,22 @@ class LoginScreen : Screen {
         }
     }
 
-    private fun validatePhoneNumber(input: String): String? = when {
-        input.isEmpty() -> "Phone number cannot be empty."
-        !input.startsWith("92") && !input.startsWith("+92") && !input.startsWith("03") -> "Phone number must start with either '92', '+92' or '03'"
-        input.startsWith("92") && input.length != 12 -> "Phone number must be 12 digits!"
-        input.startsWith("+92") && input.length != 13 -> "Phone number must be 12 digits!"
-        input.startsWith("03") && input.length != 11 -> "Phone number must be 11 digits!"
-        else -> null
-    }
-    private fun validatePassword(input: String): String? = when {
-        input.isEmpty() -> "Password cannot be empty."
-        input.length < 7 -> "Password must be at least 7 characters long."
-        else -> null
+    companion object {
+        fun validatePhoneNumber(input: String): String? = when {
+            input.isEmpty() -> "Phone number cannot be empty."
+            !input.startsWith("92") && !input.startsWith("+92") && !input.startsWith("03") -> "Phone number must start with either '92', '+92' or '03'"
+            input.startsWith("92") && input.length != 12 -> "Phone number must be 12 digits!"
+            input.startsWith("+92") && input.length != 13 -> "Phone number must be 12 digits!"
+            input.startsWith("03") && input.length != 11 -> "Phone number must be 11 digits!"
+            else -> null
+        }
 
+        private fun validatePassword(input: String): String? = when {
+            input.isEmpty() -> "Password cannot be empty."
+            input.length < 7 -> "Password must be at least 7 characters long."
+            else -> null
+
+        }
     }
 
 }

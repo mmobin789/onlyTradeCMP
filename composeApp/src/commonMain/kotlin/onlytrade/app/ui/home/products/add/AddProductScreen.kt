@@ -454,7 +454,7 @@ class AddProductScreen : Screen {
                         ).padding(16.dp)
                     ) {
                         if (galleryImages.isEmpty())
-                            items(9) {
+                            items(6) {
                                 ProductUI(sharedCMP)
                             }
                         else items(galleryImages) {
@@ -524,11 +524,11 @@ class AddProductScreen : Screen {
 
             LessImagesSelected -> {
                 toastMsg =
-                    "Please add at least 4 images."
+                    "Please add at least 3 images."
             }
 
             MoreImagesSelected -> {
-                toastMsg = "Maximum images allowed are 9."
+                toastMsg = "Maximum images allowed are 6."
             }
 
             CategoryNotSelected -> {

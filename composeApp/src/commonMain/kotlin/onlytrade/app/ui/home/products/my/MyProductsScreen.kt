@@ -64,10 +64,14 @@ import onlytrade.app.ui.home.products.my.colorScheme.myProductsColorScheme
 import onlytrade.app.ui.home.profile.ProfileScreen
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.app.viewmodel.product.ui.MyProductsViewModel
+import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.AddOfferApiError
 import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.GetProductsApiError
-import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.Idle
 import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.LoadingProducts
+import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.MakingOffer
+import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.OfferMade
+import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.OffersExceeded
 import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.ProductsNotFound
+import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.SelectionActive
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.botBar_3
@@ -75,6 +79,10 @@ import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.home_5
 import onlytrade.composeapp.generated.resources.myProducts_1
 import onlytrade.composeapp.generated.resources.myProducts_2
+import onlytrade.composeapp.generated.resources.myProducts_3
+import onlytrade.composeapp.generated.resources.myProducts_4
+import onlytrade.composeapp.generated.resources.myProducts_5
+import onlytrade.composeapp.generated.resources.myProducts_6
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import onlytrade.composeapp.generated.resources.search
 import org.jetbrains.compose.resources.stringResource
@@ -82,11 +90,12 @@ import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) -> Unit)? = null) :
+class MyProductsScreen(private val productId: Long = 0, private val offerReceiverId: Long = 0) :
     Screen {
 
     @Composable
     override fun Content() {
+        val selectionMode = productId > 0 && offerReceiverId > 0
         val nav = LocalNavigator.currentOrThrow
         val productListState = rememberLazyListState()
         val headerVisible = productListState.canScrollBackward.not()
@@ -94,8 +103,7 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
         val viewModel = koinViewModel<MyProductsViewModel>()
         val products by viewModel.productList.collectAsStateWithLifecycle()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-        val selectionMode = productIdsCallback != null
-        var refreshProducts by remember { mutableStateOf(false) } //todo change to true on error user action.
+        val makingOfferMsg = stringResource(Res.string.myProducts_5)
         Scaffold(topBar = {
             AnimatedVisibility(visible = headerVisible) {
                 Column {
@@ -118,14 +126,20 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
                             )
                         }
 
-                        if (selectionMode) Text(
+                        if (uiState == SelectionActive) Text(
                             modifier = Modifier.align(Alignment.CenterEnd).clickable {
-                                if (viewModel.pickedProductIds.isNotEmpty()) productIdsCallback?.invoke(
-                                    viewModel.pickedProductIds
-                                )
-                                nav.pop()
+                                when (uiState) {
+                                    MakingOffer -> getToast().showToast(makingOfferMsg)
+                                    else -> viewModel.makeOffer(productId, offerReceiverId)
+                                }
                             },
-                            text = stringResource(Res.string.myProducts_2),
+                            text = stringResource(if (uiState == MakingOffer) Res.string.myProducts_3 else Res.string.myProducts_2),
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
+                        )
+
+                        if (uiState == MakingOffer) Text(
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            text = stringResource(Res.string.myProducts_3),
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
                         )
 
@@ -277,7 +291,20 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
                             viewModel.idle()
                         }
 
-                        Idle -> {} // do nothing.
+                        is OfferMade -> item {
+                            getToast().showToast(stringResource(Res.string.myProducts_6))
+                            nav.pop()
+                        }
+
+                        is AddOfferApiError -> {
+                            getToast().showToast((uiState as AddOfferApiError).error)
+                        }
+
+                        OffersExceeded -> item {
+                            getToast().showToast(stringResource(Res.string.myProducts_4))
+                        }
+
+                        else -> {} // do nothing.
 
                     }
                 }
@@ -295,18 +322,19 @@ class MyProductsScreen(private val productIdsCallback: ((LinkedHashSet<Long>) ->
         product: Product? = null,
         selectionMode: Boolean = false
     ) {
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val size = (sharedCMP.screenWidth / 3).dp
         val nav = LocalNavigator.currentOrThrow
         var selected by remember { mutableStateOf(false) }
         Row(
-            modifier = if (product == null) Modifier.shimmer() else Modifier.fillMaxWidth()
+            modifier = if (product == null) Modifier.shimmer() else if (uiState == MakingOffer) Modifier.fillMaxWidth() else Modifier.fillMaxWidth()
                 .clickable {
                     val id = product.id
                     if (selectionMode) {
                         selected = viewModel.selectProduct(id)
                     } else {
                         ProductCache.add(product)
-                        nav.push(ProductDetailScreen(product.id))
+                        nav.push(ProductDetailScreen(productId = id))
                     }
                 }) {
             AsyncImage(

@@ -43,6 +43,20 @@
     <string name="login_7">Forgot password?</string>
     <string name="login_8">Login</string>
 
+    <!-- Profile Screen -->
+    <string name="profile_1">My Profile</string>
+    <string name="profile_2">Active Trades</string>
+    <string name="profile_3">My Offers</string>
+    <string name="profile_4">Logout</string>
+    <string name="profile_5">Complete Verification</string>
+
+
+    <!--> KYC Screen -->
+    <string name="kyc_1">Complete KYC</string>
+    <string name="kyc_2">Please add your selfie with ID card or passport to complete our verification process.</string>
+    <string name="kyc_3">Add Documents</string>
+    <string name="kyc_4">Upload</string>
+
     <!-- Home -->
     <string name="home_1">Categories</string>
     <string name="home_2">Latest Products</string>
@@ -63,14 +77,18 @@
 
     <!-- Product Detail -->
     <string name="productDetail_1">Trade</string>
-    <string name="productDetail_2">Offering Trade…</string>
     <string name="productDetail_3">Withdraw Trade</string>
     <string name="productDetail_4">View Trades</string>
     <string name="productDetail_5">Withdrawing Trade…</string>
+    <string name="productDetail_6">Trade Withdrawn</string>
 
     <!-- My Products -->
     <string name="myProducts_1">Select Products</string>
     <string name="myProducts_2">Done</string>
+    <string name="myProducts_3">Offering Trade…</string>
+    <string name="myProducts_4">This product has too many offers please try again later.</string>
+    <string name="myProducts_5">Making offer please wait…</string>
+    <string name="myProducts_6">Offer Placed</string>
 
     <!-- My Trades -->
     <string name="myTrades_1">Sent</string>
@@ -96,6 +114,8 @@
     <string name="tradeDetail_15">Accepted</string>
     <string name="tradeDetail_16">Get</string>
     <string name="tradeDetail_17">Trade Detail</string>
+    <string name="tradeDetail_18">Your trade has been accepted! Contact your trade partner: Name: %1$s, Phone: %2$s</string>
+
 
     <!-- Bottom Bar -->
     <string name="botBar_1">Home</string>
@@ -103,10 +123,5 @@
     <string name="botBar_3">My Products</string>
     <string name="botBar_4">Profile</string>
 
-    <!-- Profile Screen -->
-    <string name="profile_1">My Profile</string>
-    <string name="profile_2">Active Trades</string>
-    <string name="profile_3">My Offers</string>
-    <string name="profile_4">Logout</string>
 
 </resources>
