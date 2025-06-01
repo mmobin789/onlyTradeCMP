@@ -524,7 +524,7 @@ class AddProductScreen : Screen {
 
             LessImagesSelected -> {
                 toastMsg =
-                    "Please add at least 3 images."
+                    "Please add at least 4 images."
             }
 
             MoreImagesSelected -> {
