@@ -58,21 +58,17 @@ import onlytrade.app.ui.home.trades.MyTradesScreen
 import onlytrade.app.viewmodel.product.ui.ProductDetailViewModel
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.GuestUser
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.LoadingOfferMade
-import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MakeOfferFail
-import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.MakingOffer
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferMade
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferNotMade
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferReceived
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferRejected
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OfferWithdrawn
-import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.OffersExceeded
 import onlytrade.app.viewmodel.product.ui.state.ProductDetailUiState.WithdrawingOffer
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.home_5
 import onlytrade.composeapp.generated.resources.ok
 import onlytrade.composeapp.generated.resources.productDetail_1
-import onlytrade.composeapp.generated.resources.productDetail_2
 import onlytrade.composeapp.generated.resources.productDetail_3
 import onlytrade.composeapp.generated.resources.productDetail_4
 import onlytrade.composeapp.generated.resources.productDetail_5
@@ -256,7 +252,7 @@ class ProductDetailScreen(private val productId: Long, private val tradeView: Bo
                         }
 
                         val offerTrade =
-                            uiState == GuestUser || uiState == LoadingOfferMade || uiState == MakingOffer || uiState == MakeOfferFail || uiState == OfferNotMade || uiState == OfferWithdrawn || uiState == OfferRejected
+                            uiState == GuestUser || uiState == LoadingOfferMade || uiState == OfferNotMade || uiState == OfferWithdrawn || uiState == OfferRejected
 
                         if (madeOffer || uiState == WithdrawingOffer) OutlinedButton(
                             modifier = if (uiState == WithdrawingOffer) Modifier.weight(1f)
@@ -300,10 +296,12 @@ class ProductDetailScreen(private val productId: Long, private val tradeView: Bo
                                             getToast().showToast("Please login first.")
 
                                         }
-
-                                        OffersExceeded -> getToast().showToast("This product has too many offers please wait.")
-                                        is MakingOffer -> getToast().showToast("Please wait for offer to be made.")
-                                        else -> nav.push(MyProductsScreen(selectionMode = true))
+                                        else -> nav.push(
+                                            MyProductsScreen(
+                                                productId = product.id,
+                                                offerReceiverId = product.userId
+                                            )
+                                        )
                                     }
                                 },
                                 shape = MaterialTheme.shapes.medium,
@@ -312,7 +310,7 @@ class ProductDetailScreen(private val productId: Long, private val tradeView: Bo
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
                                         text = stringResource(
-                                            if (uiState == LoadingOfferMade) Res.string.home_5 else if (uiState is MakingOffer) Res.string.productDetail_2 else Res.string.productDetail_1
+                                            if (uiState == LoadingOfferMade) Res.string.home_5 else Res.string.productDetail_1
                                         ), modifier = Modifier.padding(vertical = 8.dp)
                                     )
 
@@ -325,12 +323,7 @@ class ProductDetailScreen(private val productId: Long, private val tradeView: Bo
                                     )
                                 }
                             }
-                            LaunchedEffect(Unit) {
-                                viewModel.makeOffer(
-                                    productId = product.id,
-                                    offerReceiverId = product.userId
-                                )
-                            }
+
                         } else if (receivedOffer) Button(
                             modifier = Modifier.weight(1f),
                             onClick = {
