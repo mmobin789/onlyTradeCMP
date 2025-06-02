@@ -31,9 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -204,23 +201,26 @@ class TradeDetailScreen(private val offerId: Long) : Screen {
 
 
                     if (madeOffer && offer.accepted) { // ui case where offer is accepted by receiver and viewed by maker.
+
                         val offerReceiverData = if (uiState is UserDetail) {
                             (uiState as UserDetail).user.let {
                                 val name = it.name.orEmpty()
                                 val contact = it.phone.orEmpty()
-                                stringResource(Res.string.tradeDetail_18, name, contact)
+                                stringResource(
+                                    Res.string.tradeDetail_18,
+                                    name,
+                                    contact
+                                )
                             }
                         } else null
 
-                        var showCompleteBtnDialog by remember {
-                            mutableStateOf(
-                                offerReceiverData.isNullOrBlank().not()
-                            )
-                        }
 
                         if (uiState is OfferCompleteApiError) {
-                            //show offer complete api fail.
+                            // show offer complete api fail.
                             getToast().showToast((uiState as OfferCompleteApiError).error)
+                        } else if (uiState == OfferCompleted) {
+                            getToast().showToast("Trade Completed. please await refresh.")
+                            nav.pop()
                         }
 
                         OutlinedButton(
@@ -270,53 +270,55 @@ class TradeDetailScreen(private val offerId: Long) : Screen {
                                 )
                             }
                         }
-
-                        AlertDialog(
-                            onDismissRequest = { showCompleteBtnDialog = false },
-                            title = { Text(stringResource(Res.string.tradeDetail_11)) },
-                            text = { // show contact detail of offer receiver.
-                                Text(offerReceiverData!!) // guaranteed not null.
-                            },
-                            dismissButton = {
-                                Button(
-                                    shape = MaterialTheme.shapes.medium,
-                                    colors = ButtonDefaults.buttonColors(
-                                        productDetailColorScheme.buyProductBtn
-                                    ), onClick = { showCompleteBtnDialog = false }) {
-                                    Text(stringResource(Res.string.tradeDetail_13))
-                                }
-                            },
-                            confirmButton = {
-                                OutlinedButton(
-                                    modifier = if (uiState == CompletingOffer) Modifier.shimmer() else Modifier,
-                                    border = BorderStroke(
-                                        1.dp, productDetailColorScheme.offerTradeBtnBorder
-                                    ),
-                                    onClick = {
-                                        when (uiState) {
-                                            CompletingOffer -> getToast().showToast("Completing trade please wait")
-                                            OfferCompleted -> {
-                                                getToast().showToast("Trade Completed. please await refresh.")
-                                                showCompleteBtnDialog = false
-                                            }
-
-                                            OfferDeleted -> {
-                                                getToast().showToast("Offer deleted. please await refresh.")
-                                                viewModel.idle()
-                                            }
-
-                                            else -> viewModel.completeOffer(offer)
-                                        }
-                                    },
-                                    shape = MaterialTheme.shapes.medium,
-                                ) {
+                        if (uiState is UserDetail || uiState == CompletingOffer || uiState == OfferCompleted)
+                            AlertDialog(
+                                onDismissRequest = { viewModel.idle() },
+                                title = { Text(stringResource(Res.string.tradeDetail_11)) },
+                                text = { // show contact detail of offer receiver.
                                     Text(
-                                        text = stringResource(if (uiState == CompletingOffer) Res.string.tradeDetail_8 else Res.string.tradeDetail_9),
-                                        color = productDetailColorScheme.offerTradeBtnText
-                                    )
+                                        offerReceiverData.orEmpty()
+                                            .ifBlank { "User not verified" }) // guaranteed not null.
+                                },
+                                dismissButton = {
+                                    Button(
+                                        shape = MaterialTheme.shapes.medium,
+                                        colors = ButtonDefaults.buttonColors(
+                                            productDetailColorScheme.buyProductBtn
+                                        ), onClick = { viewModel.idle() }) {
+                                        Text(stringResource(Res.string.tradeDetail_13))
+                                    }
+                                },
+                                confirmButton = {
+                                    OutlinedButton(
+                                        modifier = if (uiState == CompletingOffer) Modifier.shimmer() else Modifier,
+                                        border = BorderStroke(
+                                            1.dp, productDetailColorScheme.offerTradeBtnBorder
+                                        ),
+                                        onClick = {
+                                            when (uiState) {
+                                                CompletingOffer -> getToast().showToast("Completing trade please wait")
+                                                OfferCompleted -> {
+                                                    getToast().showToast("Trade Completed. please await refresh.")
+                                                    nav.pop()
+                                                }
+
+                                                OfferDeleted -> {
+                                                    getToast().showToast("Offer deleted. please await refresh.")
+                                                    viewModel.idle()
+                                                }
+
+                                                else -> viewModel.completeOffer(offer)
+                                            }
+                                        },
+                                        shape = MaterialTheme.shapes.medium,
+                                    ) {
+                                        Text(
+                                            text = stringResource(if (uiState == CompletingOffer) Res.string.tradeDetail_8 else Res.string.tradeDetail_9),
+                                            color = productDetailColorScheme.offerTradeBtnText
+                                        )
+                                    }
                                 }
-                            }
-                        )
+                            )
                     } else if (madeOffer || uiState == WithdrawingOffer) OutlinedButton(
                         // ui case where offer is sent to receiver but can be withdrawn by maker.
                         modifier = if (uiState == WithdrawingOffer) Modifier.weight(1f)
@@ -327,6 +329,7 @@ class TradeDetailScreen(private val offerId: Long) : Screen {
                                     getToast().showToast("Withdrawing offer please wait")
 
                                 }
+
                                 OfferRejected -> { // offer rejected click disabled.
                                     getToast().showToast("Offer Rejected. please await refresh.")
                                 }
@@ -440,6 +443,7 @@ class TradeDetailScreen(private val offerId: Long) : Screen {
                                     )
                                 }
                         } else { // offer accepted.
+
                             val offerMakerData = if (uiState is UserDetail) {
                                 (uiState as UserDetail).user.let {
                                     val name = it.name.orEmpty()
@@ -448,15 +452,14 @@ class TradeDetailScreen(private val offerId: Long) : Screen {
                                 }
                             } else null
 
-                            var showCompleteBtnDialog by remember {
-                                mutableStateOf(
-                                    offerMakerData.isNullOrBlank().not()
-                                )
-                            }
+
 
                             if (uiState is OfferCompleteApiError) {
                                 // show offer complete api fail.
                                 getToast().showToast((uiState as OfferCompleteApiError).error)
+                            } else if (uiState == OfferCompleted) {
+                                getToast().showToast("Trade Completed. please await refresh.")
+                                nav.pop()
                             }
 
                             Button(
@@ -506,19 +509,21 @@ class TradeDetailScreen(private val offerId: Long) : Screen {
                                     modifier = Modifier.padding(vertical = 8.dp)
                                 )
                             }
-                            if (showCompleteBtnDialog)
+                            if (uiState is UserDetail || uiState == CompletingOffer || uiState == OfferCompleted)
                                 AlertDialog(
-                                    onDismissRequest = { showCompleteBtnDialog = false },
+                                    onDismissRequest = { viewModel.idle() },
                                     title = { Text(stringResource(Res.string.tradeDetail_11)) },
                                     text = { //show contact detail of offer maker.
-                                        Text(offerMakerData!!) //guaranteed not null.
+                                        Text(
+                                            offerMakerData.orEmpty()
+                                                .ifBlank { "User not verified" }) //guaranteed not null.
                                     },
                                     dismissButton = {
                                         Button(
                                             shape = MaterialTheme.shapes.medium,
                                             colors = ButtonDefaults.buttonColors(
                                                 productDetailColorScheme.buyProductBtn
-                                            ), onClick = { showCompleteBtnDialog = false }) {
+                                            ), onClick = { viewModel.idle() }) {
                                             Text(stringResource(Res.string.tradeDetail_13))
                                         }
                                     },
@@ -537,7 +542,7 @@ class TradeDetailScreen(private val offerId: Long) : Screen {
 
                                                     OfferCompleted -> {
                                                         getToast().showToast("Trade Completed. please await refresh.")
-                                                        showCompleteBtnDialog = false
+                                                        nav.pop()
                                                     }
 
                                                     OfferDeleted -> {

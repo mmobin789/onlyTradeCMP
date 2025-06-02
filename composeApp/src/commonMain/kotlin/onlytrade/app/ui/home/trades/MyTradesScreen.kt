@@ -108,7 +108,7 @@ class MyTradesScreen : Screen {
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         var offerSentBtn by remember { mutableStateOf(true) }
         var offerReceivedBtn by remember { mutableStateOf(false) }
-        var refreshTrades by remember { mutableStateOf(false) } //todo change to true on error user action.
+
         Scaffold(topBar = {
             AnimatedVisibility(visible = headerVisible) {
                 Column {
@@ -217,6 +217,10 @@ class MyTradesScreen : Screen {
             }
 
         }) { paddingValues ->
+
+            LaunchedEffect(Unit) {
+                viewModel.refreshMyTradesPage()
+            }
 
             Column(
                 modifier = Modifier.padding(paddingValues)
