@@ -89,6 +89,8 @@
     <string name="myProducts_4">This product has too many offers please try again later.</string>
     <string name="myProducts_5">Making offer please wait…</string>
     <string name="myProducts_6">Offer Placed</string>
+    <string name="myProducts_7">Deleting Product…</string>
+    <string name="myProducts_8">This product is being traded to others.</string>
 
     <!-- My Trades -->
     <string name="myTrades_1">Sent</string>
