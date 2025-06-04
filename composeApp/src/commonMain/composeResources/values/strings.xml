@@ -90,7 +90,7 @@
     <string name="myProducts_5">Making offer please wait…</string>
     <string name="myProducts_6">Offer Placed</string>
     <string name="myProducts_7">Deleting Product…</string>
-    <string name="myProducts_8">This product is being traded to others.</string>
+    <string name="myProducts_8">Can't be deleted this product is being traded to others.</string>
 
     <!-- My Trades -->
     <string name="myTrades_1">Sent</string>

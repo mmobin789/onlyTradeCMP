@@ -86,6 +86,7 @@ import onlytrade.composeapp.generated.resources.myProducts_4
 import onlytrade.composeapp.generated.resources.myProducts_5
 import onlytrade.composeapp.generated.resources.myProducts_6
 import onlytrade.composeapp.generated.resources.myProducts_7
+import onlytrade.composeapp.generated.resources.myProducts_8
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import onlytrade.composeapp.generated.resources.search
 import org.jetbrains.compose.resources.stringResource
@@ -331,6 +332,9 @@ class MyProductsScreen(private val productId: Long = 0, private val offerReceive
         val nav = LocalNavigator.currentOrThrow
         var selected by remember { mutableStateOf(false) }
         val productInTradeMsg = stringResource(Res.string.myProducts_8)
+        if (uiState == ProductInTrade) {
+            getToast().showToast(productInTradeMsg)
+        }
         Row(
             modifier = if (product == null || uiState == DeletingProduct) Modifier.shimmer() else if (uiState == MakingOffer) Modifier.fillMaxWidth() else Modifier.fillMaxWidth()
                 .clickable {
@@ -464,7 +468,7 @@ class MyProductsScreen(private val productId: Long = 0, private val offerReceive
                     imageVector = Icons.Outlined.Check,
                     contentDescription = stringResource(Res.string.search)
                 )
-                if (selectionMode.not()) Icon(
+                if (selectionMode.not() || uiState != DeletingProduct) Icon(
                     modifier = Modifier.align(Alignment.End).clickable {
                         when (uiState) {
                             DeletingProduct -> {} // do nothing.
