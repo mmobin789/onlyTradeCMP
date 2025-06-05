@@ -65,11 +65,13 @@ import onlytrade.app.ui.home.profile.ProfileScreen
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.app.viewmodel.product.ui.MyProductsViewModel
 import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.AddOfferApiError
+import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.DeletingProduct
 import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.GetProductsApiError
 import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.LoadingProducts
 import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.MakingOffer
 import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.OfferMade
 import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.OffersExceeded
+import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.ProductInTrade
 import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.ProductsNotFound
 import onlytrade.app.viewmodel.product.ui.state.MyProductsUiState.SelectionActive
 import onlytrade.composeapp.generated.resources.Res
@@ -83,6 +85,8 @@ import onlytrade.composeapp.generated.resources.myProducts_3
 import onlytrade.composeapp.generated.resources.myProducts_4
 import onlytrade.composeapp.generated.resources.myProducts_5
 import onlytrade.composeapp.generated.resources.myProducts_6
+import onlytrade.composeapp.generated.resources.myProducts_7
+import onlytrade.composeapp.generated.resources.myProducts_8
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import onlytrade.composeapp.generated.resources.search
 import org.jetbrains.compose.resources.stringResource
@@ -326,8 +330,12 @@ class MyProductsScreen(private val productId: Long = 0, private val offerReceive
         val size = (sharedCMP.screenWidth / 3).dp
         val nav = LocalNavigator.currentOrThrow
         var selected by remember { mutableStateOf(false) }
+        val productInTradeMsg = stringResource(Res.string.myProducts_8)
+        if (uiState == ProductInTrade) {
+            getToast().showToast(productInTradeMsg)
+        }
         Row(
-            modifier = if (product == null) Modifier.shimmer() else if (uiState == MakingOffer) Modifier.fillMaxWidth() else Modifier.fillMaxWidth()
+            modifier = if (product == null || uiState == DeletingProduct) Modifier.shimmer() else if (uiState == MakingOffer) Modifier.fillMaxWidth() else Modifier.fillMaxWidth()
                 .clickable {
                     val id = product.id
                     if (selectionMode) {
@@ -444,7 +452,9 @@ class MyProductsScreen(private val productId: Long = 0, private val offerReceive
 
                         }.padding(horizontal = 16.dp),
                         textDecoration = TextDecoration.Underline,
-                        text = if (product == null) stringResource(Res.string.home_5) else "All ${product.imageUrls.size} images",
+                        text = if (product == null) stringResource(Res.string.home_5) else if (uiState == DeletingProduct) stringResource(
+                            Res.string.myProducts_7
+                        ) else "All ${product.imageUrls.size} images",
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
                     )
                 }
@@ -457,8 +467,18 @@ class MyProductsScreen(private val productId: Long = 0, private val offerReceive
                     imageVector = Icons.Outlined.Check,
                     contentDescription = stringResource(Res.string.search)
                 )
-                if (selectionMode.not()) Icon(
-                    modifier = Modifier.align(Alignment.End),
+                if (selectionMode.not() && uiState != DeletingProduct) Icon(
+                    modifier = Modifier.align(Alignment.End).clickable {
+                        when (uiState) {
+                            DeletingProduct -> {} // do nothing.
+                            ProductInTrade -> {
+                                getToast().showToast(productInTradeMsg)
+                            } // do nothing.
+                            else -> {
+                                viewModel.deleteProduct(product.id)
+                            }
+                        }
+                    },
                     imageVector = Icons.Outlined.Delete,
                     contentDescription = stringResource(Res.string.search)
                 )

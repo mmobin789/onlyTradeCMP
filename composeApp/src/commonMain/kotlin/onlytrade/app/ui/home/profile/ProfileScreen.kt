@@ -100,7 +100,7 @@ class ProfileScreen : Screen {
         var email = viewModel.user.email.orEmpty()
         var phone = viewModel.user.phone.orEmpty()
         val loggedInWithPhone = phone.isNotBlank()
-        val verifiedUser = uiState is VerifiedUser
+        val verifiedUser = uiState == VerifiedUser
 
 
         Scaffold(topBar = {
@@ -131,7 +131,7 @@ class ProfileScreen : Screen {
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Column(
-                    Modifier.weight(1f).clickable { nav.push(HomeScreen()) }) {
+                    Modifier.weight(1f).clickable { nav.replace(HomeScreen()) }) {
                     Icon(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         imageVector = Icons.Outlined.Home,
@@ -288,7 +288,12 @@ class ProfileScreen : Screen {
                         if (verifiedUser.not())
                             Button(
                                 modifier = Modifier.weight(1f),
-                                onClick = { nav.push(KYCScreen()) },
+                                onClick = {
+                                    when (uiState) {
+                                        LoadingKycStatus -> {} // do nothing.
+                                        else -> nav.push(KYCScreen())
+                                    }
+                                },
                                 shape = MaterialTheme.shapes.small,
                                 colors = ButtonDefaults.buttonColors(profileColorScheme.myOffersBtn)
                             ) {
