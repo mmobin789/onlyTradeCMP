@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -277,8 +277,8 @@ class MyProductsScreen(private val productId: Long = 0, private val offerReceive
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
 
-                    itemsIndexed(products) { index, product ->
-                        ProductUI(viewModel, sharedCMP, product, index, selectionMode)
+                    items(products) { product ->
+                        ProductUI(viewModel, sharedCMP, product, selectionMode)
                     }
 
                     when (uiState) {
@@ -324,7 +324,6 @@ class MyProductsScreen(private val productId: Long = 0, private val offerReceive
         viewModel: MyProductsViewModel,
         sharedCMP: SharedCMP,
         product: Product? = null,
-        index: Int = -1,
         selectionMode: Boolean = false
     ) {
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -468,7 +467,7 @@ class MyProductsScreen(private val productId: Long = 0, private val offerReceive
                     imageVector = Icons.Outlined.Check,
                     contentDescription = stringResource(Res.string.search)
                 )
-                if (selectionMode.not() || uiState != DeletingProduct) Icon(
+                if (selectionMode.not() && uiState != DeletingProduct) Icon(
                     modifier = Modifier.align(Alignment.End).clickable {
                         when (uiState) {
                             DeletingProduct -> {} // do nothing.
@@ -476,7 +475,7 @@ class MyProductsScreen(private val productId: Long = 0, private val offerReceive
                                 getToast().showToast(productInTradeMsg)
                             } // do nothing.
                             else -> {
-                                viewModel.deleteProduct(product.id, index)
+                                viewModel.deleteProduct(product.id)
                             }
                         }
                     },
