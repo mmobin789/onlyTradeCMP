@@ -78,7 +78,6 @@ import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.ui.home.profile.ProfileScreen
 import onlytrade.app.ui.home.trades.MyTradesScreen
 import onlytrade.app.viewmodel.home.ui.HomeUiState.GetProductsApiError
-import onlytrade.app.viewmodel.home.ui.HomeUiState.Idle
 import onlytrade.app.viewmodel.home.ui.HomeUiState.LoadingProducts
 import onlytrade.app.viewmodel.home.ui.HomeUiState.ProductsNotFound
 import onlytrade.app.viewmodel.home.ui.HomeViewModel
@@ -454,6 +453,26 @@ class HomeScreen : Screen {
                     }
                 }
 
+                if (uiState == ProductsNotFound) {
+                    Text(
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.align(Alignment.CenterHorizontally).clickable {
+                            viewModel.reloadProducts()
+                        },
+                        fontSize = 20.sp,
+                        text = stringResource(Res.string.home_6),
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                    )
+                } else if (uiState is GetProductsApiError) {
+                    Text(
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier,
+                        fontSize = 20.sp,
+                        text = (uiState as GetProductsApiError).error,
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                    )
+                }
+
                 LazyVerticalGrid(
                     state = productGridState,
                     modifier = Modifier
@@ -468,204 +487,186 @@ class HomeScreen : Screen {
                         ProductUI(sharedCMP, product)
                     }
 
-                    when (uiState) {
-                        LoadingProducts -> items(viewModel.productPageSizeExpected) {
-                            ProductUI(sharedCMP)
-                        }
-
-                        ProductsNotFound -> { //todo display error with call to action to reload products using refreshProducts = true.
-                            item {
-                                Text(
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    fontSize = 20.sp,
-                                    text = stringResource(Res.string.home_6),
-                                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
-                                )
-                            }
-                        }
-
-                        is GetProductsApiError -> { //todo show error.
-                            viewModel.idle()
-                        }
-
-                        Idle -> {} // do nothing.
-
+                    if (uiState == LoadingProducts) items(viewModel.productPageSizeExpected) {
+                        ProductUI(sharedCMP)
                     }
 
+
                 }
+
+
             }
         }
     }
+}
 
-    @Composable
-    private fun ProductUI(sharedCMP: SharedCMP, product: Product? = null) {
-        val size = (sharedCMP.screenWidth / 2).dp
-        val nav = LocalNavigator.currentOrThrow
-        Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
-            ProductCache.add(product)
-            nav.push(ProductDetailScreen(product.id))
-        }) {
-            Box(
-                Modifier
-                    .size(size)
+@Composable
+private fun ProductUI(sharedCMP: SharedCMP, product: Product? = null) {
+    val size = (sharedCMP.screenWidth / 2).dp
+    val nav = LocalNavigator.currentOrThrow
+    Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
+        ProductCache.add(product)
+        nav.push(ProductDetailScreen(product.id))
+    }) {
+        Box(
+            Modifier
+                .size(size)
+                .background(
+                    color = Color(
+                        Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                    ), shape = MaterialTheme.shapes.extraLarge
+                )
+        ) {
+
+            AsyncImage(
+                modifier = Modifier.matchParentSize().clip(MaterialTheme.shapes.extraLarge),
+                model = product?.imageUrls?.get(0),
+                contentDescription = product?.name,
+                contentScale = ContentScale.Crop
+            )
+
+            Icon(
+                modifier = Modifier
+                    .padding(8.dp)
                     .background(
-                        color = Color(
-                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                        ), shape = MaterialTheme.shapes.extraLarge
+                        shape = CircleShape, color = MaterialTheme.colorScheme.onSecondary
                     )
-            ) {
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp),
+                imageVector = Icons.Outlined.FavoriteBorder,
+                contentDescription = stringResource(Res.string.search)
+            )
 
-                AsyncImage(
-                    modifier = Modifier.matchParentSize().clip(MaterialTheme.shapes.extraLarge),
-                    model = product?.imageUrls?.get(0),
-                    contentDescription = product?.name,
-                    contentScale = ContentScale.Crop
-                )
 
-                Icon(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .background(
-                            shape = CircleShape, color = MaterialTheme.colorScheme.onSecondary
+        }
+
+        ConstraintLayout(
+            modifier = Modifier.padding(vertical = 16.dp)
+        ) {
+
+            val (c1, c2, c3, s1, s2, colorsTxt, productName, price) = createRefs()
+
+            AsyncImage(
+                model = product?.imageUrls?.get(1),
+                contentDescription = product?.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.clip(CircleShape)
+                    .constrainAs(c1) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                    }
+                    .size(24.dp)
+                    .background(
+                        shape = CircleShape, color = Color(
+                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
                         )
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp),
-                    imageVector = Icons.Outlined.FavoriteBorder,
-                    contentDescription = stringResource(Res.string.search)
-                )
+                    ))
 
+            Spacer(
+                modifier = Modifier
+                    .width(12.dp)
+                    .constrainAs(s1) {
+                        top.linkTo(c1.top)
+                        bottom.linkTo(c1.bottom)
+                        start.linkTo(c1.start)
+                        end.linkTo(c1.end)
 
-            }
+                    })
 
-            ConstraintLayout(
-                modifier = Modifier.padding(vertical = 16.dp)
-            ) {
+            AsyncImage(
+                model = product?.imageUrls?.get(2),
+                contentDescription = product?.name,
+                contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
+                    .constrainAs(c2) {
+                        start.linkTo(s1.end)
+                        top.linkTo(parent.top)
+                    }
+                    .size(24.dp)
+                    .background(
+                        shape = CircleShape, color = Color(
+                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                        )
+                    ))
 
-                val (c1, c2, c3, s1, s2, colorsTxt, productName, price) = createRefs()
+            Spacer(
+                modifier = Modifier
+                    .width(12.dp)
+                    .constrainAs(s2) {
+                        top.linkTo(c2.top)
+                        bottom.linkTo(c2.bottom)
+                        start.linkTo(c2.start)
+                        end.linkTo(c2.end)
 
-                AsyncImage(
-                    model = product?.imageUrls?.get(1),
-                    contentDescription = product?.name,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.clip(CircleShape)
-                        .constrainAs(c1) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                        }
-                        .size(24.dp)
-                        .background(
-                            shape = CircleShape, color = Color(
-                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                            )
-                        ))
+                    })
+            AsyncImage(
+                model = product?.imageUrls?.get(3),
+                contentDescription = product?.name,
+                contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
+                    .constrainAs(c3) {
+                        start.linkTo(s2.end)
+                        top.linkTo(parent.top)
+                    }
+                    .size(24.dp)
+                    .background(
+                        shape = CircleShape, color = Color(
+                            Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
+                        )
+                    ))
 
-                Spacer(
-                    modifier = Modifier
-                        .width(12.dp)
-                        .constrainAs(s1) {
-                            top.linkTo(c1.top)
-                            bottom.linkTo(c1.bottom)
-                            start.linkTo(c1.start)
-                            end.linkTo(c1.end)
+            Text(
+                modifier = Modifier
+                    .constrainAs(colorsTxt) {
+                        top.linkTo(parent.top)
+                        start.linkTo(c3.end)
 
-                        })
+                    }
+                    .padding(horizontal = 16.dp),
+                textDecoration = TextDecoration.Underline,
+                text = if (product == null) stringResource(Res.string.home_5) else
+                    "All ${product.imageUrls.size} images",
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300))
 
-                AsyncImage(
-                    model = product?.imageUrls?.get(2),
-                    contentDescription = product?.name,
-                    contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
-                        .constrainAs(c2) {
-                            start.linkTo(s1.end)
-                            top.linkTo(parent.top)
-                        }
-                        .size(24.dp)
-                        .background(
-                            shape = CircleShape, color = Color(
-                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                            )
-                        ))
+            Text(
+                modifier = Modifier
+                    .constrainAs(productName) {
+                        top.linkTo(c1.bottom)
+                        start.linkTo(parent.start)
+                    }
+                    .padding(top = 16.dp),
+                text = product?.name ?: stringResource(Res.string.home_5),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500))
 
-                Spacer(
-                    modifier = Modifier
-                        .width(12.dp)
-                        .constrainAs(s2) {
-                            top.linkTo(c2.top)
-                            bottom.linkTo(c2.bottom)
-                            start.linkTo(c2.start)
-                            end.linkTo(c2.end)
+            Text(
+                modifier = Modifier.constrainAs(price) {
+                    top.linkTo(productName.bottom)
+                    start.linkTo(productName.start)
+                },
+                text = product?.estPrice?.toString() ?: stringResource(Res.string.home_5),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
+            )
 
-                        })
-                AsyncImage(
-                    model = product?.imageUrls?.get(3),
-                    contentDescription = product?.name,
-                    contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
-                        .constrainAs(c3) {
-                            start.linkTo(s2.end)
-                            top.linkTo(parent.top)
-                        }
-                        .size(24.dp)
-                        .background(
-                            shape = CircleShape, color = Color(
-                                Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
-                            )
-                        ))
+            /*  Text(
+                  modifier = Modifier.constrainAs(discountPrice) {
+                      top.linkTo(price.bottom)
+                      start.linkTo(price.start)
 
-                Text(
-                    modifier = Modifier
-                        .constrainAs(colorsTxt) {
-                            top.linkTo(parent.top)
-                            start.linkTo(c3.end)
-
-                        }
-                        .padding(horizontal = 16.dp),
-                    textDecoration = TextDecoration.Underline,
-                    text = if (product == null) stringResource(Res.string.home_5) else
-                        "All ${product.imageUrls.size} images",
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300))
-
-                Text(
-                    modifier = Modifier
-                        .constrainAs(productName) {
-                            top.linkTo(c1.bottom)
-                            start.linkTo(parent.start)
-                        }
-                        .padding(top = 16.dp),
-                    text = product?.name ?: stringResource(Res.string.home_5),
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500))
-
-                Text(
-                    modifier = Modifier.constrainAs(price) {
-                        top.linkTo(productName.bottom)
-                        start.linkTo(productName.start)
-                    },
-                    text = product?.estPrice?.toString() ?: stringResource(Res.string.home_5),
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
-                )
-
-                /*  Text(
-                      modifier = Modifier.constrainAs(discountPrice) {
-                          top.linkTo(price.bottom)
-                          start.linkTo(price.start)
-
-                      },
-                      textDecoration = TextDecoration.LineThrough,
-                      text = "$${Random.nextInt(index, 500)}",
-                      style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
-                  )*/
-            }
+                  },
+                  textDecoration = TextDecoration.LineThrough,
+                  text = "$${Random.nextInt(index, 500)}",
+                  style = MaterialTheme.typography.titleSmall.copy(fontWeight = W300)
+              )*/
         }
     }
+}
 
-    private fun randomProduct(products: List<Product>): Pair<String, Product>? {
-        if (products.isEmpty())
-            return null
-        val randomProduct = products[Random.nextInt(0, products.size)]
-        val randomProductImages = randomProduct.imageUrls
-        val randomProductImageCount = randomProductImages.size
-        return Pair(
-            randomProductImages[Random.nextInt(0, randomProductImageCount)],
-            randomProduct
-        )
-    }
+private fun randomProduct(products: List<Product>): Pair<String, Product>? {
+    if (products.isEmpty())
+        return null
+    val randomProduct = products[Random.nextInt(0, products.size)]
+    val randomProductImages = randomProduct.imageUrls
+    val randomProductImageCount = randomProductImages.size
+    return Pair(
+        randomProductImages[Random.nextInt(0, randomProductImageCount)],
+        randomProduct
+    )
 }
