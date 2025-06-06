@@ -42,7 +42,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -116,7 +115,6 @@ class HomeScreen : Screen {
         val nav = LocalNavigator.currentOrThrow
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
-        var refreshProducts by remember { mutableStateOf(false) } //todo change to true on error user action.
         Scaffold(topBar = {
             Column(modifier = if (uiState is LoadingProducts) Modifier.shimmer() else Modifier) {
                 //   AnimatedVisibility(visible = headerVisible.not()) {
@@ -446,7 +444,7 @@ class HomeScreen : Screen {
                     snapshotFlow { productGridState.layoutInfo }.collect { layoutInfo ->
                         val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
                         val total = layoutInfo.totalItemsCount
-                        if (refreshProducts || lastVisible >= total - viewModel.productPageSizeExpected / 2) {
+                        if (lastVisible >= total - viewModel.productPageSizeExpected / 2) {
                             viewModel.getProducts()
 
                         }
