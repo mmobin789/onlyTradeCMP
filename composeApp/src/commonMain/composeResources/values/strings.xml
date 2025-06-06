@@ -49,6 +49,7 @@
     <string name="profile_3">My Offers</string>
     <string name="profile_4">Logout</string>
     <string name="profile_5">Complete Verification</string>
+    <string name="profile_6">Welcome,Trader!</string>
 
 
     <!--> KYC Screen -->
@@ -63,7 +64,7 @@
     <string name="home_3">SEE ALL</string>
     <string name="home_4">Add Product</string>
     <string name="home_5">Loading…</string>
-    <string name="home_6">No Products Found click to refresh.</string>
+    <string name="home_6">No Products Found click to refresh</string>
 
     <!-- Add Product -->
     <string name="addProduct_1">Add a New Trade Product</string>
@@ -95,7 +96,8 @@
     <!-- My Trades -->
     <string name="myTrades_1">Sent</string>
     <string name="myTrades_2">Received</string>
-    <string name="myTrades_3">No Trade Found</string>
+    <string name="myTrades_3">No Trades Sent click to refresh</string>
+    <string name="myTrades_4">No Trades Received click to refresh</string>
 
 
     <!-- Trade Detail -->

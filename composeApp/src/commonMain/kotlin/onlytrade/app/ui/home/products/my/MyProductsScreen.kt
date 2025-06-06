@@ -46,8 +46,10 @@ import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.text.font.FontWeight.Companion.W300
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
@@ -79,6 +81,7 @@ import onlytrade.composeapp.generated.resources.app_name
 import onlytrade.composeapp.generated.resources.botBar_3
 import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.home_5
+import onlytrade.composeapp.generated.resources.home_6
 import onlytrade.composeapp.generated.resources.myProducts_1
 import onlytrade.composeapp.generated.resources.myProducts_2
 import onlytrade.composeapp.generated.resources.myProducts_3
@@ -237,27 +240,32 @@ class MyProductsScreen(private val productId: Long = 0, private val offerReceive
                 modifier = Modifier.padding(paddingValues)
                     .background(myProductsColorScheme.screenBG)
             ) {
-                /* Row(
-                     modifier = Modifier.padding(16.dp)
-                         .border(
-                             width = 1.dp,
-                             color = myProductsColorScheme.buySellTabBGOutline,
-                             shape = MaterialTheme.shapes.large
-                         ).padding(8.dp)
-                 ) {
-                     Text(
-                         fontSize = 15.sp,
-                         modifier = Modifier.padding(horizontal = 16.dp),
-                         text = stringResource(Res.string.myProducts_1),
-                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = W300)
-                     )
-                     Text(
-                         fontSize = 15.sp,
-                         modifier = Modifier.padding(horizontal = 16.dp),
-                         text = stringResource(Res.string.myProducts_2),
-                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = W300)
-                     )
-                 }*/
+
+                if (uiState == ProductsNotFound) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Text(
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.align(Alignment.Center).clickable {
+                                viewModel.reloadProducts()
+                            },
+                            fontSize = 20.sp,
+                            text = stringResource(Res.string.home_6),
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                        )
+                    }
+                } else if (uiState is GetProductsApiError) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Text(
+                            modifier = Modifier.align(Alignment.Center).clickable {
+                                viewModel.reloadProducts()
+                            },
+                            textAlign = TextAlign.Center,
+                            fontSize = 20.sp,
+                            text = (uiState as GetProductsApiError).error,
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                        )
+                    }
+                }
                 LaunchedEffect(productListState) {
                     snapshotFlow { productListState.layoutInfo }.collect { layoutInfo ->
                         val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
@@ -284,15 +292,6 @@ class MyProductsScreen(private val productId: Long = 0, private val offerReceive
                     when (uiState) {
                         LoadingProducts -> items(viewModel.productPageSizeExpected) {
                             ProductUI(viewModel, sharedCMP)
-                        }
-
-                        ProductsNotFound -> { ////todo display error with call to action to reload products using refreshProducts = true.
-                            getToast().showToast("Products not found.")
-                            viewModel.idle()
-                        }
-
-                        is GetProductsApiError -> { //todo show error.
-                            viewModel.idle()
                         }
 
                         is OfferMade -> item {

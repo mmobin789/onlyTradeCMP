@@ -90,6 +90,7 @@ import onlytrade.composeapp.generated.resources.home_5
 import onlytrade.composeapp.generated.resources.myTrades_1
 import onlytrade.composeapp.generated.resources.myTrades_2
 import onlytrade.composeapp.generated.resources.myTrades_3
+import onlytrade.composeapp.generated.resources.myTrades_4
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -256,6 +257,33 @@ class MyTradesScreen : Screen {
                     )
                 }
 
+                if (uiState == NoOffersMade) {
+                    Box(modifier = Modifier.fillMaxSize())
+                    {
+                        Text(
+                            modifier = Modifier.align(Alignment.Center).clickable {
+                                viewModel.getOffersMade()
+                            },
+                            textAlign = TextAlign.Center,
+                            fontSize = 20.sp,
+                            text = stringResource(Res.string.myTrades_3),
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                        )
+                    }
+                } else if (uiState == NoOffersReceived) {
+                    Box(modifier = Modifier.fillMaxSize())
+                    {
+                        Text(
+                            modifier = Modifier.align(Alignment.Center).clickable {
+                                viewModel.getOffersReceived()
+                            },
+                            textAlign = TextAlign.Center,
+                            fontSize = 20.sp,
+                            text = stringResource(Res.string.myTrades_4),
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                        )
+                    }
+                }
 
                 LazyColumn(
                     state = offerListState,
@@ -285,25 +313,9 @@ class MyTradesScreen : Screen {
                             getToast().showToast((uiState as OffersMadeError).error)
                         }
 
-                        NoOffersMade -> item {
-                            Text(
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth(),
-                                fontSize = 20.sp,
-                                text = stringResource(Res.string.myTrades_3),
-                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
-                            )
-                        }
+                        NoOffersMade -> {} // do nothing here.
 
-                        NoOffersReceived -> item {
-                            Text(
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth(),
-                                fontSize = 20.sp,
-                                text = stringResource(Res.string.myTrades_3),
-                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
-                            )
-                        }
+                        NoOffersReceived -> {} // do nothing here.
 
                         is OffersReceivedError -> {
                             getToast().showToast((uiState as OffersReceivedError).error)

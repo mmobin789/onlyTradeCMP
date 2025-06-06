@@ -1,6 +1,5 @@
 package onlytrade.app.ui.home.profile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,13 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
@@ -44,14 +40,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.HomeScreen
@@ -80,6 +74,7 @@ import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import onlytrade.composeapp.generated.resources.profile_1
 import onlytrade.composeapp.generated.resources.profile_4
 import onlytrade.composeapp.generated.resources.profile_5
+import onlytrade.composeapp.generated.resources.profile_6
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -93,8 +88,6 @@ class ProfileScreen : Screen {
         val viewModel = koinViewModel<ProfileViewModel>()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val nav = LocalNavigator.currentOrThrow
-        val sharedCMP = LocalSharedCMP.current //todo will be needed to create tiles.
-
         var isEditing by remember { mutableStateOf(false) }
         var name = viewModel.user.name.orEmpty()
         var email = viewModel.user.email.orEmpty()
@@ -194,15 +187,15 @@ class ProfileScreen : Screen {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
             ) {
-                Image(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier.size(90.dp)
-                        .background(Color.Gray, shape = CircleShape)
-                )
-                Spacer(Modifier.height(8.dp))
+                /* Image(
+                     imageVector = Icons.Default.AccountCircle,
+                     contentDescription = "Profile Picture",
+                     modifier = Modifier.size(90.dp)
+                         .background(Color.Gray, shape = CircleShape)
+                 )
+                 Spacer(Modifier.height(8.dp))*/
                 Text(
-                    text = "Welcome, ${name.ifBlank { "User" }}",
+                    text = stringResource(Res.string.profile_6),
                     style = MaterialTheme.typography.titleLarge
                 )
 

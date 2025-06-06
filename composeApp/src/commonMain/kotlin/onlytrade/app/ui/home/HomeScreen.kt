@@ -357,7 +357,7 @@ class HomeScreen : Screen {
 
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .background(homeColorScheme.screenBG)
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp)
@@ -452,23 +452,29 @@ class HomeScreen : Screen {
                 }
 
                 if (uiState == ProductsNotFound) {
-                    Text(
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.align(Alignment.CenterHorizontally).clickable {
-                            viewModel.reloadProducts()
-                        },
-                        fontSize = 20.sp,
-                        text = stringResource(Res.string.home_6),
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
-                    )
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Text(
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.align(Alignment.Center).clickable {
+                                viewModel.reloadProducts()
+                            },
+                            fontSize = 20.sp,
+                            text = stringResource(Res.string.home_6),
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                        )
+                    }
                 } else if (uiState is GetProductsApiError) {
-                    Text(
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier,
-                        fontSize = 20.sp,
-                        text = (uiState as GetProductsApiError).error,
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
-                    )
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Text(
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.align(Alignment.Center).clickable {
+                                viewModel.reloadProducts()
+                            },
+                            fontSize = 20.sp,
+                            text = (uiState as GetProductsApiError).error,
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                        )
+                    }
                 }
 
                 LazyVerticalGrid(
