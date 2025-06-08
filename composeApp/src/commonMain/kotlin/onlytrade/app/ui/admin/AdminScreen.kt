@@ -21,6 +21,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -36,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
@@ -45,6 +47,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -86,6 +89,7 @@ import onlytrade.composeapp.generated.resources.ic_quickmart_intro
 import onlytrade.composeapp.generated.resources.ic_quickmart_intro_dark
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
 import onlytrade.composeapp.generated.resources.search
+import onlytrade.composeapp.generated.resources.tradeDetail_17
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -97,13 +101,14 @@ class AdminScreen : Screen {
     override fun Content() {
         val viewModel = koinViewModel<AdminViewModel>()
         val products by viewModel.productsUiState.collectAsStateWithLifecycle()
+        val users by viewModel.usersUiState.collectAsStateWithLifecycle()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val sharedCMP = LocalSharedCMP.current
         val nav = LocalNavigator.currentOrThrow
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
         Scaffold(topBar = {
-            Column(modifier = if (uiState is HomeUiState.LoadingProducts) Modifier.shimmer() else Modifier) {
+            Column {
                 //   AnimatedVisibility(visible = headerVisible.not()) {
                 Row(
                     modifier = Modifier
@@ -114,11 +119,11 @@ class AdminScreen : Screen {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
 
-                    AsyncImage(
-                        model = if (isSystemInDarkTheme()) Res.drawable.ic_quickmart_intro_dark else Res.drawable.ic_quickmart_intro,
-                        contentScale = ContentScale.None,
-                        contentDescription = stringResource(Res.string.app_logo),
-                        modifier = Modifier.padding(top = 32.dp)
+                    Text(
+                        text = stringResource(Res.string.ad_1),
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
                     )
 
                     Row(
@@ -140,128 +145,30 @@ class AdminScreen : Screen {
                 }
 
 
-                /*   SearchBar(
-                       inputField = {
-                           OTTextField(
-                               label = "",
-                               value = TextFieldValue(""),
-                               onValueChange = { },
-                               isError = false,
-                               trailingIcon = {
-
-                                   Icon(
-                                       painter = painterResource(R.drawable.outline_clear_24),
-                                       tint = MaterialTheme.colorScheme.secondary,
-                                       contentDescription = null,
-                                       modifier = Modifier.clickable { }
-                                   )
-
-                               },
-                               keyboardType = KeyboardType.Text, imeAction = ImeAction.Search
-                           )
-                       },
-                       expanded = isSearchBarExtended,
-                       onExpandedChange = {}
-                   ) { }*/
-                AnimatedVisibility(visible = headerVisible) {
-                    Box(
-                        modifier = Modifier
-                            .background(homeColorScheme.pagerCardBG)
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                    ) {
-                        val pagerState = rememberPagerState {
-                            if (products.isEmpty()) 5 else products.size
-                        }
-
-                        // Auto-scroll logic for banner.
-                        if (products.isNotEmpty())
-                            LaunchedEffect(uiState !is HomeUiState.LoadingProducts) {
-                                while (headerVisible) {
-                                    val nextPage =
-                                        (pagerState.currentPage + 1) % pagerState.pageCount
-                                    pagerState.animateScrollToPage(nextPage)
-                                    delay(3000) // Delay between scrolls (3 seconds)
-                                }
-                            }
-
-                        HorizontalPager(
-                            state = pagerState
-                        ) {
-
-                            val randomProduct by remember { mutableStateOf(randomProduct(products)) }
-
-                            AsyncImage(
-                                model = randomProduct?.first,
-                                contentDescription = randomProduct?.second?.description,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.clickable {
-                                    randomProduct?.second?.let {
-                                        ProductCache.add(it)
-                                        nav.push(ProductDetailScreen(it.id))
-                                    }
-                                }.clip(MaterialTheme.shapes.medium)
-                                    .background(
-                                        color = Color(
-                                            Random.nextFloat(),
-                                            Random.nextFloat(),
-                                            Random.nextFloat()
-                                        ), shape = MaterialTheme.shapes.medium
-                                    )
-                                    .fillMaxWidth()
-                                    .height((sharedCMP.screenHeight / 4).dp)
-                            )
-
-
-                        }
-                        DotsIndicator(
-                            modifier = Modifier
-                                .padding(bottom = 8.dp)
-                                .padding(horizontal = 8.dp)
-                                .align(Alignment.BottomEnd),
-                            totalDots = pagerState.pageCount,
-                            selectedIndex = pagerState.currentPage,
-                            selectedColor = MaterialTheme.colorScheme.tertiary,
-                            unSelectedColor = Color(0xFFC0C0C0)
-                        )
-
-                    }
-                }
             }
         }, bottomBar = {
-            if (userLoggedIn)
                 Row(
                     modifier = Modifier
                         .background(homeColorScheme.botBarBG)
                         .padding(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Column(Modifier.weight(1f)) {
+                    Column(Modifier.weight(1f).clickable {
+viewModel.getUsers()
+                    }) {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = Icons.Outlined.Home,
+                            imageVector = Icons.Outlined.AccountCircle,
                             contentDescription = stringResource(Res.string.app_name)
                         )
 
                         Text(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = stringResource(Res.string.botBar_1),
+                            text = stringResource(Res.string.ad_2),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.W200)
                         )
-                    }/*   Column(Modifier.weight(1f)) {
-                           Icon(
-                               modifier = Modifier.align(Alignment.CenterHorizontally),
-                               imageVector = Icons.Outlined.Menu,
-                               contentDescription = stringResource(R.string.app_name)
-                           )
-
-                           Text(
-                               modifier = Modifier.align(Alignment.CenterHorizontally),
-                               text = "Categories",
-                               style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                           )
-                       }*/
+                    }
                     Column(Modifier.weight(1f).clickable {
-                        nav.push(MyTradesScreen())
+viewModel.getProducts()
                     }) {
                         Icon(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -271,76 +178,13 @@ class AdminScreen : Screen {
 
                         Text(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = stringResource(Res.string.botBar_2),
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.W200)
-                        )
-                    }
-                    Column(
-                        Modifier
-                            .weight(1f)
-                            .clickable {
-                                nav.push(MyProductsScreen())
-                            }) {
-
-                        Icon(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = Icons.Outlined.Favorite,
-                            contentDescription = stringResource(Res.string.app_name)
-                        )
-
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = stringResource(Res.string.botBar_3),
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.W200)
-                        )
-                    }
-                    Column(
-                        Modifier
-                            .weight(1f)
-                            .clickable { nav.push(ProfileScreen()) }
-                    ) {
-
-                        Icon(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            imageVector = Icons.Outlined.Person,
-                            contentDescription = stringResource(Res.string.app_name)
-                        )
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = stringResource(Res.string.botBar_4),
+                            text = stringResource(Res.string.ad_3),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.W200)
                         )
                     }
                 }
-
-        }, floatingActionButton = {
-            if (userLoggedIn) {
-
-                val addProductClicked = {
-                    nav.push(AddProductScreen())
-                }
-
-                if (productGridState.isScrollInProgress)
-                    FloatingActionButton(
-                        onClick = addProductClicked,
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.secondary
-                    ) {
-                        Icon(Icons.Filled.Add, stringResource(Res.string.home_4))
-                    }
-                else
-                    ExtendedFloatingActionButton(
-                        onClick = addProductClicked,
-                        icon = { Icon(Icons.Outlined.Add, stringResource(Res.string.home_4)) },
-                        text = { Text(text = stringResource(Res.string.home_4)) },
-                    )
-            }
 
         }) { paddingValues ->
-
-            LaunchedEffect(Unit) {
-                viewModel.refreshHomePage()
-            }
 
             Column(
                 modifier = Modifier
@@ -357,50 +201,6 @@ class AdminScreen : Screen {
                                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W700)
                             )
 
-
-                            /*   Text(
-                        modifier = Modifier.align(Alignment.TopEnd),
-                        text = "SEE All",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = W700)
-                    )*/
-                        }
-
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(vertical = 16.dp),
-                            horizontalArrangement = Arrangement.Center
-                            // verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            repeat(4) { i ->
-
-                                Column(
-                                    modifier = Modifier.clickable {
-                                        nav.push(
-                                            SubCategoriesScreen(
-                                                "Category ${i + 1}"
-                                            )
-                                        )
-                                    },
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.SpaceAround
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.FavoriteBorder,
-                                        contentDescription = stringResource(Res.string.app_name)
-                                    )
-
-                                    Text(
-                                        text = "Category ${i + 1}",
-                                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.W500)
-                                    )
-
-                                }
-                                if (i < 3) Spacer(modifier = Modifier.width(16.dp))
-
-                            }
-
-                        }
                     }
                 }
 
@@ -425,17 +225,6 @@ class AdminScreen : Screen {
                         text = stringResource(Res.string.home_3),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.W700)
                     )
-                }
-
-                LaunchedEffect(productGridState) {
-                    snapshotFlow { productGridState.layoutInfo }.collect { layoutInfo ->
-                        val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-                        val total = layoutInfo.totalItemsCount
-                        if (lastVisible >= total - viewModel.productPageSizeExpected / 2) {
-                            viewModel.getProducts()
-
-                        }
-                    }
                 }
 
                 if (uiState == HomeUiState.ProductsNotFound) {

@@ -14,6 +14,11 @@
     <string name="search">search</string>
     <string name="ok">ok</string>
 
+    <!-- Admin Screen -->
+    <string name="ad_1">Admin Panel</string>
+    <string name="ad_2">Users</string>
+    <string name="ad_3">Products</string>
+
     <!-- Onboarding Page 1 -->
     <string name="ob1_1">Skip for now</string>
     <string name="ob1_2">Explore a wide range of products</string>
