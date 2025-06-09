@@ -210,7 +210,7 @@ class SubCategoriesScreen(private val categoryName: String) :
 
     @Composable
     private fun SubCategoryUI(sharedCMP: SharedCMP, index: Int) {
-        val size = (sharedCMP.screenWidth / 2).dp
+        val size = sharedCMP.screenWidth / 2
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = Modifier.clickable {
             nav.push(ProductsScreen("Subcategory ${index + 1}"))

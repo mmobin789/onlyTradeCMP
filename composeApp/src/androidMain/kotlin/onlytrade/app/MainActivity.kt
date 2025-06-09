@@ -14,7 +14,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.Navigator
 import coil3.request.ImageRequest
@@ -41,17 +42,18 @@ class MainActivity : ComponentActivity() {
             databaseDriverFactory = DatabaseDriverFactory(this)
         )
         setContent {
-            val localConfig = LocalConfiguration.current
-            val screenWidth = localConfig.screenWidthDp
-            val screenHeight = localConfig.screenHeightDp
+            val containerSize = LocalWindowInfo.current.containerSize
+            val localDensity = LocalDensity.current
+            val screenWidth = with(localDensity) { containerSize.width.toDp() }
+            val screenHeight = with(localDensity) { containerSize.height.toDp() }
             val sharedCMP = remember(screenWidth, screenHeight) {
                 object : SharedCMP {
-                    override val screenWidth: Int = screenWidth
-                    override val screenHeight: Int = screenHeight
+                    override val screenWidth = screenWidth
+                    override val screenHeight = screenHeight
 
                     @Composable
                     override fun GetImagesFromGallery(onImagesPicked: (List<ByteArray>) -> Unit) {
-                        LoadImageFromGallery(onImagesPicked)
+                        LoadImagesFromGallery(onImagesPicked)
                     }
                 }
             }
@@ -68,7 +70,7 @@ class MainActivity : ComponentActivity() {
 
 
     @Composable
-    private fun LoadImageFromGallery(
+    private fun LoadImagesFromGallery(
         onImagesPicked: (List<ByteArray>) -> Unit,
     ) {
         val scope = rememberCoroutineScope()

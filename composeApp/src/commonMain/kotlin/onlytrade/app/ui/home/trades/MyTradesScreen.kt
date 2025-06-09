@@ -403,7 +403,7 @@ class MyTradesScreen : Screen {
                                 ), shape = MaterialTheme.shapes.medium
                             )
                             .fillMaxWidth()
-                            .height((sharedCMP.screenHeight / 4).dp)
+                            .height(sharedCMP.screenHeight / 4)
                     )
 
 

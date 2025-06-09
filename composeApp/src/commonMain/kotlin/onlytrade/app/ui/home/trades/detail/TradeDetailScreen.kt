@@ -578,7 +578,7 @@ class TradeDetailScreen(private val offerId: Long) : Screen {
         product: Product? = null
     ) {
         val sharedCMP = LocalSharedCMP.current
-        val size = (sharedCMP.screenWidth / 3).dp
+        val size = sharedCMP.screenWidth / 3
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = if (product == null) modifier.shimmer() else modifier.clickable {
             ProductCache.add(product)

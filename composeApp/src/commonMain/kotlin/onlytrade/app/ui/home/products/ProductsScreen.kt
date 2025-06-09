@@ -218,7 +218,7 @@ class ProductsScreen(private val subcategoryName: String? = null) :
 
     @Composable
     private fun ProductUI(sharedCMP: SharedCMP, index: Int, product: Product? = null) {
-        val size = (sharedCMP.screenWidth / 2).dp
+        val size = sharedCMP.screenWidth / 2
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
             ProductCache.add(product)

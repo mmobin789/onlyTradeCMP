@@ -222,7 +222,7 @@ class HomeScreen : Screen {
                                         ), shape = MaterialTheme.shapes.medium
                                     )
                                     .fillMaxWidth()
-                                    .height((sharedCMP.screenHeight / 4).dp)
+                                    .height(sharedCMP.screenHeight / 4)
                             )
 
 
@@ -506,7 +506,7 @@ class HomeScreen : Screen {
 
 @Composable
 private fun ProductUI(sharedCMP: SharedCMP, product: Product? = null) {
-    val size = (sharedCMP.screenWidth / 2).dp
+    val size = sharedCMP.screenWidth / 2
     val nav = LocalNavigator.currentOrThrow
     Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
         ProductCache.add(product)

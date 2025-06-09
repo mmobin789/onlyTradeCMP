@@ -326,7 +326,7 @@ class MyProductsScreen(private val productId: Long = 0, private val offerReceive
         selectionMode: Boolean = false
     ) {
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-        val size = (sharedCMP.screenWidth / 3).dp
+        val size = sharedCMP.screenWidth / 3
         val nav = LocalNavigator.currentOrThrow
         var selected by remember { mutableStateOf(false) }
         val productInTradeMsg = stringResource(Res.string.myProducts_8)

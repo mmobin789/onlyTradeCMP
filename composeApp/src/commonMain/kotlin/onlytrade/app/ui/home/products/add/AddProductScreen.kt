@@ -545,7 +545,7 @@ class AddProductScreen : Screen {
 
     @Composable
     private fun ProductUI(sharedCMP: SharedCMP, byteArray: ByteArray? = null) {
-        val size = (sharedCMP.screenWidth / 4).dp
+        val size = sharedCMP.screenWidth / 4
         //  val nav = LocalNavigator.currentOrThrow
         Column {
             AsyncImage(

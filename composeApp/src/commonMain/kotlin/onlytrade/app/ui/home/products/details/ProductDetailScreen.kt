@@ -111,7 +111,7 @@ class ProductDetailScreen(private val productId: Long, private val tradeView: Bo
                         color = Color(
                             Random.nextFloat(), Random.nextFloat(), Random.nextFloat()
                         )
-                    ).fillMaxWidth().height((sharedCMP.screenHeight / 3).dp)
+                    ).fillMaxWidth().height(sharedCMP.screenHeight / 3)
                 )
 
 

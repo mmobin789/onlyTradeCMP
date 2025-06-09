@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -56,6 +55,7 @@ import onlytrade.app.ui.login.LoginScreen.Companion.validatePhoneNumber
 import onlytrade.app.viewmodel.login.ui.KycViewModel
 import onlytrade.app.viewmodel.login.ui.state.KycUiState.BlankEmailInputError
 import onlytrade.app.viewmodel.login.ui.state.KycUiState.BlankMobileInputError
+import onlytrade.app.viewmodel.login.ui.state.KycUiState.BlankNameError
 import onlytrade.app.viewmodel.login.ui.state.KycUiState.DocsIncomplete
 import onlytrade.app.viewmodel.login.ui.state.KycUiState.EmailFormatInputError
 import onlytrade.app.viewmodel.login.ui.state.KycUiState.Idle
@@ -85,10 +85,15 @@ class KYCScreen : Screen {
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
         var showImagePicker by remember { mutableStateOf(false) }
-        var galleryImages by remember {
-            mutableStateOf(listOf<ByteArray>())
+        var choosePhotoId = false
+        var photoId by remember {
+            mutableStateOf<ByteArray?>(null)
+        }
+        var photo by remember {
+            mutableStateOf<ByteArray?>(null)
         }
         var email by remember { mutableStateOf("") }
+        var name by remember { mutableStateOf("") }
         var phone by remember { mutableStateOf("") }
         var errorPhone by remember { mutableStateOf<String?>(null) }
         val inputEmailError = uiState is BlankEmailInputError || uiState is EmailFormatInputError
@@ -126,22 +131,12 @@ class KYCScreen : Screen {
             bottomBar = {
 
                 Column(modifier = Modifier.background(addProductColorScheme.screenBG)) {
-
-                    Button(
-                        onClick = { showImagePicker = true },
-                        colors = ButtonDefaults.buttonColors(addProductColorScheme.submitProductBtn),
-                        shape = MaterialTheme.shapes.extraSmall,
-                        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.kyc_3),
-                        )
-                    }
-
                     Button(
                         onClick = {
                             viewModel.uploadDocs(
-                                galleryImages,
+                                name,
+                                photoId,
+                                photo,
                                 email.ifBlank { null },
                                 phone.ifBlank { null })
                         },
@@ -170,6 +165,37 @@ class KYCScreen : Screen {
                     text = stringResource(Res.string.kyc_2),
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = W500),
                 )
+
+                OutlinedTextField(
+                    value = name,
+                    isError = uiState == BlankNameError,
+                    onValueChange = {
+                        name = it
+                    },
+                    shape = MaterialTheme.shapes.extraSmall,
+                    modifier = Modifier.fillMaxWidth(),
+                    trailingIcon = {
+                        if (name.isNotBlank()) {
+                            Icon(
+                                painter = painterResource(Res.drawable.outline_clear_24),
+                                tint = MaterialTheme.colorScheme.secondary,
+                                contentDescription = null,
+                                modifier = Modifier.clickable { name = "" })
+                        }
+                    },
+                    label = {
+                        Text(
+                            modifier = Modifier,
+                            text = stringResource(Res.string.kyc_3),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
+                    ),
+                )
+
                 if (viewModel.isEmailProvided().not()) OutlinedTextField(
                     onValueChange = { email = it },
                     isError = inputEmailError,
@@ -232,8 +258,9 @@ class KYCScreen : Screen {
                     ),
                 )
 
+
                 LazyVerticalGrid(
-                    columns = GridCells.Adaptive((sharedCMP.screenWidth / 2).dp),
+                    columns = GridCells.Adaptive(sharedCMP.screenWidth / 2),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.padding(top = 8.dp).border(
@@ -242,12 +269,21 @@ class KYCScreen : Screen {
                         shape = MaterialTheme.shapes.extraSmall
                     ).padding(16.dp)
                 ) {
-                    if (galleryImages.isEmpty()) items(2) { i ->
-                        docUI(sharedCMP, i)
+                    item {
+                        docUI(sharedCMP, 0, photoId) {
+                            choosePhotoId = true
+                            showImagePicker = true
+                        }
                     }
-                    else itemsIndexed(galleryImages) { i, doc ->
-                        docUI(sharedCMP, i, doc)
+
+                    item {
+                        docUI(sharedCMP, 1, photo) {
+                            choosePhotoId = false
+                            showImagePicker = true
+                        }
                     }
+
+
                 }
 
             }
@@ -256,7 +292,11 @@ class KYCScreen : Screen {
             if (showImagePicker) {
                 sharedCMP.GetImagesFromGallery {
                     showImagePicker = false
-                    galleryImages = it
+                    if (it.isEmpty())
+                        return@GetImagesFromGallery
+
+                    if (choosePhotoId) photoId = it.first()
+                    else photo = it.first()
                 }
 
             }
@@ -265,6 +305,11 @@ class KYCScreen : Screen {
             when (uiState) {
                 Uploading -> {
                     ShowToast("Uploading Docs...")
+                }
+
+                BlankNameError -> {
+                    ShowToast("Name Required")
+                    viewModel.idle()
                 }
 
                 BlankEmailInputError -> {
@@ -310,15 +355,20 @@ class KYCScreen : Screen {
 
 
     @Composable
-    private fun docUI(sharedCMP: SharedCMP, index: Int, byteArray: ByteArray? = null) {
+    private fun docUI(
+        sharedCMP: SharedCMP,
+        index: Int,
+        byteArray: ByteArray? = null,
+        onClick: () -> Unit
+    ) {
         //  val nav = LocalNavigator.currentOrThrow
-        Column {
+        Column(modifier = Modifier.clickable { onClick() }) {
             AsyncImage(
                 model = byteArray,
                 contentScale = ContentScale.Crop,
                 contentDescription = null,
-                modifier = Modifier.width(sharedCMP.screenWidth.dp)
-                    .height(if (index == 0) sharedCMP.screenWidth.dp else (sharedCMP.screenWidth / 2).dp)
+                modifier = Modifier.width(sharedCMP.screenWidth)
+                    .height(if (index == 0) sharedCMP.screenWidth else sharedCMP.screenWidth / 2)
                     .clip(MaterialTheme.shapes.small).background(
                         color = Color(
                             Random.nextFloat(), Random.nextFloat(), Random.nextFloat()

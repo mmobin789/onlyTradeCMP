@@ -59,8 +59,8 @@
 
     <!--> KYC Screen -->
     <string name="kyc_1">Complete KYC</string>
-    <string name="kyc_2">Please add your selfie with ID card or passport to complete our verification process.</string>
-    <string name="kyc_3">Add Documents</string>
+    <string name="kyc_2">Please add your selfie with any photo ID by clicking on tiles below to complete our verification process.</string>
+    <string name="kyc_3">Name</string>
     <string name="kyc_4">Upload</string>
 
     <!-- Home -->
