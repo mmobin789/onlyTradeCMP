@@ -36,6 +36,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
+import onlytrade.app.ui.admin.AdminScreen
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.login.colorScheme.loginColorScheme
@@ -265,7 +266,10 @@ class LoginScreen : Screen {
             }
 
             when (uiState) {
-                LoggedIn -> nav.replaceAll(HomeScreen())
+                is LoggedIn -> {
+                    nav.replaceAll(if ((uiState as LoggedIn).isAdmin) AdminScreen() else HomeScreen())
+                }
+
                 is ApiError -> {
                     ShowToast((uiState as ApiError).error)
                 }

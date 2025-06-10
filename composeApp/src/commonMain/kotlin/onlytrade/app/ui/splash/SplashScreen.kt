@@ -20,6 +20,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.setSingletonImageLoaderFactory
 import kotlinx.coroutines.delay
+import onlytrade.app.ui.admin.AdminScreen
 import onlytrade.app.ui.design.components.getAsyncImageLoader
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.onboarding.OBScrollPage
@@ -72,7 +73,9 @@ class SplashScreen : Screen {
             delay(250)
 
             nav.replace(
-                if (isUserLoggedIn)
+                if (isUserLoggedIn && viewModel.isAdmin())
+                    AdminScreen()
+                else if (isUserLoggedIn)
                     HomeScreen()
                 else
                     OBScrollPage()

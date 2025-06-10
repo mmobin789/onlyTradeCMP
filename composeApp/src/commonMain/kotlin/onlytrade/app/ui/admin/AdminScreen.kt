@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -50,28 +49,37 @@ import com.valentinilk.shimmer.shimmer
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.colorScheme.homeColorScheme
-import onlytrade.app.ui.home.products.ProductsScreen
 import onlytrade.app.ui.home.products.details.ProductCache
 import onlytrade.app.ui.home.products.details.ProductDetailScreen
+import onlytrade.app.ui.login.LoginScreen
 import onlytrade.app.viewmodel.admin.AdminViewModel
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.GetApprovalProductsApiError
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.GetApprovalUsersApiError
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.LoadingProducts
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.LoadingUsers
+import onlytrade.app.viewmodel.admin.ui.AdminUiState.LoggedOut
+import onlytrade.app.viewmodel.admin.ui.AdminUiState.ProductNotFound
+import onlytrade.app.viewmodel.admin.ui.AdminUiState.ProductVerified
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.ProductsNotFound
+import onlytrade.app.viewmodel.admin.ui.AdminUiState.UserNotFound
+import onlytrade.app.viewmodel.admin.ui.AdminUiState.UserVerified
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.UsersNotFound
+import onlytrade.app.viewmodel.admin.ui.AdminUiState.VerifyProductApiError
+import onlytrade.app.viewmodel.admin.ui.AdminUiState.VerifyUserApiError
+import onlytrade.app.viewmodel.admin.ui.AdminUiState.VerifyingProduct
+import onlytrade.app.viewmodel.admin.ui.AdminUiState.VerifyingUser
 import onlytrade.app.viewmodel.login.repository.data.db.User
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.ad_1
 import onlytrade.composeapp.generated.resources.ad_2
 import onlytrade.composeapp.generated.resources.ad_3
+import onlytrade.composeapp.generated.resources.ad_4
 import onlytrade.composeapp.generated.resources.app_name
-import onlytrade.composeapp.generated.resources.home_2
-import onlytrade.composeapp.generated.resources.home_3
 import onlytrade.composeapp.generated.resources.home_5
 import onlytrade.composeapp.generated.resources.home_6
 import onlytrade.composeapp.generated.resources.outline_compare_arrows_24
+import onlytrade.composeapp.generated.resources.profile_4
 import onlytrade.composeapp.generated.resources.search
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -89,7 +97,6 @@ class AdminScreen : Screen {
         val sharedCMP = LocalSharedCMP.current
         val nav = LocalNavigator.currentOrThrow
         val productGridState = rememberLazyGridState()
-        val headerVisible = productGridState.canScrollBackward.not()
         Scaffold(topBar = {
             Column {
                 Row(
@@ -109,19 +116,20 @@ class AdminScreen : Screen {
                     )
 
                     Row(
-                        modifier = Modifier
-                            .padding(top = 32.dp)
+                        Modifier.padding(vertical = 8.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.Search,
+                            imageVector = Icons.Outlined.Settings,
                             contentDescription = stringResource(Res.string.search)
                         )
 
                         Spacer(modifier = Modifier.width(16.dp))
 
-                        Icon(
-                            imageVector = Icons.Outlined.Settings,
-                            contentDescription = stringResource(Res.string.search)
+                        Text(
+                            text = stringResource(Res.string.profile_4),
+                            modifier = Modifier.clickable { viewModel.logOut() },
+                            color = MaterialTheme.colorScheme.secondary,
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = W500)
                         )
                     }
                 }
@@ -176,79 +184,75 @@ class AdminScreen : Screen {
                     .padding(horizontal = 16.dp)
             ) {
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                ) {
-                    Text(
-                        modifier = Modifier.align(Alignment.TopStart),
-                        text = stringResource(Res.string.home_2),
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W700)
-                    )
 
+                when (uiState) {
+                    UsersNotFound -> {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.align(Alignment.Center).clickable {
+                                    viewModel.getUsers()
+                                },
+                                fontSize = 20.sp,
+                                text = stringResource(Res.string.ad_4),
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                            )
+                        }
+                    }
 
-                    Text(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .clickable {
-                                nav.push(ProductsScreen())
-                            },
-                        text = stringResource(Res.string.home_3),
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.W700)
-                    )
+                    is GetApprovalUsersApiError -> {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.align(Alignment.Center).clickable {
+                                    viewModel.getUsers()
+                                },
+                                fontSize = 20.sp,
+                                text = (uiState as GetApprovalProductsApiError).error,
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                            )
+                        }
+                    }
+
+                    ProductsNotFound -> {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.align(Alignment.Center).clickable {
+                                    viewModel.getProducts()
+                                },
+                                fontSize = 20.sp,
+                                text = stringResource(Res.string.home_6),
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                            )
+                        }
+                    }
+
+                    is GetApprovalProductsApiError -> {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.align(Alignment.Center).clickable {
+                                    viewModel.getProducts()
+                                },
+                                fontSize = 20.sp,
+                                text = (uiState as GetApprovalProductsApiError).error,
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
+                            )
+                        }
+                    }
+
+                    ProductNotFound -> TODO()
+                    ProductVerified -> TODO()
+                    UserNotFound -> TODO()
+                    UserVerified -> TODO()
+                    is VerifyProductApiError -> TODO()
+                    is VerifyUserApiError -> TODO()
+                    VerifyingProduct -> TODO()
+                    VerifyingUser -> TODO()
+                    LoggedOut -> nav.replace(LoginScreen())
+                    else -> {}
                 }
-
-                if (uiState == ProductsNotFound) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Text(
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.align(Alignment.Center).clickable {
-                                viewModel.getProducts()
-                            },
-                            fontSize = 20.sp,
-                            text = stringResource(Res.string.home_6),
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W500)
-                        )
-                    }
-                } else if (uiState is GetApprovalProductsApiError) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Text(
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.align(Alignment.Center).clickable {
-                                viewModel.getProducts()
-                            },
-                            fontSize = 20.sp,
-                            text = (uiState as GetApprovalProductsApiError).error,
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W500)
-                        )
-                    }
-                } else if (uiState == UsersNotFound) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Text(
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.align(Alignment.Center).clickable {
-                                viewModel.getUsers()
-                            },
-                            fontSize = 20.sp,
-                            text = stringResource(Res.string.home_6),
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W500)
-                        )
-                    }
-                } else if (uiState is GetApprovalUsersApiError) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Text(
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.align(Alignment.Center).clickable {
-                                viewModel.getProducts()
-                            },
-                            fontSize = 20.sp,
-                            text = (uiState as GetApprovalProductsApiError).error,
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W500)
-                        )
-                    }
-                }
-
                 LazyVerticalGrid(
                     state = productGridState,
                     modifier = Modifier
@@ -258,21 +262,22 @@ class AdminScreen : Screen {
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     columns = GridCells.Fixed(2)
                 ) {
+                    if (users.isEmpty())
+                        items(products) { product ->
+                            ProductUI(sharedCMP, product)
+                        }
+                    else
+                        items(users) { user ->
+                            UserUI(sharedCMP, user)
+                        }
 
-                    items(products) { product ->
-                        ProductUI(sharedCMP, product)
-                    }
-
-                    items(users) { user ->
-                        UserUI(sharedCMP, user)
-                    }
-
-                    if (uiState == LoadingProducts) items(20) {
-                        ProductUI(sharedCMP)
-                    }
                     if (uiState == LoadingUsers) items(20) {
                         UserUI(sharedCMP)
                     }
+                    else if (uiState == LoadingProducts) items(20) {
+                        ProductUI(sharedCMP)
+                    }
+
 
                 }
 

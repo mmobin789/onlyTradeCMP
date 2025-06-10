@@ -18,6 +18,7 @@
     <string name="ad_1">Admin Panel</string>
     <string name="ad_2">Users</string>
     <string name="ad_3">Products</string>
+    <string name="ad_4">No Users Found click to refresh</string>
 
     <!-- Onboarding Page 1 -->
     <string name="ob1_1">Skip for now</string>

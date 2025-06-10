@@ -47,7 +47,6 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import onlytrade.app.ui.design.components.ShowToast
-import onlytrade.app.ui.design.components.getToast
 import onlytrade.app.ui.home.HomeScreen
 import onlytrade.app.ui.home.products.my.MyProductsScreen
 import onlytrade.app.ui.home.profile.colorScheme.profileColorScheme
@@ -333,7 +332,6 @@ class ProfileScreen : Screen {
                     }
 
                     LoggedOut -> {
-                        getToast().showToast("Logged Out Successfully")
                         nav.replaceAll(LoginScreen())
                     }
 
