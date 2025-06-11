@@ -20,6 +20,10 @@
     <string name="ad_3">Products</string>
     <string name="ad_4">No Users Found click to refresh</string>
 
+    <string name="userDetail_1">Verify User</string>
+    <string name="userDetail_2">Verifying…</string>
+    <string name="userDetail_3">Verified</string>
+
     <!-- Onboarding Page 1 -->
     <string name="ob1_1">Skip for now</string>
     <string name="ob1_2">Explore a wide range of products</string>
@@ -60,7 +64,7 @@
 
     <!--> KYC Screen -->
     <string name="kyc_1">Complete KYC</string>
-    <string name="kyc_2">Please add your selfie with any photo ID by clicking on tiles below to complete our verification process.</string>
+    <string name="kyc_2">Please add your selfie 1st then a photo ID by clicking on tiles below to complete our verification process.</string>
     <string name="kyc_3">Name</string>
     <string name="kyc_4">Upload</string>
 

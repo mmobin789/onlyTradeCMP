@@ -61,13 +61,9 @@ import onlytrade.app.viewmodel.admin.ui.AdminUiState.LoggedOut
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.ProductNotFound
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.ProductVerified
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.ProductsNotFound
-import onlytrade.app.viewmodel.admin.ui.AdminUiState.UserNotFound
-import onlytrade.app.viewmodel.admin.ui.AdminUiState.UserVerified
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.UsersNotFound
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.VerifyProductApiError
-import onlytrade.app.viewmodel.admin.ui.AdminUiState.VerifyUserApiError
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.VerifyingProduct
-import onlytrade.app.viewmodel.admin.ui.AdminUiState.VerifyingUser
 import onlytrade.app.viewmodel.login.repository.data.db.User
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.composeapp.generated.resources.Res
@@ -244,12 +240,8 @@ class AdminScreen : Screen {
 
                     ProductNotFound -> TODO()
                     ProductVerified -> TODO()
-                    UserNotFound -> TODO()
-                    UserVerified -> TODO()
                     is VerifyProductApiError -> TODO()
-                    is VerifyUserApiError -> TODO()
                     VerifyingProduct -> TODO()
-                    VerifyingUser -> TODO()
                     LoggedOut -> nav.replace(LoginScreen())
                     else -> {}
                 }
@@ -438,9 +430,10 @@ class AdminScreen : Screen {
     @Composable
     private fun UserUI(sharedCMP: SharedCMP, user: User? = null) {
         val size = sharedCMP.screenWidth / 2
-        // val nav = LocalNavigator.currentOrThrow
+        val nav = LocalNavigator.currentOrThrow
         Column(modifier = if (user == null) Modifier.shimmer() else Modifier.clickable {
-            // nav.push(ProductDetailScreen(product.id))
+            UserCache.add(user)
+            nav.push(UserDetailScreen(user.id))
         }) {
             Box(
                 Modifier

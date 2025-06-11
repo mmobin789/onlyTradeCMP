@@ -1,4 +1,4 @@
-package onlytrade.app.ui.login.kyc
+package onlytrade.app.ui.admin
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -27,11 +27,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,52 +47,33 @@ import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.home.products.add.colorScheme.addProductColorScheme
-import onlytrade.app.ui.login.LoginScreen.Companion.validatePhoneNumber
-import onlytrade.app.viewmodel.login.ui.KycViewModel
-import onlytrade.app.viewmodel.login.ui.state.KycUiState.BlankEmailInputError
-import onlytrade.app.viewmodel.login.ui.state.KycUiState.BlankMobileInputError
-import onlytrade.app.viewmodel.login.ui.state.KycUiState.BlankNameError
-import onlytrade.app.viewmodel.login.ui.state.KycUiState.DocsIncomplete
-import onlytrade.app.viewmodel.login.ui.state.KycUiState.EmailFormatInputError
-import onlytrade.app.viewmodel.login.ui.state.KycUiState.Idle
-import onlytrade.app.viewmodel.login.ui.state.KycUiState.InReview
-import onlytrade.app.viewmodel.login.ui.state.KycUiState.KycApiError
-import onlytrade.app.viewmodel.login.ui.state.KycUiState.MobileNoFormatInputError
-import onlytrade.app.viewmodel.login.ui.state.KycUiState.Uploading
+import onlytrade.app.viewmodel.admin.UserDetailViewModel
+import onlytrade.app.viewmodel.admin.ui.UserDetailUiState.Idle
+import onlytrade.app.viewmodel.admin.ui.UserDetailUiState.UserNotFound
+import onlytrade.app.viewmodel.admin.ui.UserDetailUiState.UserVerified
+import onlytrade.app.viewmodel.admin.ui.UserDetailUiState.VerifyUserApiError
+import onlytrade.app.viewmodel.admin.ui.UserDetailUiState.VerifyingUser
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.kyc_1
 import onlytrade.composeapp.generated.resources.kyc_2
 import onlytrade.composeapp.generated.resources.kyc_3
-import onlytrade.composeapp.generated.resources.kyc_4
-import onlytrade.composeapp.generated.resources.outline_clear_24
-import org.jetbrains.compose.resources.painterResource
+import onlytrade.composeapp.generated.resources.userDetail_1
+import onlytrade.composeapp.generated.resources.userDetail_2
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class KYCScreen : Screen {
+class UserDetailScreen(private val userId: Long) : Screen {
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<KycViewModel>()
+        val user = UserCache.get(userId)!!
+        val viewModel = koinViewModel<UserDetailViewModel>()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val nav = LocalNavigator.currentOrThrow
         val sharedCMP = LocalSharedCMP.current
         val productGridState = rememberLazyGridState()
         val headerVisible = productGridState.canScrollBackward.not()
-        var showImagePicker by remember { mutableStateOf(false) }
-        var choosePhotoId = false
-        var photoId by remember {
-            mutableStateOf<ByteArray?>(null)
-        }
-        var photo by remember {
-            mutableStateOf<ByteArray?>(null)
-        }
-        var email by remember { mutableStateOf("") }
-        var name by remember { mutableStateOf("") }
-        var phone by remember { mutableStateOf("") }
-        var errorPhone by remember { mutableStateOf<String?>(null) }
-        val inputEmailError = uiState is BlankEmailInputError || uiState is EmailFormatInputError
 
         Scaffold(
             topBar = {
@@ -133,12 +110,11 @@ class KYCScreen : Screen {
                 Column(modifier = Modifier.background(addProductColorScheme.screenBG)) {
                     Button(
                         onClick = {
-                            viewModel.uploadDocs(
-                                name,
-                                photoId,
-                                photo,
-                                email.ifBlank { null },
-                                phone.ifBlank { null })
+                            when (uiState) {
+                                VerifyingUser -> {}
+                                else -> viewModel.verifyUser(userId)
+
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(addProductColorScheme.submitProductBtn),
                         shape = MaterialTheme.shapes.extraSmall,
@@ -146,7 +122,7 @@ class KYCScreen : Screen {
                             .fillMaxWidth()
                     ) {
                         Text(
-                            text = stringResource(Res.string.kyc_4),
+                            text = stringResource(if (uiState == VerifyingUser) Res.string.userDetail_2 else Res.string.userDetail_1),
                         )
                     }
 
@@ -167,22 +143,12 @@ class KYCScreen : Screen {
                 )
 
                 OutlinedTextField(
-                    value = name,
-                    isError = uiState == BlankNameError,
-                    onValueChange = {
-                        name = it
+                    readOnly = true,
+                    onValueChange = { //do nothing
                     },
+                    value = user.name!!,
                     shape = MaterialTheme.shapes.extraSmall,
                     modifier = Modifier.fillMaxWidth(),
-                    trailingIcon = {
-                        if (name.isNotBlank()) {
-                            Icon(
-                                painter = painterResource(Res.drawable.outline_clear_24),
-                                tint = MaterialTheme.colorScheme.secondary,
-                                contentDescription = null,
-                                modifier = Modifier.clickable { name = "" })
-                        }
-                    },
                     label = {
                         Text(
                             modifier = Modifier,
@@ -196,22 +162,12 @@ class KYCScreen : Screen {
                     ),
                 )
 
-                if (viewModel.isEmailProvided().not()) OutlinedTextField(
-                    onValueChange = { email = it },
-                    isError = inputEmailError,
+                OutlinedTextField(
+                    readOnly = true,
+                    onValueChange = { },
                     shape = MaterialTheme.shapes.extraSmall,
                     modifier = Modifier.fillMaxWidth(),
-                    value = email,
-                    trailingIcon = {
-                        if (email.isNotBlank()) {
-                            Icon(
-                                painter = painterResource(Res.drawable.outline_clear_24),
-                                tint = MaterialTheme.colorScheme.secondary,
-                                contentDescription = null,
-                                modifier = Modifier.clickable { email = "" })
-                        }
-
-                    },
+                    value = user.email!!,
                     label = {
                         Text(
                             modifier = Modifier,
@@ -224,27 +180,13 @@ class KYCScreen : Screen {
                         keyboardType = KeyboardType.Email, imeAction = ImeAction.Done
                     ),
                 )
-                else OutlinedTextField(
-                    value = phone,
-                    isError = errorPhone != null,
-                    onValueChange = {
-                        phone = it
-                        errorPhone = validatePhoneNumber(phone)
-                    },
-                    supportingText = {
-                        errorPhone?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-                    },
+
+                OutlinedTextField(
+                    readOnly = true,
+                    value = user.phone!!,
+                    onValueChange = {},
                     shape = MaterialTheme.shapes.extraSmall,
                     modifier = Modifier.fillMaxWidth(),
-                    trailingIcon = {
-                        if (phone.isNotBlank()) {
-                            Icon(
-                                painter = painterResource(Res.drawable.outline_clear_24),
-                                tint = MaterialTheme.colorScheme.secondary,
-                                contentDescription = null,
-                                modifier = Modifier.clickable { phone = "" })
-                        }
-                    },
                     label = {
                         Text(
                             modifier = Modifier,
@@ -270,85 +212,31 @@ class KYCScreen : Screen {
                     ).padding(16.dp)
                 ) {
                     item {
-                        docUI(sharedCMP, 0, photo) {
-                            choosePhotoId = false
-                            showImagePicker = true
-                        }
+                        docUI(sharedCMP, 0, user.photo)
                     }
 
                     item {
-                        docUI(sharedCMP, 1, photoId) {
-                            choosePhotoId = true
-                            showImagePicker = true
-                        }
+                        docUI(sharedCMP, 1, user.photoId)
                     }
 
 
-                }
-
-            }
-
-
-            if (showImagePicker) {
-                sharedCMP.GetImagesFromGallery {
-                    showImagePicker = false
-                    if (it.isEmpty())
-                        return@GetImagesFromGallery
-
-                    if (choosePhotoId) photoId = it.first()
-                    else photo = it.first()
                 }
 
             }
 
 
             when (uiState) {
-                Uploading -> {
-                    ShowToast("Uploading Docs...")
+                Idle -> {
+                    //do nothing.
                 }
 
-                BlankNameError -> {
-                    ShowToast("Name Required")
-                    viewModel.idle()
+                UserNotFound -> {
+                    ShowToast("User not found.")
                 }
 
-                BlankEmailInputError -> {
-                    ShowToast("BlankEmail")
-                    viewModel.idle()
-                }
-
-                BlankMobileInputError -> {
-                    ShowToast("BlankMobileNo")
-                    viewModel.idle()
-                }
-
-                DocsIncomplete -> {
-                    ShowToast("Docs required.")
-                    viewModel.idle()
-                }
-
-                EmailFormatInputError -> {
-                    ShowToast("EmailFormatInputError")
-                    viewModel.idle()
-                }
-
-                Idle -> {} // do nothing.
-                InReview -> {
-                    ShowToast("Added for review.")
-                    LaunchedEffect(Unit) {
-                        nav.pop()
-                    }
-                }
-
-                is KycApiError -> {
-                    ShowToast((uiState as KycApiError).error)
-                    viewModel.idle()
-                }
-
-                MobileNoFormatInputError -> {
-                    ShowToast("Wrong format for Mobile No")
-                    viewModel.idle()
-                }
+                UserVerified -> TODO()
+                is VerifyUserApiError -> TODO()
+                VerifyingUser -> TODO()
             }
         }
     }
@@ -358,13 +246,12 @@ class KYCScreen : Screen {
     private fun docUI(
         sharedCMP: SharedCMP,
         index: Int,
-        byteArray: ByteArray? = null,
-        onClick: () -> Unit
+        imageUrl: String?
     ) {
         //  val nav = LocalNavigator.currentOrThrow
-        Column(modifier = Modifier.clickable { onClick() }) {
+        Column {
             AsyncImage(
-                model = byteArray,
+                model = imageUrl,
                 contentScale = ContentScale.Crop,
                 contentDescription = null,
                 modifier = Modifier.width(sharedCMP.screenWidth)
