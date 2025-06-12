@@ -51,7 +51,6 @@ import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.home.colorScheme.homeColorScheme
 import onlytrade.app.ui.home.products.details.ProductCache
-import onlytrade.app.ui.home.products.details.ProductDetailScreen
 import onlytrade.app.ui.login.LoginScreen
 import onlytrade.app.viewmodel.admin.AdminViewModel
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.GetApprovalProductsApiError
@@ -59,12 +58,8 @@ import onlytrade.app.viewmodel.admin.ui.AdminUiState.GetApprovalUsersApiError
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.LoadingProducts
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.LoadingUsers
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.LoggedOut
-import onlytrade.app.viewmodel.admin.ui.AdminUiState.ProductNotFound
-import onlytrade.app.viewmodel.admin.ui.AdminUiState.ProductVerified
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.ProductsNotFound
 import onlytrade.app.viewmodel.admin.ui.AdminUiState.UsersNotFound
-import onlytrade.app.viewmodel.admin.ui.AdminUiState.VerifyProductApiError
-import onlytrade.app.viewmodel.admin.ui.AdminUiState.VerifyingProduct
 import onlytrade.app.viewmodel.login.repository.data.db.User
 import onlytrade.app.viewmodel.product.repository.data.db.Product
 import onlytrade.composeapp.generated.resources.Res
@@ -242,11 +237,6 @@ class AdminScreen : Screen {
                             )
                         }
                     }
-
-                    ProductNotFound -> TODO()
-                    ProductVerified -> TODO()
-                    is VerifyProductApiError -> TODO()
-                    VerifyingProduct -> TODO()
                     LoggedOut -> nav.replace(LoginScreen())
                     else -> {}
                 }
@@ -289,7 +279,7 @@ class AdminScreen : Screen {
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = if (product == null) Modifier.shimmer() else Modifier.clickable {
             ProductCache.add(product)
-            nav.push(ProductDetailScreen(product.id))
+            nav.push(VerifyProductScreen(product.id))
         }) {
             Box(
                 Modifier
@@ -438,7 +428,7 @@ class AdminScreen : Screen {
         val nav = LocalNavigator.currentOrThrow
         Column(modifier = if (user == null) Modifier.shimmer() else Modifier.clickable {
             UserCache.add(user)
-            nav.push(UserDetailScreen(user.id))
+            nav.push(VerifyUserScreen(user.id))
         }) {
             Box(
                 Modifier

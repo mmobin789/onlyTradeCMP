@@ -20,9 +20,13 @@
     <string name="ad_3">Products</string>
     <string name="ad_4">No Users Found click to refresh</string>
 
+    <!-- Verify User -->
     <string name="userDetail_1">Verify User</string>
     <string name="userDetail_2">Verifying…</string>
     <string name="userDetail_3">Verified</string>
+
+    <!-- Verify Product -->
+    <string name="verifyProduct_1">Verify Product</string>
 
     <!-- Onboarding Page 1 -->
     <string name="ob1_1">Skip for now</string>

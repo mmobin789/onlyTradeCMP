@@ -486,14 +486,13 @@ class HomeScreen : Screen {
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     columns = GridCells.Fixed(2)
                 ) {
-
-                    items(products) { product ->
-                        ProductUI(sharedCMP, product)
-                    }
-
                     if (uiState == LoadingProducts) items(viewModel.productPageSizeExpected) {
                         ProductUI(sharedCMP)
                     }
+                    else
+                        items(products) { product ->
+                            ProductUI(sharedCMP, product)
+                        }
 
 
                 }

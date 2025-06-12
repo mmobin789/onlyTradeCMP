@@ -47,12 +47,12 @@ import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
 import onlytrade.app.ui.design.components.ShowToast
 import onlytrade.app.ui.home.products.add.colorScheme.addProductColorScheme
-import onlytrade.app.viewmodel.admin.UserDetailViewModel
-import onlytrade.app.viewmodel.admin.ui.UserDetailUiState.Idle
-import onlytrade.app.viewmodel.admin.ui.UserDetailUiState.UserNotFound
-import onlytrade.app.viewmodel.admin.ui.UserDetailUiState.UserVerified
-import onlytrade.app.viewmodel.admin.ui.UserDetailUiState.VerifyUserApiError
-import onlytrade.app.viewmodel.admin.ui.UserDetailUiState.VerifyingUser
+import onlytrade.app.viewmodel.admin.VerifyUserViewModel
+import onlytrade.app.viewmodel.admin.ui.VerifyUserUiState.Idle
+import onlytrade.app.viewmodel.admin.ui.VerifyUserUiState.UserNotFound
+import onlytrade.app.viewmodel.admin.ui.VerifyUserUiState.UserVerified
+import onlytrade.app.viewmodel.admin.ui.VerifyUserUiState.VerifyUserApiError
+import onlytrade.app.viewmodel.admin.ui.VerifyUserUiState.VerifyingUser
 import onlytrade.composeapp.generated.resources.Res
 import onlytrade.composeapp.generated.resources.cancel
 import onlytrade.composeapp.generated.resources.kyc_1
@@ -64,11 +64,11 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.random.Random
 
-class UserDetailScreen(private val userId: Long) : Screen {
+class VerifyUserScreen(private val userId: Long) : Screen {
     @Composable
     override fun Content() {
         val user = UserCache.get(userId)!!
-        val viewModel = koinViewModel<UserDetailViewModel>()
+        val viewModel = koinViewModel<VerifyUserViewModel>()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val nav = LocalNavigator.currentOrThrow
         val sharedCMP = LocalSharedCMP.current
@@ -236,6 +236,7 @@ class UserDetailScreen(private val userId: Long) : Screen {
 
                 UserVerified -> {
                     ShowToast("User verified.")
+                    nav.pop()
                 }
 
                 is VerifyUserApiError -> {
