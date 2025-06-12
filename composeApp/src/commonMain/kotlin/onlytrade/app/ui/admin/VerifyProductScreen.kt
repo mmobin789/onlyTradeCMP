@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight.Companion.W200
 import androidx.compose.ui.text.font.FontWeight.Companion.W300
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.unit.dp
@@ -157,36 +156,36 @@ class VerifyProductScreen(private val productId: Long) : Screen {
                 }
 
             ) {
-                val (tags, productTitle, productDescription, buttons) = createRefs()
+                val (productTitle, productDescription, buttons) = createRefs()
 
-                Row(
-                    modifier = Modifier.constrainAs(tags) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
+                /*   Row(
+                       modifier = Modifier.constrainAs(tags) {
+                           top.linkTo(parent.top)
+                           start.linkTo(parent.start)
 
-                    }.padding(top = 16.dp).padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    repeat(times = 2) { i ->
+                       }.padding(top = 16.dp).padding(horizontal = 16.dp),
+                       horizontalArrangement = Arrangement.spacedBy(8.dp)
+                   ) {
+                       repeat(times = 2) { i ->
 
 
-                        Text(
-                            modifier = Modifier.background(
-                                color = productDetailColorScheme.productTagsBG,
-                                shape = MaterialTheme.shapes.medium
-                            ).padding(8.dp),
-                            text = if (i == 0) "1st Hand" else "In Demand",
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
-                        )
+                           Text(
+                               modifier = Modifier.background(
+                                   color = productDetailColorScheme.productTagsBG,
+                                   shape = MaterialTheme.shapes.medium
+                               ).padding(8.dp),
+                               text = if (i == 0) "1st Hand" else "In Demand",
+                               style = MaterialTheme.typography.titleSmall.copy(fontWeight = W200)
+                           )
 
-                    }
-                }
+                       }
+                   }*/
 
                 Text(
                     text = product.name,
                     modifier = Modifier.constrainAs(productTitle) {
-                        top.linkTo(tags.bottom)
-                        start.linkTo(tags.start)
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
                     }.padding(16.dp),
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = W500)
