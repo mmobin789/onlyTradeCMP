@@ -234,9 +234,17 @@ class UserDetailScreen(private val userId: Long) : Screen {
                     ShowToast("User not found.")
                 }
 
-                UserVerified -> TODO()
-                is VerifyUserApiError -> TODO()
-                VerifyingUser -> TODO()
+                UserVerified -> {
+                    ShowToast("User verified.")
+                }
+
+                is VerifyUserApiError -> {
+                    ShowToast((uiState as VerifyUserApiError).error)
+                }
+
+                VerifyingUser -> {
+                    // do nothing.
+                }
             }
         }
     }
