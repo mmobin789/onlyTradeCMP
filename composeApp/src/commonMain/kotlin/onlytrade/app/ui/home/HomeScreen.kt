@@ -67,7 +67,6 @@ import kotlinx.coroutines.delay
 import onlytrade.app.ui.design.components.DotsIndicator
 import onlytrade.app.ui.design.components.LocalSharedCMP
 import onlytrade.app.ui.design.components.SharedCMP
-import onlytrade.app.ui.home.categories.sub.SubCategoriesScreen
 import onlytrade.app.ui.home.colorScheme.homeColorScheme
 import onlytrade.app.ui.home.products.ProductsScreen
 import onlytrade.app.ui.home.products.add.AddProductScreen
@@ -88,7 +87,6 @@ import onlytrade.composeapp.generated.resources.botBar_1
 import onlytrade.composeapp.generated.resources.botBar_2
 import onlytrade.composeapp.generated.resources.botBar_3
 import onlytrade.composeapp.generated.resources.botBar_4
-import onlytrade.composeapp.generated.resources.home_1
 import onlytrade.composeapp.generated.resources.home_2
 import onlytrade.composeapp.generated.resources.home_3
 import onlytrade.composeapp.generated.resources.home_4
@@ -108,7 +106,6 @@ class HomeScreen : Screen {
     @Composable
     override fun Content() {
         val viewModel = koinViewModel<HomeViewModel>()
-        val userLoggedIn by remember { mutableStateOf(viewModel.isUserLoggedIn) }
         val products by viewModel.productList.collectAsStateWithLifecycle()
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val sharedCMP = LocalSharedCMP.current
@@ -242,7 +239,7 @@ class HomeScreen : Screen {
                 }
             }
         }, bottomBar = {
-            if (userLoggedIn)
+            if (viewModel.isUserLoggedIn)
                 Row(
                     modifier = Modifier
                         .background(homeColorScheme.botBarBG)
@@ -327,7 +324,7 @@ class HomeScreen : Screen {
                 }
 
         }, floatingActionButton = {
-            if (userLoggedIn) {
+            if (viewModel.verified) {
 
                 val addProductClicked = {
                     nav.push(AddProductScreen())
@@ -362,20 +359,20 @@ class HomeScreen : Screen {
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp)
             ) {
-                AnimatedVisibility(visible = headerVisible) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Box {
-                            Text(
-                                text = stringResource(Res.string.home_1),
-                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
-                            )
+                /*  AnimatedVisibility(visible = headerVisible) {
+                      Column(modifier = Modifier.fillMaxWidth()) {
+                          Box {
+                              Text(
+                                  text = stringResource(Res.string.home_1),
+                                  style = MaterialTheme.typography.titleLarge.copy(fontWeight = W700)
+                              )
 
 
-                            /*   Text(
+                              *//*   Text(
                         modifier = Modifier.align(Alignment.TopEnd),
                         text = "SEE All",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = W700)
-                    )*/
+                    )*//*
                         }
 
                         Row(
@@ -415,7 +412,7 @@ class HomeScreen : Screen {
 
                         }
                     }
-                }
+                }*/
 
                 Box(
                     modifier = Modifier
